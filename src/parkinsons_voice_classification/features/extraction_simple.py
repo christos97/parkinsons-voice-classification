@@ -15,9 +15,11 @@ Usage:
 """
 
 import logging
+import os
 from pathlib import Path
 
 import pandas as pd
+from joblib import Parallel, delayed
 from tqdm import tqdm
 
 from parkinsons_voice_classification.features.prosodic_simple import extract_prosodic_features, get_prosodic_feature_names
@@ -61,7 +63,33 @@ def extract_all_features(audio_path: str) -> dict:
     return features
 
 
-def run_extraction(task: str, output_path: str | None = None) -> pd.DataFrame:
+def _extract_single_file(row: dict) -> dict | None:
+    """
+    Worker function to extract features from a single audio file.
+    
+    Parameters
+    ----------
+    row : dict
+        Manifest row with 'filepath', 'subject_id', 'label', 'task', 'filename'.
+        
+    Returns
+    -------
+    dict or None
+        Feature dictionary with metadata, or None if extraction failed.
+    """
+    try:
+        features = extract_all_features(str(row['filepath']))
+        features['subject_id'] = row['subject_id']
+        features['label'] = row['label']
+        features['task'] = row['task']
+        features['filename'] = row['filename']
+        return features
+    except Exception as e:
+        logger.warning(f"Failed to extract features from {row['filename']}: {e}")
+        return None
+
+
+def run_extraction(task: str, output_path: str | None = None, jobs: int | None = None) -> pd.DataFrame:
     """
     Run feature extraction for a speech task.
     
@@ -71,31 +99,42 @@ def run_extraction(task: str, output_path: str | None = None) -> pd.DataFrame:
         'ReadText' or 'SpontaneousDialogue'
     output_path : str, optional
         Path to save CSV. If None, saves to default location.
+    jobs : int, optional
+        Number of parallel workers. Defaults to min(8, cpu_count - 1).
         
     Returns
     -------
     pd.DataFrame
         DataFrame with features and metadata.
     """
+    # Determine number of parallel workers
+    if jobs is None:
+        cpu_count = os.cpu_count() or 4
+        jobs = min(8, max(1, cpu_count - 1))
+    logger.info(f"Using {jobs} parallel workers")
+    
     # Build manifest
     manifest = build_manifest(task)
     logger.info(f"Found {len(manifest)} recordings for task: {task}")
     
-    # Extract features for each file
-    rows = []
-    for _, row in tqdm(manifest.iterrows(), total=len(manifest), desc=f"Extracting {task}"):
-        try:
-            features = extract_all_features(str(row['filepath']))
-            features['subject_id'] = row['subject_id']
-            features['label'] = row['label']
-            features['task'] = row['task']
-            features['filename'] = row['filename']
-            rows.append(features)
-        except Exception as e:
-            logger.warning(f"Failed to extract features from {row['filename']}: {e}")
+    # Convert manifest rows to list of dicts for parallel processing
+    manifest_rows = manifest.to_dict('records')
     
-    # Create DataFrame
+    # Extract features in parallel with progress bar
+    results = Parallel(n_jobs=jobs, backend='loky')(
+        delayed(_extract_single_file)(row)
+        for row in tqdm(manifest_rows, desc=f"Extracting {task}")
+    )
+    
+    # Filter out failed extractions (None values)
+    rows = [r for r in results if r is not None]
+    
+    if len(rows) < len(manifest_rows):
+        logger.warning(f"Failed to extract {len(manifest_rows) - len(rows)} files")
+    
+    # Create DataFrame and sort deterministically by filename for reproducibility
     df = pd.DataFrame(rows)
+    df = df.sort_values('filename').reset_index(drop=True)
     
     # Reorder columns: metadata first, then features
     meta_cols = ['subject_id', 'label', 'task', 'filename']

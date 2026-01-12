@@ -17,9 +17,14 @@ Output:
 """
 
 import argparse
+import os
 
 from parkinsons_voice_classification.features.extraction_simple import run_extraction, get_all_feature_names
 from parkinsons_voice_classification.data.mdvr_kcl import load_dataset_manifest
+
+# Default number of parallel workers
+_CPU_COUNT = os.cpu_count() or 4
+_DEFAULT_JOBS = min(8, max(1, _CPU_COUNT - 1))
 
 
 def main():
@@ -32,6 +37,12 @@ def main():
         choices=["ReadText", "SpontaneousDialogue", "all"],
         default="all",
         help="Speech task to process (default: all)"
+    )
+    parser.add_argument(
+        "--jobs", "-j",
+        type=int,
+        default=_DEFAULT_JOBS,
+        help=f"Number of parallel workers (default: {_DEFAULT_JOBS})"
     )
     
     args = parser.parse_args()
@@ -62,8 +73,8 @@ def main():
         print(f"  - Subjects: {manifest['subject_id'].nunique()}")
         
         # Extract features
-        print(f"\nExtracting features...")
-        df = run_extraction(task)
+        print(f"\nExtracting features with {args.jobs} parallel workers...")
+        df = run_extraction(task, jobs=args.jobs)
         
         # Summary
         meta_cols = ['subject_id', 'label', 'task', 'filename']

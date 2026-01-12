@@ -3,6 +3,18 @@ project: "Parkinson’s Disease Voice Classification Thesis"
 degree: "MSc Thesis"
 domain: "Speech Signal Processing / Classical Machine Learning"
 task: "Binary classification (Parkinson’s Disease vs Healthy Controls)"
+language: "English"
+last_updated: "2026-01-12"
+repository_state:
+  datasets_downloaded: true
+  codebase_status: "Implemented (feature extraction + experiments)"
+  primary_entrypoints:
+    extract_features_cli: "pvc-extract"
+    run_experiments_cli: "pvc-experiment"
+  make_targets:
+    extract_all: "make extract-all"
+    experiments: "make experiments"
+    results: "make results"
 
 datasets:
   dataset_a:
@@ -11,10 +23,12 @@ datasets:
     source: "Kaggle"
     data_card_url: "https://www.kaggle.com/datasets/asthamishra96/parkinson-multi-model-dataset-2-0/data"
     local_path: "assets/DATASET_MDVR_KCL/"
+    tasks: ["ReadText", "SpontaneousDialogue"]
+    unit_of_analysis: "Recording (WAV) grouped by subject"
     description: >
-      Raw voice recordings from Parkinson’s Disease patients and Healthy Controls,
-      recorded via smartphone in clinical conditions. Multiple recordings per subject
-      across two speech tasks (ReadText, SpontaneousDialogue).
+      Raw voice recordings from Parkinson’s Disease patients and Healthy Controls.
+      Multiple recordings per subject across two speech tasks. Subject identity is encoded
+      in filenames and must be used for grouped cross-validation to prevent leakage.
 
   dataset_b:
     name: "Parkinson’s Disease Speech Signal Features"
@@ -23,29 +37,47 @@ datasets:
     data_card_url: "https://www.kaggle.com/datasets/dipayanbiswas/parkinsons-disease-speech-signal-features/data"
     example_notebook_url: "https://www.kaggle.com/code/parhamzm/parkinson-s-disease-pd-classification/notebook"
     local_path: "assets/PD_SPEECH_FEATURES.csv"
+    unit_of_analysis: "Sample row (subject identifiers not provided)"
     description: >
-      Tabular dataset containing 752 pre-extracted acoustic speech features
-      for Parkinson’s Disease classification. One row per subject/sample,
-      used directly for classical ML.
+      Tabular dataset containing 752 pre-extracted acoustic speech features for PD/HC classification.
+      Used directly for classical ML. Subject identifiers are not provided; results may be optimistic
+      if multiple samples per subject exist.
 
 reference_notebooks:
-  - name: "Parkinson’s Disease (PD) Classification"
+  - name: "PD Classification (tabular pipeline reference)"
     url: "https://www.kaggle.com/code/parhamzm/parkinson-s-disease-pd-classification/notebook"
-    role: "Reference for tabular ML pipeline (features → models → metrics)"
-    applies_to: "Dataset B and post-extraction Dataset A"
+    role: "Reference for features → models → metrics pattern (not for deep learning or leaderboard chasing)"
+    applies_to: ["Dataset B", "Dataset A after feature extraction"]
 
 data_availability:
   status: "Downloaded"
-  note: "Both CSV and WAV datasets are already downloaded locally and must not be re-fetched."
+  note: "Datasets are already present locally and must not be re-fetched."
 
 methodology_constraints:
-  ml_type: "Classical ML only (Logistic Regression, SVM, Random Forest)"
+  ml_type: "Classical ML only (Logistic Regression, SVM_RBF, Random Forest)"
   deep_learning_allowed: false
   deployment: false
   clinical_use: false
+  leakage_prevention:
+    dataset_a: "Grouped stratified 5-fold CV by subject_id"
+    dataset_b: "Stratified 5-fold CV (subject IDs unavailable; caveat required in writeup)"
 
-last_updated: "2026-01-12"
+artifacts:
+  extracted_features:
+    dataset_a_readtext: "outputs/features/features_readtext.csv"
+    dataset_a_spontaneous: "outputs/features/features_spontaneousdialogue.csv"
+  experiment_results:
+    all_results: "outputs/results/all_results.csv"
+    summary: "outputs/results/summary.csv"
+  notes:
+    parallel_extraction_supported: true
+    extract_jobs_flag: "--jobs / -j"
+
+results_snapshot:
+  date: "2026-01-12"
+  note: "Experiments have been run once; re-running may overwrite outputs/results/*.csv."
 ---
+
 
 # Strict Rules for AI Coding Agents
 
@@ -379,6 +411,92 @@ If a design choice increases performance but risks:
 ---
 
 ## 14. When in Doubt
+
+If uncertain, the agent must:
+
+1. Stop
+2. Ask for clarification
+3. Document assumptions
+
+Silent assumptions are not allowed.
+
+---
+
+## 15. Results Interpretation Rules
+
+### 15.1 ROC-AUC Below Chance
+
+If any model produces ROC-AUC < 0.5, document as:
+
+- Model instability (not pipeline failure)
+- Note sensitivity to hyperparameters on small samples
+- Do NOT exclude from results
+
+Example statement:
+
+> "The SVM with RBF kernel yielded ROC-AUC values below chance level, indicating unstable decision boundaries under small-sample, high-dimensional conditions."
+
+---
+
+### 15.2 Confidence Interval Overlap
+
+When comparing conditions (e.g., speech tasks):
+
+- If standard deviations overlap substantially, use "suggests" or "trend toward"
+- Do NOT claim one condition is definitively superior
+- Statistical tests required for causal claims
+
+Example:
+
+- ❌ "Spontaneous speech is more informative than read speech"
+- ✅ "Results suggest a trend toward higher discriminability in spontaneous speech, though confidence intervals overlap"
+
+---
+
+### 15.3 Dataset B Subject Independence
+
+Dataset B has no subject identifiers. Always include this caveat:
+
+> "Since Dataset B does not provide subject identifiers, stratified cross-validation was performed at the sample level. If multiple samples originate from the same subject, this may introduce optimistic bias due to implicit subject overlap across folds."
+
+---
+
+### 15.4 Cross-Dataset Comparisons
+
+Never attribute performance differences to a single factor. Always acknowledge:
+
+- Sample size differences (756 vs 37)
+- Feature dimensionality differences (752 vs 47)
+- CV strategy differences (grouped vs ungrouped)
+
+Example:
+
+- ❌ "Pre-extracted features outperform raw-audio features"
+- ✅ "Higher performance on Dataset B likely reflects the combined effect of larger sample size, richer feature representation, and potentially less stringent cross-validation constraints"
+
+---
+
+## 16. Forbidden Language Patterns
+
+The following phrases are **forbidden** in results interpretation:
+
+❌ "X outperforms Y" (without confound acknowledgment)  
+❌ "This proves..." (no clinical claims)  
+❌ "Clearly superior..." (requires statistical test)  
+❌ "Dataset A features are worse" (conflates multiple variables)  
+❌ "This system can diagnose..." (clinical claim)  
+
+The following phrases are **allowed**:
+
+✅ "Higher performance was observed on..."  
+✅ "Results suggest..."  
+✅ "Under identical classifiers..."  
+✅ "This trend should be interpreted cautiously given..."  
+✅ "Indicative but not conclusive..."  
+
+---
+
+## 17. When in Doubt
 
 If uncertain, the agent must:
 
