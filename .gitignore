@@ -2,6 +2,7 @@
 __pycache__/
 *.py[cod]
 *$py.class
+_legacy_/
 
 # C extensions
 *.so
@@ -89,7 +90,6 @@ dmypy.json
 
 # Data files (will be downloaded separately)
 *.wav
-*.csv
 
 # Model artifacts
 *.pkl

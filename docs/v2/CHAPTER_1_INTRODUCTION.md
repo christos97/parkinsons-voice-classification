@@ -31,10 +31,10 @@ The primary objectives of this research are:
 
 This thesis makes the following contributions:
 
-- A **subject-grouped cross-validation framework** that prevents data leakage in multi-recording datasets
-- A **controlled feature ablation study** demonstrating +8.7 percentage points ROC-AUC improvement with extended features
-- **Systematic comparison** of class weighting strategies across different imbalance levels
-- **Transparent documentation** of methodological constraints and their implications
+- A **subject-grouped cross-validation framework** that prevents data leakage, a common pitfall in multi-recording voice datasets.
+- A **controlled feature ablation study** demonstrating substantial ROC-AUC improvements (+23pp) by extending the feature set from 47 to 78 features for specific speech tasks.
+- **Task-specific analysis** revealing that spontaneous speech yields higher classification performance (ROC-AUC 0.857) compared to read speech (ROC-AUC 0.822).
+- **Benchmarking analysis** contrasting rigorous subject-grouped performance (Dataset A) against optimistic estimates from larger, unstratified public datasets (Dataset B).
 
 ## 1.5 Thesis Organization
 

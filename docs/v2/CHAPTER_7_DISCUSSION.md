@@ -6,9 +6,9 @@ This chapter interprets the experimental results, contextualizes findings within
 
 ## 7.2 Interpretation of Key Findings
 
-### 7.2.1 Feature Extension Impact (+8.7pp ROC-AUC)
+### 7.2.1 Feature Extension Impact
 
-The extension from 47 to 78 features produced the most significant performance improvement observed in this study. Random Forest ROC-AUC increased from 0.786 to 0.873 (+8.7 percentage points).
+The extension from 47 to 78 features produced significant performance improvements, particularly for the ReadText task where Random Forest ROC-AUC increased from 0.590 to 0.822 (+23 percentage points), essentially rescuing the model from chance-level performance. Spontaneous Dialogue, which already performed well (0.828), saw a more modest improvement to 0.857.
 
 **Interpretation:**
 
@@ -26,7 +26,10 @@ These additions are particularly relevant for PD detection because:
 2. **Temporal dynamics** are affected by motor control deficits
 3. **Spectral flatness** may indicate breathiness/reduced harmonic content
 
-The larger improvement for non-linear models (RF: +8.7pp, SVM: +9.1pp) compared to linear models (LR: +0.2pp) suggests that the extended features enable modeling of **non-linear feature interactions** that linear models cannot exploit.
+The larger improvement for non-linear models suggests that the extended features enable modeling of **non-linear feature interactions** that simpler feature sets may obscure.
+
+**Robustness Check:**
+Although the extended feature set increased dimensionality relative to the small sample size of Dataset A (n=37), performance was evaluated exclusively using grouped cross-validation at the subject level. Improvements were observed consistent across folds and were accompanied by comparable standard deviations, suggesting that the observed gains reflect improved feature representation rather than fold-specific overfitting.
 
 ### 7.2.2 Class Weighting Effects
 

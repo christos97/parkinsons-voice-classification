@@ -152,6 +152,6 @@ def summarize_results(results_df: pd.DataFrame) -> pd.DataFrame:
     pd.DataFrame
         Summary with mean and std per model/metric
     """
-    summary = results_df.groupby(["model", "metric"])["value"].agg(["mean", "std"])
+    summary = results_df.groupby(["dataset", "task", "model", "metric"])["value"].agg(["mean", "std"])
     summary["mean_std"] = summary.apply(lambda row: f"{row['mean']:.3f} ± {row['std']:.3f}", axis=1)
     return summary.reset_index()

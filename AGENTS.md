@@ -252,7 +252,7 @@ Never attribute performance differences to a single factor.
 
 ---
 
-## 10. Forbidden Language
+### 14. Forbidden Language
 
 ❌ “X outperforms Y”  
 ❌ “This proves…”  
@@ -263,6 +263,18 @@ Allowed:
 ✅ “Results suggest…”  
 ✅ “Observed under identical classifiers…”  
 ✅ “Should be interpreted cautiously…”
+
+### 15. Mandatory Variance Reporting
+
+All reported performance metrics must be presented as mean ± standard deviation across cross-validation folds.
+
+Single-point estimates are forbidden, including in:
+- tables
+- figures
+- text
+- summaries
+
+This rule exists to prevent overinterpretation under small-sample conditions.
 
 ---
 
