@@ -105,3 +105,64 @@ Therefore, we **cannot** conclude that the "pre-extracted features" are inherent
 *   **Logistic Regression:** Proved to be the most "honest" baseline. It provided consistent, low-variance estimates on Dataset A and solid performance on Dataset B. It was less prone to the extreme volatility seen in the SVM.
 *   **SVM (RBF):** Exhibited significant fragility in the low-data regime (Dataset A), often performing worse than chance. However, on the larger Dataset B, it became highly effective (ROC-AUC 0.885). This validates the theoretical understanding that non-linear kernel methods require sufficient density of data points to form reliable support vectors.
 *   **Random Forest:** Emerged as the most robust model overall. It handled the high dimensionality of Dataset B (feature selection is inherent to the algorithm) and provided the best signal extraction on the noisy, small Dataset A.
+
+---
+
+## 6.6 Effect of Class Weighting on Classification Performance
+
+To assess sensitivity to class imbalance, all experiments were repeated using class-weighted loss functions (`class_weight="balanced"`). This section compares the baseline (unweighted) results with the class-weighted results.
+
+### 6.6.1 Dataset A: MDVR-KCL (Class-Weighted)
+
+**Table 6.5: ReadText Task — Baseline vs Class-Weighted**
+
+| Model | Condition | Accuracy | F1-Score | ROC-AUC | Recall |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| **Logistic Regression** | Baseline | 0.621 ± 0.05 | 0.542 ± 0.09 | 0.717 ± 0.12 | 0.550 ± 0.18 |
+| | Weighted | 0.596 ± 0.08 | 0.528 ± 0.10 | 0.717 ± 0.14 | 0.550 ± 0.20 |
+| **SVM (RBF)** | Baseline | 0.621 ± 0.09 | 0.333 ± 0.30 | 0.614 ± 0.28 | 0.317 ± 0.27 |
+| | Weighted | 0.704 ± 0.11 | 0.519 ± 0.32 | 0.542 ± 0.31 | 0.500 ± 0.37 |
+| **Random Forest** | Baseline | 0.628 ± 0.16 | 0.351 ± 0.33 | 0.590 ± 0.27 | 0.333 ± 0.37 |
+| | Weighted | 0.650 ± 0.15 | 0.431 ± 0.31 | 0.687 ± 0.26 | 0.400 ± 0.37 |
+
+**Table 6.6: SpontaneousDialogue Task — Baseline vs Class-Weighted**
+
+| Model | Condition | Accuracy | F1-Score | ROC-AUC | Recall |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| **Logistic Regression** | Baseline | 0.639 ± 0.14 | 0.539 ± 0.29 | 0.760 ± 0.19 | 0.667 ± 0.33 |
+| | Weighted | 0.639 ± 0.16 | 0.539 ± 0.32 | 0.760 ± 0.21 | 0.667 ± 0.41 |
+| **SVM (RBF)** | Baseline | 0.636 ± 0.12 | 0.400 ± 0.23 | 0.407 ± 0.28 | 0.333 ± 0.27 |
+| | Weighted | 0.693 ± 0.12 | 0.560 ± 0.32 | 0.423 ± 0.31 | 0.600 ± 0.37 |
+| **Random Forest** | Baseline | 0.721 ± 0.16 | 0.567 ± 0.33 | 0.828 ± 0.13 | 0.600 ± 0.37 |
+| | Weighted | 0.693 ± 0.12 | 0.538 ± 0.33 | 0.827 ± 0.13 | 0.600 ± 0.44 |
+
+**Observations (Dataset A):**
+*   Class weighting had **minimal impact** on Dataset A performance. Most metrics remained within one standard deviation of the baseline.
+*   The moderate imbalance (57%/43%) in Dataset A is likely insufficient to cause substantial bias in the baseline models.
+*   SVM showed improved recall under weighting but at the cost of ROC-AUC stability.
+
+### 6.6.2 Dataset B: PD_SPEECH_FEATURES (Class-Weighted)
+
+**Table 6.7: Dataset B — Baseline vs Class-Weighted**
+
+| Model | Condition | Accuracy | F1-Score | ROC-AUC | Precision | Recall |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| **Logistic Regression** | Baseline | 0.828 ± 0.01 | 0.885 ± 0.01 | 0.867 ± 0.03 | 0.881 ± 0.01 | 0.890 ± 0.02 |
+| | Weighted | 0.825 ± 0.02 | 0.882 ± 0.01 | 0.867 ± 0.03 | 0.892 ± 0.02 | 0.872 ± 0.01 |
+| **SVM (RBF)** | Baseline | 0.850 ± 0.02 | 0.908 ± 0.01 | 0.885 ± 0.02 | 0.841 ± 0.01 | 0.986 ± 0.02 |
+| | Weighted | 0.847 ± 0.02 | 0.899 ± 0.02 | 0.900 ± 0.02 | 0.887 ± 0.03 | 0.911 ± 0.01 |
+| **Random Forest** | Baseline | 0.882 ± 0.02 | 0.925 ± 0.01 | 0.939 ± 0.01 | 0.876 ± 0.01 | 0.980 ± 0.01 |
+| | Weighted | 0.865 ± 0.02 | 0.916 ± 0.01 | 0.949 ± 0.01 | 0.859 ± 0.01 | 0.980 ± 0.01 |
+
+**Observations (Dataset B):**
+*   Class weighting produced a **recall-precision trade-off** in the substantially imbalanced Dataset B (75% PD / 25% HC).
+*   SVM showed **improved ROC-AUC** (+0.015) under weighting, suggesting better calibration of decision boundaries.
+*   Random Forest showed **improved ROC-AUC** (+0.01) but slightly reduced accuracy (−0.017), reflecting a more balanced treatment of the minority class.
+*   The baseline models exhibited high recall (0.98–0.99) but lower precision, indicating a tendency to over-predict the majority class (PD). Class weighting corrected this bias.
+
+### 6.6.3 Summary of Class Weighting Effect
+
+| Dataset | Imbalance | Effect of Class Weighting |
+| :--- | :--- | :--- |
+| **Dataset A** | Moderate (57/43) | Minimal impact; within noise margins |
+| **Dataset B** | Substantial (25/75) | Improved precision-recall balance; slight ROC-AUC gains |

@@ -251,9 +251,9 @@ def load_features(task: str) -> tuple:
         Subject IDs for grouped CV
     """
     import numpy as np
-    from parkinsons_voice_classification.config import FEATURES_OUTPUT_DIR
+    from parkinsons_voice_classification.config import get_features_output_dir
 
-    csv_path = FEATURES_OUTPUT_DIR / f"features_{task.lower()}.csv"
+    csv_path = get_features_output_dir() / f"features_{task.lower()}.csv"
 
     if not csv_path.exists():
         raise FileNotFoundError(
@@ -271,3 +271,31 @@ def load_features(task: str) -> tuple:
     groups = df["subject_id"].values
 
     return X, y, groups
+
+
+def get_feature_names(task: str) -> list[str]:
+    """
+    Get feature column names for a speech task.
+
+    Parameters
+    ----------
+    task : str
+        'ReadText' or 'SpontaneousDialogue'
+
+    Returns
+    -------
+    list[str]
+        List of feature column names
+    """
+    from parkinsons_voice_classification.config import get_features_output_dir
+
+    csv_path = get_features_output_dir() / f"features_{task.lower()}.csv"
+
+    if not csv_path.exists():
+        raise FileNotFoundError(
+            f"Features not found at {csv_path}. " f"Run feature extraction first."
+        )
+
+    df = pd.read_csv(csv_path, nrows=0)
+    meta_cols = ["subject_id", "label", "task", "filename"]
+    return [c for c in df.columns if c not in meta_cols]

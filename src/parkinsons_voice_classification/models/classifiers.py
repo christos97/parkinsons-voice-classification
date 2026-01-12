@@ -15,7 +15,7 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.svm import SVC
 from sklearn.ensemble import RandomForestClassifier
 
-from parkinsons_voice_classification.config import RANDOM_SEED
+from parkinsons_voice_classification.config import RANDOM_SEED, USE_CLASS_WEIGHT_BALANCED
 
 
 def get_models() -> dict[str, Pipeline]:
@@ -26,12 +26,16 @@ def get_models() -> dict[str, Pipeline]:
     - StandardScaler preprocessing
     - Default hyperparameters
     - Fixed random seed for reproducibility
+    - Optional class_weight="balanced" (controlled by USE_CLASS_WEIGHT_BALANCED)
 
     Returns
     -------
     dict[str, Pipeline]
         Mapping of model names to sklearn Pipelines.
     """
+    # Determine class weighting strategy based on config
+    class_weight = "balanced" if USE_CLASS_WEIGHT_BALANCED else None
+
     return {
         "LogisticRegression": Pipeline(
             [
@@ -42,6 +46,7 @@ def get_models() -> dict[str, Pipeline]:
                         random_state=RANDOM_SEED,
                         max_iter=1000,
                         solver="lbfgs",
+                        class_weight=class_weight,
                     ),
                 ),
             ]
@@ -55,6 +60,7 @@ def get_models() -> dict[str, Pipeline]:
                         kernel="rbf",
                         random_state=RANDOM_SEED,
                         probability=True,  # For ROC-AUC
+                        class_weight=class_weight,
                     ),
                 ),
             ]
@@ -67,6 +73,7 @@ def get_models() -> dict[str, Pipeline]:
                     RandomForestClassifier(
                         n_estimators=100,
                         random_state=RANDOM_SEED,
+                        class_weight=class_weight,
                     ),
                 ),
             ]

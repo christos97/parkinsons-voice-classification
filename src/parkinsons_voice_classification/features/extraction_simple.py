@@ -31,7 +31,7 @@ from parkinsons_voice_classification.features.spectral_simple import (
     get_spectral_feature_names,
 )
 from parkinsons_voice_classification.data.mdvr_kcl import build_manifest
-from parkinsons_voice_classification.config import FEATURES_OUTPUT_DIR
+from parkinsons_voice_classification.config import get_features_output_dir, USE_EXTENDED_FEATURES
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 logger = logging.getLogger(__name__)
@@ -150,8 +150,9 @@ def run_extraction(
 
     # Save to CSV
     if output_path is None:
-        FEATURES_OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
-        output_path_obj = FEATURES_OUTPUT_DIR / f"features_{task.lower()}.csv"
+        features_dir = get_features_output_dir()
+        features_dir.mkdir(parents=True, exist_ok=True)
+        output_path_obj = features_dir / f"features_{task.lower()}.csv"
     else:
         output_path_obj = Path(output_path)
         output_path_obj.parent.mkdir(parents=True, exist_ok=True)

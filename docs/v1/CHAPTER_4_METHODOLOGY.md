@@ -92,3 +92,30 @@ All metrics are reported as the **Mean ± Standard Deviation** across the 5 fold
 ### 4.6.3 Reproducibility
 *   **Random Seed:** A fixed random seed (42) was used for all splitters and model initializers.
 *   **Scaling:** `StandardScaler` (z-score normalization) was fit on the training folds and transformed to the test folds to prevent data leakage from the test set statistics.
+
+## 4.7 Class Imbalance Mitigation
+
+### 4.7.1 Observed Imbalance
+Both datasets exhibit class imbalance:
+*   **Dataset A (MDVR-KCL):** 57% HC / 43% PD — moderate imbalance.
+*   **Dataset B (PD_SPEECH_FEATURES):** 25% HC / 75% PD — substantial imbalance.
+
+Class imbalance can bias classifiers toward predicting the majority class, leading to inflated accuracy but poor minority-class recall.
+
+### 4.7.2 Mitigation Strategy
+To assess sensitivity to class imbalance, all experiments were conducted under two conditions:
+
+1.  **Baseline (Unweighted):** Standard classifiers without class balancing. This represents the default behavior when imbalance is not explicitly addressed.
+2.  **Class-Weighted:** All classifiers were configured with `class_weight="balanced"`, which adjusts the loss function to weight misclassifications inversely proportional to class frequency.
+
+The `class_weight="balanced"` approach was selected over resampling methods (e.g., SMOTE) for the following reasons:
+*   **No synthetic data:** Unlike oversampling, class weighting does not generate synthetic samples, avoiding potential artifacts.
+*   **No leakage risk:** Resampling within cross-validation folds requires careful implementation to avoid leakage; class weighting is applied at the model level.
+*   **Simplicity:** Built into scikit-learn classifiers with no additional dependencies.
+
+### 4.7.3 Implementation
+The same pipeline was used for both conditions. Only the `class_weight` parameter was toggled:
+*   Baseline: `class_weight=None`
+*   Weighted: `class_weight="balanced"`
+
+Results from both conditions are reported separately to enable direct comparison of the effect of class weighting on classification performance.

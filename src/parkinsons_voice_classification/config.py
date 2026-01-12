@@ -30,8 +30,26 @@ MDVR_KCL_SPONTANEOUS = MDVR_KCL_DIR / "SpontaneousDialogue"
 # Dataset B path
 PD_SPEECH_FEATURES_CSV = ASSETS_DIR / "PD_SPEECH_FEATURES.csv"
 
-# Output paths
-FEATURES_OUTPUT_DIR = OUTPUTS_DIR / "features"
+# =============================================================================
+# FEATURE SET CONFIGURATION
+# =============================================================================
+# When True, use extended 78-feature set (baseline + MFCC std + delta-delta + spectral shape)
+# When False, use baseline 47-feature set
+# Features are saved to outputs/features/extended/ or outputs/features/baseline/
+USE_EXTENDED_FEATURES = False
+
+# Output paths (dynamic based on feature set)
+_FEATURES_BASE_DIR = OUTPUTS_DIR / "features"
+
+
+def get_features_output_dir() -> Path:
+    """Get features output directory based on USE_EXTENDED_FEATURES flag."""
+    subdir = "extended" if USE_EXTENDED_FEATURES else "baseline"
+    return _FEATURES_BASE_DIR / subdir
+
+
+# For backward compatibility (but prefer get_features_output_dir())
+FEATURES_OUTPUT_DIR = _FEATURES_BASE_DIR
 
 # =============================================================================
 # FEATURE EXTRACTION PARAMETERS (locked)
@@ -58,6 +76,15 @@ MFCC_N_MELS = 128  # Number of mel bands
 TARGET_SAMPLE_RATE = 22050
 
 # =============================================================================
+# FEATURE COUNTS (for documentation)
+# =============================================================================
+# Baseline: 47 features (21 prosodic + 26 spectral)
+# Extended: 78 features (21 prosodic + 57 spectral)
+#   Added: MFCC std (13) + delta-delta MFCC mean (13) + spectral shape (5)
+BASELINE_FEATURE_COUNT = 47
+EXTENDED_FEATURE_COUNT = 78
+
+# =============================================================================
 # LABEL ENCODING
 # =============================================================================
 
@@ -79,3 +106,12 @@ LABEL_NAMES = {
 # CROSS-VALIDATION PARAMETERS
 # =============================================================================
 N_FOLDS = 5
+
+# =============================================================================
+# CLASS IMBALANCE HANDLING
+# =============================================================================
+# When True, all classifiers use class_weight="balanced" to mitigate
+# class imbalance. Results are saved to outputs/results/weighted/
+# When False (baseline), no class weighting is applied.
+# Results are saved to outputs/results/baseline/
+USE_CLASS_WEIGHT_BALANCED = False

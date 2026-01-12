@@ -24,6 +24,12 @@ from parkinsons_voice_classification.features.extraction_simple import (
     get_all_feature_names,
 )
 from parkinsons_voice_classification.data.mdvr_kcl import load_dataset_manifest
+from parkinsons_voice_classification.config import (
+    USE_EXTENDED_FEATURES,
+    get_features_output_dir,
+    BASELINE_FEATURE_COUNT,
+    EXTENDED_FEATURE_COUNT,
+)
 
 # Default number of parallel workers
 _CPU_COUNT = os.cpu_count() or 4
@@ -51,9 +57,18 @@ def main():
 
     # Show feature configuration
     feature_names = get_all_feature_names()
-    print(f"Feature set: {len(feature_names)} features")
-    print(f"  - Prosodic: 21 (F0, jitter, shimmer, HNR, intensity, formants)")
-    print(f"  - Spectral: 26 (MFCC 0-12 mean + delta MFCC 0-12 mean)")
+    feature_mode = "EXTENDED" if USE_EXTENDED_FEATURES else "BASELINE"
+    expected_count = EXTENDED_FEATURE_COUNT if USE_EXTENDED_FEATURES else BASELINE_FEATURE_COUNT
+    output_dir = get_features_output_dir()
+
+    print(f"Feature set: {feature_mode} ({len(feature_names)} features)")
+    if USE_EXTENDED_FEATURES:
+        print(f"  - Prosodic: 21 (F0, jitter, shimmer, HNR, intensity, formants)")
+        print(f"  - Spectral: 57 (MFCC mean/std + delta/delta2 + spectral shape)")
+    else:
+        print(f"  - Prosodic: 21 (F0, jitter, shimmer, HNR, intensity, formants)")
+        print(f"  - Spectral: 26 (MFCC 0-12 mean + delta MFCC 0-12 mean)")
+    print(f"Output directory: {output_dir}")
     print()
 
     # Determine tasks to process

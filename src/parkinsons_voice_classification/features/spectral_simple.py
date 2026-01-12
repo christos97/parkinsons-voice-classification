@@ -1,13 +1,19 @@
 """
-Simplified Spectral Feature Extraction using Librosa
+Spectral Feature Extraction using Librosa
 
-Reduced feature set for baseline experiments:
-- MFCC 0-12 mean: 13 features
-- Delta MFCC 0-12 mean: 13 features
+Feature sets:
+- Baseline (26 features):
+  - MFCC 0-12 mean: 13 features
+  - Delta MFCC 0-12 mean: 13 features
 
-Total: 26 features
+- Extended (57 features):
+  - MFCC 0-12 mean: 13 features
+  - MFCC 0-12 std: 13 features
+  - Delta MFCC 0-12 mean: 13 features
+  - Delta-delta MFCC 0-12 mean: 13 features
+  - Spectral shape: 5 features (centroid, bandwidth, rolloff, flatness, zcr)
 
-No std, no delta-delta — keeping it minimal.
+Controlled by USE_EXTENDED_FEATURES in config.py
 """
 
 import numpy as np
@@ -19,27 +25,48 @@ from parkinsons_voice_classification.config import (
     MFCC_N_FFT,
     MFCC_HOP_LENGTH,
     MFCC_N_MELS,
+    USE_EXTENDED_FEATURES,
 )
 
 
 def get_spectral_feature_names() -> list[str]:
-    """Return ordered list of spectral feature names (26 features)."""
+    """Return ordered list of spectral feature names (26 or 57 features)."""
     names = []
 
-    # MFCC means (13)
+    # MFCC means (13) - always included
     for i in range(MFCC_N_COEFFS):
         names.append(f"mfcc_{i}_mean")
 
-    # Delta MFCC means (13)
+    # MFCC std (13) - extended only
+    if USE_EXTENDED_FEATURES:
+        for i in range(MFCC_N_COEFFS):
+            names.append(f"mfcc_{i}_std")
+
+    # Delta MFCC means (13) - always included
     for i in range(MFCC_N_COEFFS):
         names.append(f"delta_mfcc_{i}_mean")
+
+    # Delta-delta MFCC means (13) - extended only
+    if USE_EXTENDED_FEATURES:
+        for i in range(MFCC_N_COEFFS):
+            names.append(f"delta2_mfcc_{i}_mean")
+
+    # Spectral shape features (5) - extended only
+    if USE_EXTENDED_FEATURES:
+        names.extend([
+            "spectral_centroid_mean",
+            "spectral_bandwidth_mean",
+            "spectral_rolloff_mean",
+            "spectral_flatness_mean",
+            "zcr_mean",
+        ])
 
     return names
 
 
 def extract_spectral_features(audio_path: str) -> dict:
     """
-    Extract all spectral features from a single audio file.
+    Extract spectral features from a single audio file.
 
     Parameters
     ----------
@@ -49,7 +76,7 @@ def extract_spectral_features(audio_path: str) -> dict:
     Returns
     -------
     dict
-        Dictionary with 26 spectral features.
+        Dictionary with 26 (baseline) or 57 (extended) spectral features.
     """
     features = {}
 
@@ -67,14 +94,57 @@ def extract_spectral_features(audio_path: str) -> dict:
             n_mels=MFCC_N_MELS,
         )
 
-        # MFCC means (13)
+        # MFCC means (13) - always included
         for i in range(MFCC_N_COEFFS):
             features[f"mfcc_{i}_mean"] = np.mean(mfccs[i])
 
-        # Delta MFCC means (13)
+        # MFCC std (13) - extended only
+        if USE_EXTENDED_FEATURES:
+            for i in range(MFCC_N_COEFFS):
+                features[f"mfcc_{i}_std"] = np.std(mfccs[i])
+
+        # Delta MFCC means (13) - always included
         delta_mfccs = librosa.feature.delta(mfccs, order=1)
         for i in range(MFCC_N_COEFFS):
             features[f"delta_mfcc_{i}_mean"] = np.mean(delta_mfccs[i])
+
+        # Delta-delta MFCC means (13) - extended only
+        if USE_EXTENDED_FEATURES:
+            delta2_mfccs = librosa.feature.delta(mfccs, order=2)
+            for i in range(MFCC_N_COEFFS):
+                features[f"delta2_mfcc_{i}_mean"] = np.mean(delta2_mfccs[i])
+
+        # Spectral shape features (5) - extended only
+        if USE_EXTENDED_FEATURES:
+            # Spectral centroid
+            centroid = librosa.feature.spectral_centroid(
+                y=y, sr=sr, n_fft=MFCC_N_FFT, hop_length=MFCC_HOP_LENGTH
+            )
+            features["spectral_centroid_mean"] = np.mean(centroid)
+
+            # Spectral bandwidth
+            bandwidth = librosa.feature.spectral_bandwidth(
+                y=y, sr=sr, n_fft=MFCC_N_FFT, hop_length=MFCC_HOP_LENGTH
+            )
+            features["spectral_bandwidth_mean"] = np.mean(bandwidth)
+
+            # Spectral rolloff
+            rolloff = librosa.feature.spectral_rolloff(
+                y=y, sr=sr, n_fft=MFCC_N_FFT, hop_length=MFCC_HOP_LENGTH
+            )
+            features["spectral_rolloff_mean"] = np.mean(rolloff)
+
+            # Spectral flatness
+            flatness = librosa.feature.spectral_flatness(
+                y=y, n_fft=MFCC_N_FFT, hop_length=MFCC_HOP_LENGTH
+            )
+            features["spectral_flatness_mean"] = np.mean(flatness)
+
+            # Zero crossing rate
+            zcr = librosa.feature.zero_crossing_rate(
+                y=y, frame_length=MFCC_N_FFT, hop_length=MFCC_HOP_LENGTH
+            )
+            features["zcr_mean"] = np.mean(zcr)
 
     except Exception:
         # Fill with NaN on failure

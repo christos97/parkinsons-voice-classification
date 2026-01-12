@@ -7,7 +7,7 @@ Runs all classification experiments:
 2. Dataset A - SpontaneousDialogue (grouped CV)
 3. Dataset B - Pre-extracted features (standard CV)
 
-Saves results to outputs/results/
+Saves results to outputs/results/{baseline,weighted}/{baseline,extended}/
 """
 
 import pandas as pd
@@ -15,19 +15,31 @@ import pandas as pd
 from parkinsons_voice_classification.data.mdvr_kcl import load_features as load_mdvr_features
 from parkinsons_voice_classification.data.pd_speech import load_features as load_pd_speech_features
 from parkinsons_voice_classification.models.training import run_cv, summarize_results
-from parkinsons_voice_classification.config import OUTPUTS_DIR
+from parkinsons_voice_classification.config import (
+    OUTPUTS_DIR,
+    USE_CLASS_WEIGHT_BALANCED,
+    USE_EXTENDED_FEATURES,
+)
 
 
 def main():
     """Run experiments on all datasets."""
 
-    results_dir = OUTPUTS_DIR / "results"
+    # Output to {weight_mode}/{feature_mode}/ subdirectory based on config
+    weight_subdir = "weighted" if USE_CLASS_WEIGHT_BALANCED else "baseline"
+    feature_subdir = "extended" if USE_EXTENDED_FEATURES else "baseline"
+    results_dir = OUTPUTS_DIR / "results" / weight_subdir / feature_subdir
     results_dir.mkdir(parents=True, exist_ok=True)
 
     all_results = []
 
+    weight_status = "CLASS-WEIGHTED" if USE_CLASS_WEIGHT_BALANCED else "BASELINE (unweighted)"
+    feature_status = "EXTENDED (78 features)" if USE_EXTENDED_FEATURES else "BASELINE (47 features)"
     print("=" * 70)
     print("PARKINSON'S DISEASE VOICE CLASSIFICATION EXPERIMENTS")
+    print(f"Class weighting: {weight_status}")
+    print(f"Feature set: {feature_status}")
+    print(f"Output: {results_dir}")
     print("=" * 70)
 
     # =========================================================================

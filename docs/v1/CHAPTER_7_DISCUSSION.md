@@ -51,3 +51,32 @@ This research is exploratory and academic in nature. The models developed here a
 1.  **Subject-Level Splitting:** Future studies must prioritize subject-level splitting. The variance seen in Dataset A is the "true" variance of the problem; methods that report high accuracy with recording-level splits on small datasets likely underestimate the generalization error.
 2.  **Task Selection:** The findings suggest that spontaneous speech may be a more sensitive modality for PD detection than read speech, warranting further investigation with larger cohorts.
 3.  **Data Requirements:** The instability of the SVM on Dataset A emphasizes that collecting larger datasets is more critical than developing more complex models.
+
+## 7.7 Effect of Class Imbalance Mitigation
+
+A secondary analysis was conducted to assess the impact of class-weighted loss functions on classification performance. This methodological extension provides insight into the sensitivity of voice-based PD classification to dataset composition.
+
+### 7.7.1 Findings
+
+**Dataset A (Moderate Imbalance):**
+Class weighting had negligible effect on Dataset A, where the class distribution (57% HC / 43% PD) represents only moderate imbalance. The baseline models were not substantially biased toward the majority class, and the introduction of class weights did not meaningfully alter decision boundaries. This is consistent with the understanding that class weighting primarily addresses severe imbalance.
+
+**Dataset B (Substantial Imbalance):**
+Class weighting produced measurable effects on Dataset B, where the severe imbalance (75% PD / 25% HC) caused baseline models to over-predict the majority class. Specifically:
+*   Baseline models achieved very high recall (0.98–0.99) but at the cost of precision.
+*   Class-weighted models showed improved precision-recall balance, with ROC-AUC improvements of +0.01 to +0.015.
+*   The trade-off is appropriate: in a diagnostic context, reducing false positives (improved precision) may be preferable to maximizing sensitivity alone.
+
+### 7.7.2 Methodological Insight
+
+The class weighting analysis demonstrates that:
+1.  **Imbalance severity matters:** Moderate imbalance (≤60/40) may not require explicit mitigation; severe imbalance (≥70/30) benefits from class-weighted approaches.
+2.  **ROC-AUC is more robust than accuracy:** Accuracy can be misleading under imbalance; ROC-AUC and F1-score provide more informative assessments.
+3.  **No free lunch:** Class weighting improved minority-class treatment but did not uniformly improve all metrics. The choice to apply weighting should be driven by the application's tolerance for false positives vs. false negatives.
+
+### 7.7.3 Implications
+
+For future PD voice classification studies:
+*   **Report class distributions** explicitly in methodology sections.
+*   **Consider class weighting** when imbalance exceeds 70/30.
+*   **Report both weighted and unweighted results** when feasible, to demonstrate robustness.
