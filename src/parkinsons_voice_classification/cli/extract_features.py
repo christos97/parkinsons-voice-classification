@@ -19,7 +19,10 @@ Output:
 import argparse
 import os
 
-from parkinsons_voice_classification.features.extraction_simple import run_extraction, get_all_feature_names
+from parkinsons_voice_classification.features.extraction_simple import (
+    run_extraction,
+    get_all_feature_names,
+)
 from parkinsons_voice_classification.data.mdvr_kcl import load_dataset_manifest
 
 # Default number of parallel workers
@@ -28,62 +31,61 @@ _DEFAULT_JOBS = min(8, max(1, _CPU_COUNT - 1))
 
 
 def main():
-    parser = argparse.ArgumentParser(
-        description="Extract acoustic features from MDVR-KCL dataset"
-    )
+    parser = argparse.ArgumentParser(description="Extract acoustic features from MDVR-KCL dataset")
     parser.add_argument(
         "--task",
         type=str,
         choices=["ReadText", "SpontaneousDialogue", "all"],
         default="all",
-        help="Speech task to process (default: all)"
+        help="Speech task to process (default: all)",
     )
     parser.add_argument(
-        "--jobs", "-j",
+        "--jobs",
+        "-j",
         type=int,
         default=_DEFAULT_JOBS,
-        help=f"Number of parallel workers (default: {_DEFAULT_JOBS})"
+        help=f"Number of parallel workers (default: {_DEFAULT_JOBS})",
     )
-    
+
     args = parser.parse_args()
-    
+
     # Show feature configuration
     feature_names = get_all_feature_names()
     print(f"Feature set: {len(feature_names)} features")
     print(f"  - Prosodic: 21 (F0, jitter, shimmer, HNR, intensity, formants)")
     print(f"  - Spectral: 26 (MFCC 0-12 mean + delta MFCC 0-12 mean)")
     print()
-    
+
     # Determine tasks to process
     if args.task == "all":
         tasks = ["ReadText", "SpontaneousDialogue"]
     else:
         tasks = [args.task]
-    
+
     for task in tasks:
         print(f"\n{'='*60}")
         print(f"Processing task: {task}")
         print(f"{'='*60}")
-        
+
         # Load manifest for summary
         manifest = load_dataset_manifest(task)
         print(f"Found {len(manifest)} recordings")
         print(f"  - HC: {(manifest['label'] == 0).sum()}")
         print(f"  - PD: {(manifest['label'] == 1).sum()}")
         print(f"  - Subjects: {manifest['subject_id'].nunique()}")
-        
+
         # Extract features
         print(f"\nExtracting features with {args.jobs} parallel workers...")
         df = run_extraction(task, jobs=args.jobs)
-        
+
         # Summary
-        meta_cols = ['subject_id', 'label', 'task', 'filename']
+        meta_cols = ["subject_id", "label", "task", "filename"]
         feature_cols = [c for c in df.columns if c not in meta_cols]
-        
+
         print(f"\nFeature matrix shape: {df.shape}")
         print(f"  - Rows (recordings): {len(df)}")
         print(f"  - Columns: {len(df.columns)} (4 metadata + {len(feature_cols)} features)")
-        
+
         # Check for NaN features
         nan_counts = df[feature_cols].isna().sum()
         if nan_counts.sum() > 0:
@@ -92,7 +94,7 @@ def main():
             print("Features with NaN:")
             for col, count in cols_with_nan.items():
                 print(f"  - {col}: {count} NaN values")
-    
+
     print(f"\n{'='*60}")
     print("Feature extraction complete!")
     print(f"{'='*60}")

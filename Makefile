@@ -88,6 +88,11 @@ test:
 	@echo "Running test suite..."
 	poetry run pytest -v
 
+format:
+	@echo "✨ Formatting code with black..."
+	poetry run black src/ --line-length=100
+	@echo "✓ Formatting complete"
+
 check-types:
 	@echo "Running type checks..."
 	@echo "Note: This requires Pylance/Pyright to be installed"

@@ -7,24 +7,36 @@ language: "English"
 last_updated: "2026-01-12"
 repository_state:
   datasets_downloaded: true
-  codebase_status: "Implemented (feature extraction + experiments)"
+  codebase_status: "Complete (experiments run, thesis chapters 3-8 drafted)"
   primary_entrypoints:
     extract_features_cli: "pvc-extract"
     run_experiments_cli: "pvc-experiment"
+  cli_usage:
+    extract: "pvc-extract --task [ReadText|SpontaneousDialogue|all] [--jobs N]"
+    experiment: "pvc-experiment"
   make_targets:
     extract_all: "make extract-all"
     experiments: "make experiments"
     results: "make results"
+    pipeline: "make pipeline  # extract-all + experiments"
+    clean: "make clean  # remove all outputs"
 
 datasets:
   dataset_a:
     name: "MDVR-KCL (Mobile Device Voice Recordings – King’s College London)"
     type: "Raw audio (WAV)"
-    source: "Kaggle"
-    data_card_url: "https://www.kaggle.com/datasets/asthamishra96/parkinson-multi-model-dataset-2-0/data"
+    source: "Zenodo"
+    zenodo_doi: "10.5281/zenodo.2867215"
+    data_card_url: "https://zenodo.org/records/2867215"
     local_path: "assets/DATASET_MDVR_KCL/"
     tasks: ["ReadText", "SpontaneousDialogue"]
+    subjects_per_task:
+      ReadText: {total: 37, HC: 21, PD: 16}
+      SpontaneousDialogue: {total: 36, HC: 21, PD: 15}  # ID18 missing
     unit_of_analysis: "Recording (WAV) grouped by subject"
+    known_anomalies:
+      - "ID22 filename parsing edge case (handled in code)"
+      - "ID18 missing from SpontaneousDialogue task"
     description: >
       Raw voice recordings from Parkinson’s Disease patients and Healthy Controls.
       Multiple recordings per subject across two speech tasks. Subject identity is encoded
@@ -62,6 +74,12 @@ methodology_constraints:
     dataset_a: "Grouped stratified 5-fold CV by subject_id"
     dataset_b: "Stratified 5-fold CV (subject IDs unavailable; caveat required in writeup)"
 
+features:
+  total: 47
+  prosodic: 21  # F0 stats, jitter (3), shimmer (3), HNR, intensity (3), formants F1-F3 (6)
+  spectral: 26  # MFCC 0-12 mean (13) + Delta MFCC 0-12 mean (13)
+  config_reference: "src/parkinsons_voice_classification/config.py"
+
 artifacts:
   extracted_features:
     dataset_a_readtext: "outputs/features/features_readtext.csv"
@@ -75,7 +93,36 @@ artifacts:
 
 results_snapshot:
   date: "2026-01-12"
-  note: "Experiments have been run once; re-running may overwrite outputs/results/*.csv."
+  status: "Complete"
+  experiments_run:
+    A1_ReadText: {subjects: 37, cv: "GroupedStratified5Fold"}
+    A2_SpontaneousDialogue: {subjects: 36, cv: "GroupedStratified5Fold"}
+    B_PD_SPEECH_FEATURES: {samples: 756, cv: "Stratified5Fold"}
+  key_results:
+    dataset_a_best: "RF/Spontaneous: 72% accuracy, 0.83 ROC-AUC"
+    dataset_b_best: "RF: 88% accuracy, 0.94 ROC-AUC"
+    performance_gap: "20-25pp gap attributed to sample size (756 vs 36-37), feature dimensionality (752 vs 47), and CV rigor differences"
+  note: "Re-running experiments will overwrite outputs/results/*.csv."
+
+documentation:
+  thesis_chapters_markdown:
+    - {file: "docs/CHAPTER_3_DATA_DESCRIPTION.md", status: "Complete"}
+    - {file: "docs/CHAPTER_4_METHODOLOGY.md", status: "Complete"}
+    - {file: "docs/CHAPTER_5_EXPERIMENTAL_DESIGN.md", status: "Complete"}
+    - {file: "docs/CHAPTER_6_RESULTS.md", status: "Complete"}
+    - {file: "docs/CHAPTER_7_DISCUSSION.md", status: "Complete"}
+    - {file: "docs/CHAPTER_8_LIMITATIONS.md", status: "Complete"}
+  thesis_chapters_pdf:
+    - "docs/Chapter 1_ Introduction.pdf"
+    - "docs/Chapter 2 — Literature Review.pdf"
+    - "docs/Chapter 9 – Conclusion.pdf"
+  data_cards:
+    - "docs/DATASET_MDVR_KCL.md"
+    - "docs/DATASET_PD_SPEECH_FEATURES.md"
+  guides:
+    - "docs/THESIS_WRITING_GUIDE.md"
+    - "docs/summary_report.md"
+    - "docs/SCOPE_AND_LIMITATIONS.md"
 ---
 
 

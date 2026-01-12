@@ -24,10 +24,12 @@ from parkinsons_voice_classification.config import RANDOM_SEED, N_FOLDS
 from parkinsons_voice_classification.models.classifiers import get_models
 
 
-def compute_metrics(y_true: np.ndarray, y_pred: np.ndarray, y_prob: np.ndarray | None = None) -> dict:
+def compute_metrics(
+    y_true: np.ndarray, y_pred: np.ndarray, y_prob: np.ndarray | None = None
+) -> dict:
     """
     Compute all evaluation metrics.
-    
+
     Parameters
     ----------
     y_true : np.ndarray
@@ -36,27 +38,27 @@ def compute_metrics(y_true: np.ndarray, y_pred: np.ndarray, y_prob: np.ndarray |
         Predicted labels
     y_prob : np.ndarray, optional
         Predicted probabilities for positive class (for ROC-AUC)
-        
+
     Returns
     -------
     dict
         Dictionary with metric names and values
     """
     metrics = {
-        'accuracy': accuracy_score(y_true, y_pred),
-        'precision': precision_score(y_true, y_pred, zero_division=0),
-        'recall': recall_score(y_true, y_pred, zero_division=0),
-        'f1': f1_score(y_true, y_pred, zero_division=0),
+        "accuracy": accuracy_score(y_true, y_pred),
+        "precision": precision_score(y_true, y_pred, zero_division=0),
+        "recall": recall_score(y_true, y_pred, zero_division=0),
+        "f1": f1_score(y_true, y_pred, zero_division=0),
     }
-    
+
     if y_prob is not None:
         try:
-            metrics['roc_auc'] = roc_auc_score(y_true, y_prob)
+            metrics["roc_auc"] = roc_auc_score(y_true, y_prob)
         except ValueError:
-            metrics['roc_auc'] = np.nan
+            metrics["roc_auc"] = np.nan
     else:
-        metrics['roc_auc'] = np.nan
-    
+        metrics["roc_auc"] = np.nan
+
     return metrics
 
 
@@ -69,7 +71,7 @@ def run_cv(
 ) -> pd.DataFrame:
     """
     Run cross-validation for all models.
-    
+
     Parameters
     ----------
     X : np.ndarray
@@ -82,7 +84,7 @@ def run_cv(
         If True, use StratifiedGroupKFold; else use StratifiedKFold
     n_folds : int
         Number of CV folds
-        
+
     Returns
     -------
     pd.DataFrame
@@ -97,59 +99,59 @@ def run_cv(
     else:
         cv = StratifiedKFold(n_splits=n_folds, shuffle=True, random_state=RANDOM_SEED)
         split_args = (X, y)
-    
+
     models = get_models()
     results = []
-    
+
     for model_name, pipeline in models.items():
         for fold_idx, (train_idx, test_idx) in enumerate(cv.split(*split_args)):
             X_train, X_test = X[train_idx], X[test_idx]
             y_train, y_test = y[train_idx], y[test_idx]
-            
+
             # Clone and fit model
             model = clone(pipeline)
             model.fit(X_train, y_train)
-            
+
             # Predict
             y_pred = model.predict(X_test)
-            
+
             # Get probabilities for ROC-AUC
-            if hasattr(model, 'predict_proba'):
+            if hasattr(model, "predict_proba"):
                 y_prob = model.predict_proba(X_test)[:, 1]
             else:
                 y_prob = None
-            
+
             # Compute metrics
             metrics = compute_metrics(y_test, y_pred, y_prob)
-            
+
             # Store results
             for metric_name, value in metrics.items():
-                results.append({
-                    'model': model_name,
-                    'fold': fold_idx + 1,
-                    'metric': metric_name,
-                    'value': value,
-                })
-    
+                results.append(
+                    {
+                        "model": model_name,
+                        "fold": fold_idx + 1,
+                        "metric": metric_name,
+                        "value": value,
+                    }
+                )
+
     return pd.DataFrame(results)
 
 
 def summarize_results(results_df: pd.DataFrame) -> pd.DataFrame:
     """
     Summarize CV results with mean ± std.
-    
+
     Parameters
     ----------
     results_df : pd.DataFrame
         Raw results from run_cv()
-        
+
     Returns
     -------
     pd.DataFrame
         Summary with mean and std per model/metric
     """
-    summary = results_df.groupby(['model', 'metric'])['value'].agg(['mean', 'std'])
-    summary['mean_std'] = summary.apply(
-        lambda row: f"{row['mean']:.3f} ± {row['std']:.3f}", axis=1
-    )
+    summary = results_df.groupby(["model", "metric"])["value"].agg(["mean", "std"])
+    summary["mean_std"] = summary.apply(lambda row: f"{row['mean']:.3f} ± {row['std']:.3f}", axis=1)
     return summary.reset_index()

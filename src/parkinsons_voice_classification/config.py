@@ -16,7 +16,9 @@ RANDOM_SEED = 42
 # =============================================================================
 # config.py is at: src/parkinsons_voice_classification/config.py
 # PROJECT_ROOT should be: /home/xsrm/repos/parkinsons-voice-classification
-PROJECT_ROOT = Path(__file__).parent.parent.parent  # src/parkinsons_voice_classification -> src -> root
+PROJECT_ROOT = Path(
+    __file__
+).parent.parent.parent  # src/parkinsons_voice_classification -> src -> root
 ASSETS_DIR = PROJECT_ROOT / "assets"
 OUTPUTS_DIR = PROJECT_ROOT / "outputs"
 
@@ -42,11 +44,11 @@ F0_MIN_HZ = 75
 F0_MAX_HZ = 500
 
 # MFCC parameters
-MFCC_N_COEFFS = 13          # Number of MFCC coefficients (0-12)
-MFCC_N_FFT = 2048           # FFT window size
-MFCC_HOP_LENGTH = 512       # Hop length (samples)
-MFCC_WIN_LENGTH = 2048      # Window length (samples)
-MFCC_N_MELS = 128           # Number of mel bands
+MFCC_N_COEFFS = 13  # Number of MFCC coefficients (0-12)
+MFCC_N_FFT = 2048  # FFT window size
+MFCC_HOP_LENGTH = 512  # Hop length (samples)
+MFCC_WIN_LENGTH = 2048  # Window length (samples)
+MFCC_N_MELS = 128  # Number of mel bands
 
 # At 22050 Hz sample rate:
 # - Window length: 2048/22050 ≈ 93ms (captures multiple pitch periods)
