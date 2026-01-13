@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>About - Parkinson's Voice Classification</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <body class="bg-gray-100 min-h-screen">
+    <div class="container mx-auto px-4 py-8 max-w-2xl">
+      <!-- Header -->
+      <header class="text-center mb-8">
+        <h1 class="text-3xl font-bold text-gray-800 mb-2">
+          About This Project
+        </h1>
+      </header>
+
+      <!-- Main Content -->
+      <div class="bg-white shadow-md rounded-lg p-6 mb-6">
+        <h2 class="text-xl font-semibold text-gray-800 mb-4">
+          Research Context
+        </h2>
+        <p class="text-gray-700 mb-4">
+          This web application is a demonstration component of an MSc thesis
+          investigating the use of classical machine learning techniques for
+          detecting acoustic markers associated with Parkinson's Disease in
+          voice recordings.
+        </p>
+
+        <h3 class="text-lg font-semibold text-gray-800 mb-2 mt-6">
+          Methodology
+        </h3>
+        <p class="text-gray-700 mb-4">
+          The system extracts acoustic features from voice recordings,
+          including:
+        </p>
+        <ul class="list-disc list-inside text-gray-700 mb-4 ml-4">
+          <li>Prosodic features (fundamental frequency, jitter, shimmer)</li>
+          <li>Spectral features (MFCCs, spectral centroid, bandwidth)</li>
+          <li>Voice quality measures (harmonic-to-noise ratio)</li>
+        </ul>
+        <p class="text-gray-700">
+          These features are processed by a Random Forest classifier trained on
+          the MDVR-KCL dataset using grouped cross-validation to prevent data
+          leakage.
+        </p>
+
+        <h3 class="text-lg font-semibold text-gray-800 mb-2 mt-6">
+          Limitations
+        </h3>
+        <ul class="list-disc list-inside text-gray-700 mb-4 ml-4">
+          <li>Small training dataset (~37 subjects)</li>
+          <li>Single speech task (ReadText)</li>
+          <li>No external validation on independent cohorts</li>
+          <li>Recording conditions may affect results</li>
+        </ul>
+      </div>
+
+      <!-- Important Disclaimer -->
+      <div class="bg-red-50 border-l-4 border-red-400 p-6 mb-6 rounded">
+        <h2 class="text-lg font-bold text-red-800 mb-3">
+          ⚠️ Important Disclaimer
+        </h2>
+        <p class="text-red-700 mb-3">
+          <strong
+            >This application is a research demonstration developed as part of
+            an MSc thesis. It is NOT intended for medical diagnosis or clinical
+            use.</strong
+          >
+        </p>
+        <p class="text-red-700 mb-3">
+          Parkinson's Disease is a complex neurological condition that can only
+          be diagnosed by qualified medical professionals through comprehensive
+          clinical assessment.
+        </p>
+        <p class="text-red-700">The predictions made by this system:</p>
+        <ul class="list-disc list-inside text-red-700 mt-2 ml-4">
+          <li>Are based on limited training data</li>
+          <li>Have not been clinically validated</li>
+          <li>Should not influence medical decisions</li>
+          <li>May produce incorrect results</li>
+        </ul>
+      </div>
+
+      <!-- Technical Info -->
+      <div class="bg-gray-50 rounded-lg p-4 mb-6">
+        <h3 class="text-sm font-semibold text-gray-700 mb-2">
+          Technical Information
+        </h3>
+        <dl class="grid grid-cols-2 gap-2 text-sm">
+          <dt class="text-gray-500">Dataset:</dt>
+          <dd class="text-gray-800">
+            MDVR-KCL (Mobile Device Voice Recordings)
+          </dd>
+          <dt class="text-gray-500">Model Type:</dt>
+          <dd class="text-gray-800">Random Forest Classifier</dd>
+          <dt class="text-gray-500">Features:</dt>
+          <dd class="text-gray-800">47 acoustic features (baseline set)</dd>
+          <dt class="text-gray-500">Validation:</dt>
+          <dd class="text-gray-800">Grouped Stratified 5-Fold CV</dd>
+        </dl>
+      </div>
+
+      <!-- Back Link -->
+      <div class="text-center">
+        <a
+          href="{{ url_for('index') }}"
+          class="inline-block bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded transition duration-200"
+        >
+          ← Back to Demo
+        </a>
+      </div>
+
+      <!-- Footer -->
+      <footer class="mt-8 text-center text-sm text-gray-500">
+        <p>
+          MSc Thesis Project — Speech Signal Processing / Classical Machine
+          Learning
+        </p>
+      </footer>
+    </div>
+  </body>
+</html>

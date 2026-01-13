@@ -1,4 +1,4 @@
-.PHONY: help install clean extract-all extract-readtext extract-spontaneous experiments test format lint check-types
+.PHONY: help install clean extract-all extract-readtext extract-spontaneous experiments test format lint check-types train-demo-model demo demo-dev demo-install
 
 # Default target
 help:
@@ -17,6 +17,12 @@ help:
 	@echo "Experiments:"
 	@echo "  make experiments          Run all experiments (Dataset A + Dataset B)"
 	@echo "  make results              Display experiment results summary"
+	@echo ""
+	@echo "Demo Application:"
+	@echo "  make demo-install         Install demo dependencies (Flask)"
+	@echo "  make train-demo-model     Train inference model for demo"
+	@echo "  make demo                 Run Flask demo application"
+	@echo "  make demo-dev             Run Flask demo in debug mode (auto-reload)"
 	@echo ""
 	@echo "Quality Assurance:"
 	@echo "  make test                 Run test suite"
@@ -79,6 +85,54 @@ results:
 	else \
 		echo "No results found. Run 'make experiments' first."; \
 	fi
+
+# ============================================================================
+# Demo Application
+# ============================================================================
+
+demo-install:
+	@echo "Installing demo dependencies (Flask)..."
+	poetry install --with demo
+	@echo "Demo dependencies installed."
+
+train-demo-model:
+	@echo "Training inference model for demo app..."
+	@echo "  Model: RandomForest"
+	@echo "  Task: ReadText"
+	@echo "  Features: baseline (47)"
+	@echo ""
+	@if [ ! -f outputs/features/baseline/features_readtext.csv ]; then \
+		echo "Error: Features not found. Run 'make extract-readtext' first."; \
+		exit 1; \
+	fi
+	poetry run pvc-train --task ReadText --model RandomForest --feature-set baseline
+	@echo ""
+	@echo "✓ Model trained and saved to outputs/models/"
+
+demo: 
+	@echo "Starting Flask demo application..."
+	@if [ ! -f outputs/models/RandomForest_ReadText_baseline.joblib ]; then \
+		echo "Error: Inference model not found."; \
+		echo "Run 'make train-demo-model' first."; \
+		exit 1; \
+	fi
+	@echo "Visit http://127.0.0.1:5000 in your browser"
+	@echo "Press Ctrl+C to stop"
+	@echo ""
+	cd demo_app && poetry run flask --app app run --host 127.0.0.1 --port 5000
+
+demo-dev:
+	@echo "Starting Flask demo application in DEBUG mode..."
+	@if [ ! -f outputs/models/RandomForest_ReadText_baseline.joblib ]; then \
+		echo "Error: Inference model not found."; \
+		echo "Run 'make train-demo-model' first."; \
+		exit 1; \
+	fi
+	@echo "Visit http://127.0.0.1:5000 in your browser"
+	@echo "Press Ctrl+C to stop"
+	@echo "Debug mode: auto-reload enabled"
+	@echo ""
+	cd demo_app && FLASK_ENV=development poetry run flask --app app run --host 127.0.0.1 --port 5000 --debug
 
 # ============================================================================
 # Quality Assurance

@@ -2,23 +2,24 @@
 
 ## 7.1 Overview
 
-This chapter interprets the experimental results, contextualizes findings within the literature, and discusses implications for PD voice classification research.
+This chapter interprets the experimental results, situates the findings within the broader literature on Parkinson’s disease (PD) voice analysis, and discusses their methodological and practical implications. Emphasis is placed on understanding the effects of feature representation, model choice, class imbalance, and evaluation protocol on classification performance.
 
 ## 7.2 Interpretation of Key Findings
 
 ### 7.2.1 Feature Extension Impact
 
-The extension from 47 to 78 features produced significant performance improvements, particularly for the ReadText task where Random Forest ROC-AUC increased from 0.590 to 0.822 (+23 percentage points), essentially rescuing the model from chance-level performance. Spontaneous Dialogue, which already performed well (0.828), saw a more modest improvement to 0.857.
+Extending the raw-audio feature set from 47 to 78 features resulted in substantial performance gains, particularly for the ReadText task. Under the Random Forest classifier, ROC-AUC increased from 0.590 to 0.822 (+23 percentage points), elevating performance from near chance level to clinically meaningful discrimination. In contrast, the Spontaneous Dialogue task, which already demonstrated relatively strong baseline performance (0.828), exhibited a more modest improvement to 0.857.
 
 **Interpretation:**
 
 The extended features capture three complementary aspects of speech dynamics:
 
-| New Feature Set | Contribution |
-|-----------------|--------------|
-| MFCC std (13) | Within-utterance spectral variability |
-| Delta-Delta MFCC (13) | Acceleration of spectral changes |
-| Spectral shape (5) | Global spectral characteristics |
+| Feature Group              | Contribution                           |
+| -------------------------- | -------------------------------------- |
+| MFCC standard deviations   | Within-utterance spectral variability  |
+| Delta–delta MFCCs          | Second-order temporal dynamics         |
+| Spectral shape descriptors | Global distribution of spectral energy |
+
 
 These additions are particularly relevant for PD detection because:
 
@@ -29,7 +30,7 @@ These additions are particularly relevant for PD detection because:
 The larger improvement for non-linear models suggests that the extended features enable modeling of **non-linear feature interactions** that simpler feature sets may obscure.
 
 **Robustness Check:**
-Although the extended feature set increased dimensionality relative to the small sample size of Dataset A (n=37), performance was evaluated exclusively using grouped cross-validation at the subject level. Improvements were observed consistent across folds and were accompanied by comparable standard deviations, suggesting that the observed gains reflect improved feature representation rather than fold-specific overfitting.
+Although the extended feature set increases dimensionality relative to the small number of subjects in Dataset A (n ≈ 36–37), all evaluations were conducted using grouped stratified cross-validation at the subject level. Performance improvements were consistently observed across folds and accompanied by comparable standard deviations, indicating that the gains are attributable to improved feature representation rather than fold-specific overfitting.
 
 ### 7.2.2 Class Weighting Effects
 

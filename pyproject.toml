@@ -11,6 +11,7 @@ packages = [{include = "parkinsons_voice_classification", from = "src"}]
 pvc-extract = "parkinsons_voice_classification.cli.extract_features:main"
 pvc-experiment = "parkinsons_voice_classification.cli.run_experiments:main"
 pvc-importance = "parkinsons_voice_classification.cli.feature_importance:main"
+pvc-train = "parkinsons_voice_classification.cli.train_model:main"
 
 [tool.poetry.dependencies]
 python = "^3.10"
@@ -22,6 +23,15 @@ librosa = "^0.10"
 praat-parselmouth = "^0.4"
 tqdm = "^4.66"
 matplotlib = "^3.8"
+
+[tool.poetry.extras]
+demo = ["flask"]
+
+[tool.poetry.group.demo]
+optional = true
+
+[tool.poetry.group.demo.dependencies]
+flask = "^3.0"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^7.4"

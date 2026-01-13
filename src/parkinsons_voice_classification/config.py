@@ -115,3 +115,18 @@ N_FOLDS = 5
 # When False (baseline), no class weighting is applied.
 # Results are saved to outputs/results/baseline/
 USE_CLASS_WEIGHT_BALANCED = False
+
+# =============================================================================
+# INFERENCE CONFIGURATION (Demo App)
+# =============================================================================
+# Directory for trained model artifacts
+MODELS_DIR = OUTPUTS_DIR / "models"
+
+# Default inference model configuration
+# These can be overridden by environment variables for flexibility
+INFERENCE_FEATURE_SET = "baseline"  # "baseline" (47 features) or "extended" (78 features)
+INFERENCE_MODEL_NAME = "RandomForest"  # Model architecture name
+INFERENCE_TASK = "ReadText"  # Speech task the model was trained on
+
+# Model filename follows pattern: {model_name}_{task}_{feature_set}.joblib
+INFERENCE_MODEL_PATH = MODELS_DIR / f"{INFERENCE_MODEL_NAME}_{INFERENCE_TASK}_{INFERENCE_FEATURE_SET}.joblib"

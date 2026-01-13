@@ -4,7 +4,7 @@ degree: "MSc Thesis"
 domain: "Speech Signal Processing / Classical Machine Learning"
 task: "Binary classification (Parkinson’s Disease vs Healthy Controls)"
 language: "English"
-last_updated: "2026-01-12"
+last_updated: "2026-01-13"
 
 repository_state:
   datasets_downloaded: true
@@ -12,15 +12,34 @@ repository_state:
   primary_entrypoints:
     extract_features_cli: "pvc-extract"
     run_experiments_cli: "pvc-experiment"
+    train_model_cli: "pvc-train"
   cli_usage:
     extract: "pvc-extract --task [ReadText|SpontaneousDialogue|all] [--jobs N]"
     experiment: "pvc-experiment"
+    train: "pvc-train --task ReadText --model RandomForest --feature-set baseline"
   make_targets:
     extract_all: "make extract-all"
     experiments: "make experiments"
     results: "make results"
     pipeline: "make pipeline  # extract-all + experiments"
     clean: "make clean  # remove all outputs"
+    demo_install: "make demo-install  # install Flask"
+    train_demo: "make train-demo-model  # train inference model"
+    demo: "make demo  # run Flask demo app"
+
+demo_app:
+  purpose: "Research demonstration for thesis defense"
+  location: "demo_app/"
+  inference_api: "src/parkinsons_voice_classification/inference.py"
+  model_config:
+    default_model: "RandomForest"
+    default_task: "ReadText"
+    default_features: "baseline (47 features)"
+  architecture_principle: >
+    Flask app imports ONLY the inference module. It has no knowledge of
+    feature extraction, model internals, or feature counts. This ensures
+    pipeline changes require zero web app modifications.
+  documentation: "docs/WEB_APP_ARCHITECTURE.md"
 
 datasets:
   dataset_a:
@@ -76,7 +95,7 @@ features:
   config_reference: "src/parkinsons_voice_classification/config.py"
 
 results_snapshot:
-  date: "2026-01-12"
+  date: "2026-01-13"
   dataset_a_best: "Random Forest / SpontaneousDialogue ≈ 0.83 ROC-AUC"
   dataset_b_best: "Random Forest ≈ 0.94 ROC-AUC"
   performance_gap_note: >
@@ -96,9 +115,11 @@ This repository supports a **Master’s thesis** focused on **binary classificat
 
 This is a **research-only project**.
 
-❌ No application  
-❌ No deployment  
+❌ No production deployment  
 ❌ No clinical or diagnostic system  
+
+✅ Research demonstration (Flask demo app) exists for thesis defense purposes only.
+   See `docs/WEB_APP_ARCHITECTURE.md` for architecture details.
 
 ---
 
@@ -269,6 +290,7 @@ Allowed:
 All reported performance metrics must be presented as mean ± standard deviation across cross-validation folds.
 
 Single-point estimates are forbidden, including in:
+
 - tables
 - figures
 - text
@@ -286,5 +308,14 @@ This rule exists to prevent overinterpretation under small-sample conditions.
 If a choice risks leakage, bias, or ambiguity — **reject it**.
 
 ---
+
+- Use poetry for package management and running scripts directly (not python or python3 commands).
+- If needed, create script with poetry in the `Makefile` to re-use common commands.
+- Ensure all dependencies are declared in `pyproject.toml`.  
+- Follow PEP 8 and use black for formatting.
+
+---
+
+If significant changes made, always update this file `AGENTS.md`, to reflect current rules, constraints, principles and the pipeline/workflow.
 
 ## End of Rules
