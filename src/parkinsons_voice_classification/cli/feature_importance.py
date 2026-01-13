@@ -12,6 +12,7 @@ Runs feature importance analysis on all experiments and generates:
 import argparse
 import pandas as pd
 import matplotlib
+
 matplotlib.use("Agg")  # Non-interactive backend for saving figures
 import matplotlib.pyplot as plt
 
@@ -63,7 +64,7 @@ def save_top_features_table(summary_df, output_path, top_n=20):
             top["model"] = model
             top["method"] = method
             tables.append(top)
-    
+
     combined = pd.concat(tables, ignore_index=True)
     combined = combined[["model", "method", "rank", "feature", "mean", "std"]]
     combined.to_csv(output_path, index=False)
@@ -112,32 +113,32 @@ def main():
         print(f"  Loaded: {X.shape[0]} samples, {X.shape[1]} features")
 
         raw, summary = run_importance_analysis(
-            X, y, feature_names, groups=groups, use_groups=True,
-            use_permutation=args.permutation
+            X, y, feature_names, groups=groups, use_groups=True, use_permutation=args.permutation
         )
         summary["dataset"] = "MDVR-KCL"
         summary["task"] = "ReadText"
         all_importance.append(summary)
 
         # Save tables
-        save_top_features_table(
-            summary, results_dir / "importance_readtext.csv", args.top_n
-        )
+        save_top_features_table(summary, results_dir / "importance_readtext.csv", args.top_n)
 
         # Generate plots for each model
         for model in ["RandomForest", "LogisticRegression"]:
             fig = plot_feature_importance(
-                summary, model, top_n=args.top_n,
+                summary,
+                model,
+                top_n=args.top_n,
                 title=f"Top {args.top_n} Features - {model} (ReadText)",
-                save_path=plots_dir / f"importance_readtext_{model.lower()}.png"
+                save_path=plots_dir / f"importance_readtext_{model.lower()}.png",
             )
             plt.close(fig)
 
         # Category plot for RF
         fig = plot_feature_importance_by_category(
-            summary, "RandomForest",
+            summary,
+            "RandomForest",
             title="Feature Importance by Category - RF (ReadText)",
-            save_path=plots_dir / "importance_readtext_categories.png"
+            save_path=plots_dir / "importance_readtext_categories.png",
         )
         plt.close(fig)
 
@@ -158,8 +159,7 @@ def main():
         print(f"  Loaded: {X.shape[0]} samples, {X.shape[1]} features")
 
         raw, summary = run_importance_analysis(
-            X, y, feature_names, groups=groups, use_groups=True,
-            use_permutation=args.permutation
+            X, y, feature_names, groups=groups, use_groups=True, use_permutation=args.permutation
         )
         summary["dataset"] = "MDVR-KCL"
         summary["task"] = "SpontaneousDialogue"
@@ -167,23 +167,24 @@ def main():
         dataset_a_importance = summary  # Save for cross-dataset comparison
 
         # Save tables
-        save_top_features_table(
-            summary, results_dir / "importance_spontaneous.csv", args.top_n
-        )
+        save_top_features_table(summary, results_dir / "importance_spontaneous.csv", args.top_n)
 
         # Generate plots
         for model in ["RandomForest", "LogisticRegression"]:
             fig = plot_feature_importance(
-                summary, model, top_n=args.top_n,
+                summary,
+                model,
+                top_n=args.top_n,
                 title=f"Top {args.top_n} Features - {model} (Spontaneous)",
-                save_path=plots_dir / f"importance_spontaneous_{model.lower()}.png"
+                save_path=plots_dir / f"importance_spontaneous_{model.lower()}.png",
             )
             plt.close(fig)
 
         fig = plot_feature_importance_by_category(
-            summary, "RandomForest",
+            summary,
+            "RandomForest",
             title="Feature Importance by Category - RF (Spontaneous)",
-            save_path=plots_dir / "importance_spontaneous_categories.png"
+            save_path=plots_dir / "importance_spontaneous_categories.png",
         )
         plt.close(fig)
 
@@ -203,8 +204,7 @@ def main():
     print(f"  Loaded: {X.shape[0]} samples, {X.shape[1]} features")
 
     raw, summary = run_importance_analysis(
-        X, y, feature_names, use_groups=False,
-        use_permutation=args.permutation
+        X, y, feature_names, use_groups=False, use_permutation=args.permutation
     )
     summary["dataset"] = "PD_SPEECH_FEATURES"
     summary["task"] = "N/A"
@@ -212,16 +212,16 @@ def main():
     dataset_b_importance = summary
 
     # Save tables
-    save_top_features_table(
-        summary, results_dir / "importance_pd_speech.csv", args.top_n
-    )
+    save_top_features_table(summary, results_dir / "importance_pd_speech.csv", args.top_n)
 
     # Generate plots (only top features, 752 is too many)
     for model in ["RandomForest", "LogisticRegression"]:
         fig = plot_feature_importance(
-            summary, model, top_n=args.top_n,
+            summary,
+            model,
+            top_n=args.top_n,
             title=f"Top {args.top_n} Features - {model} (PD_SPEECH)",
-            save_path=plots_dir / f"importance_pd_speech_{model.lower()}.png"
+            save_path=plots_dir / f"importance_pd_speech_{model.lower()}.png",
         )
         plt.close(fig)
 
@@ -247,7 +247,7 @@ def main():
                 models=["LogisticRegression", "RandomForest"],
                 top_n=15,
                 title="Feature Importance Heatmap - ReadText",
-                save_path=plots_dir / "heatmap_readtext.png"
+                save_path=plots_dir / "heatmap_readtext.png",
             )
             plt.close(fig)
     except Exception as e:
@@ -255,14 +255,16 @@ def main():
 
     # Heatmap for Dataset A (Spontaneous)
     try:
-        spont_df = all_df[(all_df["dataset"] == "MDVR-KCL") & (all_df["task"] == "SpontaneousDialogue")]
+        spont_df = all_df[
+            (all_df["dataset"] == "MDVR-KCL") & (all_df["task"] == "SpontaneousDialogue")
+        ]
         if len(spont_df) > 0:
             fig = plot_top_features_heatmap(
                 spont_df,
                 models=["LogisticRegression", "RandomForest"],
                 top_n=15,
                 title="Feature Importance Heatmap - Spontaneous",
-                save_path=plots_dir / "heatmap_spontaneous.png"
+                save_path=plots_dir / "heatmap_spontaneous.png",
             )
             plt.close(fig)
     except Exception as e:
@@ -292,7 +294,7 @@ def main():
                 dataset_b_importance,
                 common_features,
                 model="RandomForest",
-                save_path=plots_dir / "comparison_datasets.png"
+                save_path=plots_dir / "comparison_datasets.png",
             )
             plt.close(fig)
             print(f"  Found {len(common_features)} common features for comparison")
@@ -327,7 +329,9 @@ def main():
             if len(df_subset) > 0:
                 print(f"\n{dataset} - {task}:")
                 for _, row in df_subset.iterrows():
-                    print(f"  {int(row['rank']):2d}. {row['feature']:30s} {row['mean']:.4f} ± {row['std']:.4f}")
+                    print(
+                        f"  {int(row['rank']):2d}. {row['feature']:30s} {row['mean']:.4f} ± {row['std']:.4f}"
+                    )
 
 
 if __name__ == "__main__":

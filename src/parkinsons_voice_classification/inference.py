@@ -183,9 +183,7 @@ def _validate_features(features: dict, metadata: dict) -> None:
         if actual_names != expected_names:
             missing = set(expected_names) - set(actual_names)
             extra = set(actual_names) - set(expected_names)
-            raise FeatureMismatchError(
-                f"Feature name mismatch. Missing: {missing}, Extra: {extra}"
-            )
+            raise FeatureMismatchError(f"Feature name mismatch. Missing: {missing}, Extra: {extra}")
 
 
 def run_inference(

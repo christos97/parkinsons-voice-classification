@@ -19,9 +19,9 @@ from pathlib import Path
 
 from flask import Flask, render_template, request, redirect, url_for, flash
 
-# Import ONLY the stable inference interface
-from parkinsons_voice_classification.inference import (
-    run_inference,
+# Import from the adapter layer (wraps core inference with display data)
+from inference_adapter import (
+    run_inference_with_features,
     get_model_info,
     InferenceError,
     ModelNotFoundError,
@@ -87,8 +87,8 @@ def analyze():
             tmp_path = tmp.name
 
         try:
-            # Run inference through the stable API
-            result = run_inference(tmp_path, task="ReadText")
+            # Run inference through the adapter (returns enriched data)
+            result = run_inference_with_features(tmp_path, task="ReadText")
 
             return render_template(
                 "result.html",

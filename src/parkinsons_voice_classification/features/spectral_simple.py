@@ -53,13 +53,15 @@ def get_spectral_feature_names() -> list[str]:
 
     # Spectral shape features (5) - extended only
     if USE_EXTENDED_FEATURES:
-        names.extend([
-            "spectral_centroid_mean",
-            "spectral_bandwidth_mean",
-            "spectral_rolloff_mean",
-            "spectral_flatness_mean",
-            "zcr_mean",
-        ])
+        names.extend(
+            [
+                "spectral_centroid_mean",
+                "spectral_bandwidth_mean",
+                "spectral_rolloff_mean",
+                "spectral_flatness_mean",
+                "zcr_mean",
+            ]
+        )
 
     return names
 

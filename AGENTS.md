@@ -4,7 +4,7 @@ degree: "MSc Thesis"
 domain: "Speech Signal Processing / Classical Machine Learning"
 task: "Binary classification (Parkinson’s Disease vs Healthy Controls)"
 language: "English"
-last_updated: "2026-01-13"
+last_updated: "2026-01-14"
 
 repository_state:
   datasets_downloaded: true
@@ -31,15 +31,45 @@ demo_app:
   purpose: "Research demonstration for thesis defense"
   location: "demo_app/"
   inference_api: "src/parkinsons_voice_classification/inference.py"
+  adapter_layer: "demo_app/inference_adapter.py"
   model_config:
     default_model: "RandomForest"
     default_task: "ReadText"
     default_features: "baseline (47 features)"
+  display_features:
+    curated_count: 8
+    source_total: 47  # baseline feature set
+    selected: ["f0_mean", "f0_max", "hnr_mean", "jitter_local", "shimmer_apq11", "intensity_mean", "mfcc_0_mean", "mfcc_5_mean"]
+    metadata_source: "demo_app/feature_metadata.py"
   architecture_principle: >
-    Flask app imports ONLY the inference module. It has no knowledge of
-    feature extraction, model internals, or feature counts. This ensures
-    pipeline changes require zero web app modifications.
+    Flask app imports ONLY the adapter module (demo_app/inference_adapter.py).
+    Adapter imports ONLY the core inference API and feature extraction.
+    Flask has zero knowledge of feature counts, extraction algorithms, or model internals.
+    This ensures pipeline changes require zero web app modifications.
+  flow:
+    - "User uploads WAV file via browser (demo_app/templates/index.html)"
+    - "Flask validates extension and saves to temporary location (app.py:analyze route)"
+    - "Adapter extracts features via extraction_simple.py (inference_adapter.py:run_inference_with_features)"
+    - "Core inference loads cached model and validates feature count (inference.py:run_inference)"
+    - "sklearn Pipeline scales features and predicts class + probabilities"
+    - "Adapter enriches result with display metadata (8 curated features, importance data)"
+    - "Flask renders result with prediction card, probability bar, feature table (templates/result.html)"
+    - "Temporary file cleanup in finally block"
+  architectural_invariants:
+    - "Flask app must import ONLY adapter module (not core inference directly)"
+    - "Feature count determined by config.py, not hardcoded in templates"
+    - "Model switching requires zero changes to Flask routes or templates"
+    - "Feature extraction called exactly once per request (no duplication)"
+    - "Temp file cleanup must happen in finally block (no leaks)"
+    - "Model loading must be cached (not re-loaded per request)"
+    - "Feature validation must happen before prediction (fail fast on mismatch)"
+    - "Research disclaimers must appear on every page (index, result, about)"
   documentation: "docs/WEB_APP_ARCHITECTURE.md"
+  quick_start:
+    - "make extract-readtext  # Extract features from Dataset A"
+    - "make demo-install      # Install Flask via poetry"
+    - "make train-demo-model  # Train RandomForest for inference"
+    - "make demo              # Run at http://127.0.0.1:5000"
 
 datasets:
   dataset_a:

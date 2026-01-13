@@ -111,7 +111,9 @@ def plot_feature_importance(
     ax.set_ylabel("Feature")
 
     if title is None:
-        method_label = "Gini Importance" if method == "native" and "Random" in model else "Importance"
+        method_label = (
+            "Gini Importance" if method == "native" and "Random" in model else "Importance"
+        )
         if method == "permutation":
             method_label = "Permutation Importance"
         elif "Logistic" in model:
@@ -185,7 +187,12 @@ def plot_importance_comparison(
     df = summary_df[mask].copy()
 
     # Pivot for grouped bar chart
-    pivot = df.pivot_table(index="feature", columns="model", values="mean", aggfunc=lambda x: x.iloc[0] if len(x) > 0 else np.nan)
+    pivot = df.pivot_table(
+        index="feature",
+        columns="model",
+        values="mean",
+        aggfunc=lambda x: x.iloc[0] if len(x) > 0 else np.nan,
+    )
 
     # Sort by average importance across models
     pivot["_avg"] = pivot.mean(axis=1)
@@ -275,7 +282,12 @@ def plot_top_features_heatmap(
     mask = (summary_df["method"] == method) & (summary_df["feature"].isin(top_features))
     df = summary_df[mask].copy()
 
-    pivot = df.pivot_table(index="feature", columns="model", values="mean", aggfunc=lambda x: x.iloc[0] if len(x) > 0 else np.nan)
+    pivot = df.pivot_table(
+        index="feature",
+        columns="model",
+        values="mean",
+        aggfunc=lambda x: x.iloc[0] if len(x) > 0 else np.nan,
+    )
     pivot = pivot[models]  # Reorder columns
 
     # Normalize each column to [0, 1]
@@ -370,7 +382,9 @@ def plot_feature_importance_by_category(
     # Create figure
     fig, ax = plt.subplots(figsize=figsize)
 
-    bars = ax.barh(list(category_importance.index), list(category_importance.values), color=colors, alpha=0.8)
+    bars = ax.barh(
+        list(category_importance.index), list(category_importance.values), color=colors, alpha=0.8
+    )
 
     ax.set_xlabel("Aggregated Importance Score")
     ax.set_ylabel("Feature Category")
@@ -381,8 +395,13 @@ def plot_feature_importance_by_category(
 
     # Add value labels
     for bar, val in zip(bars, category_importance.values):
-        ax.text(val + 0.01 * max(category_importance), bar.get_y() + bar.get_height() / 2,
-                f"{val:.3f}", va="center", fontsize=9)
+        ax.text(
+            val + 0.01 * max(category_importance),
+            bar.get_y() + bar.get_height() / 2,
+            f"{val:.3f}",
+            va="center",
+            fontsize=9,
+        )
 
     plt.tight_layout()
 
@@ -462,8 +481,22 @@ def plot_dataset_comparison(
     y_pos = np.arange(len(combined))
     bar_width = 0.35
 
-    ax.barh(y_pos - bar_width / 2, combined["Dataset A"], bar_width, label="Dataset A (MDVR-KCL)", color="#3A86FF", alpha=0.8)
-    ax.barh(y_pos + bar_width / 2, combined["Dataset B"], bar_width, label="Dataset B (PD_SPEECH)", color="#E63946", alpha=0.8)
+    ax.barh(
+        y_pos - bar_width / 2,
+        combined["Dataset A"],
+        bar_width,
+        label="Dataset A (MDVR-KCL)",
+        color="#3A86FF",
+        alpha=0.8,
+    )
+    ax.barh(
+        y_pos + bar_width / 2,
+        combined["Dataset B"],
+        bar_width,
+        label="Dataset B (PD_SPEECH)",
+        color="#E63946",
+        alpha=0.8,
+    )
 
     ax.set_yticks(y_pos)
     ax.set_yticklabels(combined.index)

@@ -234,9 +234,11 @@ def get_top_features(
         Top N features with importance scores
     """
     mask = (summary_df["model"] == model) & (summary_df["method"] == method)
-    return summary_df[mask].nsmallest(top_n, "rank")[
-        ["feature", "mean", "std", "rank"]
-    ].reset_index(drop=True)
+    return (
+        summary_df[mask]
+        .nsmallest(top_n, "rank")[["feature", "mean", "std", "rank"]]
+        .reset_index(drop=True)
+    )
 
 
 def compare_feature_rankings(
