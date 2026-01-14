@@ -3,24 +3,12 @@
 \chapter*{Abstract}
 \addcontentsline{toc}{chapter}{Abstract}
 
-Parkinson's Disease (PD) is the second most prevalent neurodegenerative disorder globally, affecting approximately 1\% of the population over 60 years of age. Voice changes, including reduced pitch variability and hypophonia, often appear early in disease progression, making voice-based biomarkers a promising avenue for non-invasive detection.
+Parkinson's Disease (PD) is a neurodegenerative disorder characterized by motor symptoms and pervasive speech impairments. This thesis investigates the feasibility of voice-based PD detection using classical machine learning, emphasizing rigorous methodology over maximal performance. Two complementary datasets are examined: Dataset~A, a clinical corpus of raw voice recordings (37 subjects) requiring acoustic feature extraction; and Dataset~B, a larger public dataset (756 samples) of pre-extracted features. A consistent pipeline is applied, extracting 47 baseline features (prosodic and perturbation measures) from Dataset~A, with an extended set of 78 features incorporating additional spectral descriptors. Three interpretable classifiers---Logistic Regression, Support Vector Machine (RBF kernel), and Random Forest---are evaluated under a 2$\times$2 factorial design: baseline vs.\ extended features, with vs.\ without class weighting to address class imbalance. Crucially, subject-grouped 5-fold cross-validation is employed for Dataset~A to prevent data leakage, while a standard stratified 5-fold CV (with caveats on subject overlap) is used for Dataset~B.
 
-This thesis investigates binary classification of Parkinson's Disease versus healthy controls using classical machine learning approaches applied to acoustic voice features. The work addresses key methodological challenges in the field, including subject-level data leakage, class imbalance, and feature representation.
+Results are reported as mean $\pm$ standard deviation. On Dataset~A, the best model (Random Forest, extended features) achieved ROC-AUC $\approx$ 0.87 $\pm$ 0.14, a +8.7 percentage point improvement over the baseline feature set. Extended features consistently improved accuracy and ROC-AUC, especially for the smaller Dataset~A (e.g., Random Forest AUC rose from 0.59 to 0.82 on one task). Class weighting had only modest effects (e.g., +3.5pp ROC-AUC for Random Forest with baseline features, but negligible or negative impact with extended features). Random Forest outperformed SVM and Logistic Regression across conditions, likely due to its ability to capture non-linear patterns and leverage feature importance for insight. Dataset~B yielded higher absolute performance (ROC-AUC $\approx$ 0.94 with Random Forest) but is interpreted with caution given potential subject overlaps and its high-dimensional feature set.
 
-Using the MDVR-KCL dataset (37 subjects), we implement grouped stratified cross-validation to prevent optimistic bias from subject identity leakage. We evaluate three classical models---Logistic Regression, Support Vector Machine (RBF kernel), and Random Forest---across a 2$\times$2 factorial design examining feature set extension (47 vs.\ 78 features) and class weighting strategies.
-
-Key findings include:
-\begin{itemize}
-    \item Random Forest achieves the best performance with ROC-AUC of 0.873 $\pm$ 0.137 using extended features
-    \item Feature set extension from 47 to 78 features improves ROC-AUC by +8.7 percentage points
-    \item Spontaneous dialogue yields higher classification performance than read text tasks
-    \item Class weighting shows modest and inconsistent effects on moderately imbalanced data
-\end{itemize}
-
-The most discriminative features include maximum fundamental frequency (f0\_max), MFCC dynamics (delta\_mfcc\_2\_mean), and harmonicity measures, aligning with known clinical manifestations of PD speech.
-
-This work contributes a rigorous evaluation framework prioritizing methodological validity over performance optimization, with transparent reporting of limitations and reproducible implementation.
+In conclusion, classical ML models can detect PD from voice with competitive accuracy, but robust validation is paramount. This work highlights that methodological rigor---including proper cross-validation, careful feature engineering, and honest reporting of variance and limitations---is essential to produce reliable findings. The extended feature set notably enhances detection of PD voice signatures, and results underscore the importance of addressing data leakage and class imbalance. These contributions lay a reproducible groundwork for future research, prioritizing interpretability and validity in the development of non-invasive PD screening tools.
 
 \vspace{1cm}
 
-\textbf{Keywords:} Parkinson's Disease, voice analysis, machine learning, acoustic features, classification, cross-validation
+\textbf{Keywords:} Parkinson's Disease; Dysarthria; Voice Biomarkers; Acoustic Features; Machine Learning; Cross-Validation; Imbalanced Data; Reproducibility

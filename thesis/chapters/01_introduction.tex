@@ -5,9 +5,9 @@
 
 \section{Background and Motivation}
 
-Parkinson's Disease (PD) is the second most prevalent neurodegenerative disorder globally, affecting approximately 1\% of the population over 60 years of age. Early and accurate detection remains a critical clinical challenge, as motor symptoms often manifest only after substantial neurological damage has occurred. Among the earliest observable symptoms are changes in speech and voice production, which can precede motor symptoms by several years.
+Parkinson's Disease (PD) is the second most prevalent neurodegenerative disorder globally, affecting approximately 1\% of the population over 60 years of age \citep{ho1999speech}. Early and accurate detection remains a critical clinical challenge, as motor symptoms often manifest only after substantial neurological damage has occurred. Among the earliest observable symptoms are changes in speech and voice production, which can precede motor symptoms by several years \citep{harel2004acoustic}.
 
-Voice-based biomarkers offer a promising non-invasive avenue for PD detection \citep{little2009suitability, tsanas2010accurate}. The disease affects the laryngeal muscles and respiratory control, resulting in measurable changes to prosodic features (pitch, intensity, rhythm) and spectral characteristics (formants, harmonics). These acoustic signatures can be captured using standard recording equipment, making voice analysis a cost-effective and accessible screening approach.
+Voice-based biomarkers offer a promising non-invasive avenue for PD detection \citep{little2009suitability, tsanas2010accurate}. The disease affects the laryngeal and respiratory muscles, resulting in measurable changes to prosodic features (pitch, loudness, rhythm) and spectral characteristics (formant frequencies, harmonic structure). PD speech is often characterized by \textit{hypokinetic dysarthria}, a motor speech disorder marked by reduced voice loudness (\textit{hypophonia}), a limited pitch range (\textit{monopitch}), and monotonous volume (\textit{monoloudness}) \citep{duffy2012motor}. Patients may also exhibit articulatory imprecision (unclear consonant enunciation) and voice quality changes such as breathiness or hoarseness. These acoustic signatures can be captured using standard microphones, making voice analysis a cost-effective and accessible approach for screening and monitoring PD. Moreover, subtle vocal abnormalities may appear even before classic motor symptoms in some patients, highlighting the potential of voice as an early indicator.
 
 \section{Problem Statement}
 
@@ -39,10 +39,10 @@ The primary objectives of this research are:
 This thesis makes the following contributions:
 
 \begin{itemize}
-    \item A \textbf{subject-grouped cross-validation framework} that prevents data leakage, a common pitfall in multi-recording voice datasets.
-    \item A \textbf{controlled feature ablation study} demonstrating substantial ROC-AUC improvements (+23pp) by extending the feature set from 47 to 78 features for specific speech tasks.
-    \item \textbf{Task-specific analysis} revealing that spontaneous speech yields higher classification performance (ROC-AUC 0.857) compared to read speech (ROC-AUC 0.822).
-    \item \textbf{Benchmarking analysis} contrasting rigorous subject-grouped performance (Dataset A) against optimistic estimates from larger, unstratified public datasets (Dataset B).
+    \item A \textbf{subject-grouped cross-validation framework} for voice data that prevents data leakage. By grouping recordings by subject in cross-validation splits, we ensure that no speaker's recordings appear in both training and test sets, addressing a common pitfall in PD voice studies.
+    \item A \textbf{controlled feature ablation study} demonstrating substantial improvements in classification performance (up to +23 percentage points in ROC-AUC) by extending the feature set from 47 to 78 features. We show which additional features (e.g., variability measures and spectral shape descriptors) drive the performance gains.
+    \item \textbf{Task-specific analysis} revealing that spontaneous, free-form speech yields higher PD detection performance (e.g., Random Forest ROC-AUC 0.857 on spontaneous speech) compared to read speech (ROC-AUC 0.822 on a standard reading passage). This suggests that less structured vocal tasks may contain richer PD cues.
+    \item \textbf{Benchmarking analysis} contrasting our rigorous validation on Dataset~A with results on a larger public dataset (Dataset~B). We highlight that standard cross-validation on Dataset~B (which lacks subject IDs) produces optimistic estimates (Random Forest AUC $\sim$0.94), underscoring the importance of subject-aware evaluation for realistic performance assessment.
 \end{itemize}
 
 \section{Thesis Organization}
@@ -74,8 +74,8 @@ The remainder of this thesis is organized as follows:
 This research is explicitly bounded by the following constraints:
 
 \begin{itemize}
-    \item \textbf{Binary classification only} (PD vs HC) --- no severity prediction
-    \item \textbf{Classical ML only} --- no deep learning or end-to-end models
-    \item \textbf{Research context only} --- no clinical deployment or diagnostic claims
-    \item \textbf{Reproducibility prioritized} --- over leaderboard-style accuracy maximization
+    \item \textbf{Binary classification only} --- We focus on distinguishing PD vs.\ healthy controls. The work does not address prediction of disease severity, progression, or differential diagnosis against other disorders.
+    \item \textbf{Classical machine learning models} --- We restrict our study to interpretable, classical algorithms (Logistic Regression, SVM, Random Forest). No deep learning or neural network models are used, given the small dataset size and our emphasis on interpretability.
+    \item \textbf{Research context} --- The models and results are intended for research demonstration and are not directly deployed as clinical diagnostic tools. We do not claim clinical utility without further validation.
+    \item \textbf{Reproducibility prioritized} --- We emphasize reproducible experimentation (with fixed random seeds, documented code, and shared data processing) over chasing state-of-the-art accuracy. All code and data usage adheres to best practices to ensure results can be independently verified.
 \end{itemize}

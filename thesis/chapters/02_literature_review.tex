@@ -5,56 +5,39 @@
 
 \section{Parkinson's Disease and Speech Impairment}
 
-Parkinson's disease (PD) is a progressive neurodegenerative disorder primarily known for its motor symptoms such as tremor, rigidity, and bradykinesia. In addition to these well-recognized motor features, PD almost invariably affects speech and voice as the disease progresses. Studies report that approximately 70--90\% of individuals with PD develop measurable speech and voice impairments. This collection of speech symptoms in PD is often referred to as \textit{hypokinetic dysarthria}, indicating a characteristic pattern of speech motor control impairment associated with the disease.
+Parkinson's disease is a progressive neurodegenerative disorder primarily known for its motor symptoms (tremor, rigidity, bradykinesia). In addition to these, PD almost invariably affects speech and voice as the disease progresses. It is reported that approximately 70--90\% of individuals with PD develop measurable speech and voice impairments over the course of the illness \citep{ho1999speech}. This collection of speech symptoms in PD is often referred to as \textit{hypokinetic dysarthria}, denoting a characteristic pattern of speech motor control impairment associated with the disease \citep{duffy2012motor}.
 
-The speech of a person with PD typically exhibits several hallmark changes:
+The speech of a person with PD typically exhibits several hallmark changes. One prominent feature is \textit{hypophonia}, or reduced voice loudness---patients often speak in a much softer voice than normal. Another is a monotonic pitch: PD speakers tend to have a limited pitch range, resulting in speech that lacks the normal ups and downs of intonation (often described as ``monopitch'' speech). Monoloudness (abnormally uniform volume) often accompanies this, so the overall prosody (melody and expressiveness of speech) is markedly diminished. Patients may also exhibit articulatory imprecision, where consonants are not enunciated crisply. For example, consonant sounds may blur together or be undershot due to reduced range of motion in the articulators (jaw, tongue, lips). The voice quality in PD is frequently described as breathy or hoarse, reflecting incomplete vocal fold closure and other phonatory deficits. Additionally, some individuals speak with an improperly fast rate or with short rushes of speech, which---combined with the articulation issues---can reduce intelligibility \citep{skodda2011intonation}. These speech characteristics---reduced loudness, monopitch, monoloudness, imprecise articulation, and breathy/hoarse voice---are widely observed in PD and form the basis of clinical descriptions of hypokinetic dysarthria \citep{ramig2008speech}.
 
-\begin{itemize}
-    \item \textbf{Hypophonia} --- reduced voice loudness; patients often speak in a much softer voice than normal
-    \item \textbf{Monotonic pitch} --- limited range of pitch, resulting in speech that lacks normal intonation
-    \item \textbf{Monoloudness} --- little variation in volume
-    \item \textbf{Articulatory imprecision} --- consonants not enunciated crisply
-    \item \textbf{Breathy or hoarse voice quality} --- reflecting incomplete vocal fold closure
-\end{itemize}
+Crucially, speech changes in PD are of interest not just as symptoms affecting communication, but also as potential non-invasive biomarkers of the disease. Voice is relatively easy to capture (e.g., via a short recording on a phone), and vocal changes can manifest early in the disease course. Some research suggests that subtle voice abnormalities may appear even before classic motor symptoms in certain patients \citep{harel2004acoustic}. Because voice recording and analysis can be done inexpensively and remotely, there is considerable motivation to use speech as a way to detect or monitor PD without the need for invasive tests. Speech and voice metrics are appealing for telemedicine and longitudinal tracking of PD progression \citep{tsanas2010accurate}. Unlike many clinical assessments that require in-person visits and specialized equipment, voice recordings can be obtained by patients at home and sent to clinicians or analyzed by algorithms, enabling more frequent monitoring.
 
-Crucially, speech changes in PD are of interest not just as symptoms affecting communication, but also as potential non-invasive biomarkers of the disease. Voice is relatively easy to capture (e.g., via a short recording on a phone), and vocal changes can manifest early in the disease course. Some research suggests that subtle voice abnormalities may appear even before classic motor symptoms in some patients.
+It should be noted, however, that the speech impairments in PD can vary greatly across patients and disease stages. Not every person with PD will have all the aforementioned speech symptoms, and the severity can range from very mild to highly debilitating. There is variability in how early voice changes emerge: some patients present with noticeable hypophonia and monotonous speech in the early stages, whereas others might have minimal speech impact until later in the disease. Moreover, the progression of speech symptoms does not always strictly parallel the progression of other motor symptoms. For example, a patient with advanced limb tremor might still speak relatively clearly, while another patient with otherwise mild motor symptoms could have pronounced dysarthria. This variability underscores the need for personalized approaches in voice-based assessment.
 
 \section{Acoustic Characteristics of Parkinsonian Speech}
 
+A variety of acoustic features have been explored to characterize the distinctive patterns of Parkinsonian speech. These features quantify specific aspects of the voice signal that are hypothesized to change due to PD. Broadly, prior studies have looked at \textbf{prosodic features}, \textbf{perturbation measures}, and \textbf{spectral/cepstral features} to capture different dimensions of vocal impairment.
+
 \subsection{Prosodic Features}
 
-Prosodic features relate to the pitch (fundamental frequency) and loudness (intensity) patterns in speech. The fundamental frequency of the voice (notated as $F_0$) corresponds to the perceived pitch. Prosodic analysis often examines:
-
-\begin{itemize}
-    \item Mean pitch and pitch range
-    \item Standard deviation of pitch across an utterance
-    \item Overall intensity level and its variability
-\end{itemize}
-
-In Parkinson's disease, a well-documented phenomenon is the reduction of prosodic variability. PD patients often speak in a monotone---their pitch remains relatively flat and at a narrow range. Objectively, one finds a lower standard deviation of $F_0$ and a smaller pitch range in PD speech compared to healthy age-matched controls.
+Prosodic features relate to the pitch (fundamental frequency) and loudness (intensity) patterns in speech, as well as timing and rhythm to some extent. The fundamental frequency of speech (perceived as pitch) is often denoted as $F_0$. In PD, prosodic modulation is reduced: PD patients typically exhibit a lower variability in $F_0$ and intensity over an utterance. In practical terms, this means their speech has a flatter intonation and a narrower dynamic range. Key prosodic features examined include: $F_0$ mean, minimum, maximum, and standard deviation, which reflect overall pitch level and variability; intensity mean and variability, reflecting loudness and its modulation; and speech rate or pause duration (though rate is sometimes considered separately). Monotony in pitch and loudness (low $F_0$ std and low intensity range) is a classic sign of PD speech \citep{skodda2011intonation}. These prosodic deficits correspond to the perceptual impressions of monopitch and monoloudness described earlier. By measuring them quantitatively (e.g., computing the standard deviation of $F_0$ across an utterance, or the range between maximum and minimum intensity), researchers can objectively gauge the extent of prosodic impairment. Prosodic feature extraction often involves algorithms that track pitch (via autocorrelation or cepstral methods) and energy on a frame-by-frame basis, using tools like Praat or librosa \citep{parselmouth2018, librosa2020}.
 
 \subsection{Perturbation Measures}
 
-Perturbation measures capture the cycle-to-cycle variations in the voice signal, reflecting stability (or instability) of vocal fold vibration. The two primary perturbation measures are:
+Perturbation measures capture the cycle-to-cycle variations in the voice signal, reflecting stability (or instability) of vocal fold vibration. The two primary categories are \textbf{jitter} (pertaining to frequency instability) and \textbf{shimmer} (pertaining to amplitude instability). Jitter is usually defined as the percentage variation in fundamental period between consecutive glottal cycles; PD voices often have elevated jitter, indicating irregular pitch periods. Shimmer is the percentage variation in amplitude of consecutive cycles; it tends to be higher in PD, indicating inconsistent loudness from cycle to cycle. Essentially, increased jitter and shimmer correspond to a harsher, more breathy voice quality with less stable tone---consistent with PD-related vocal tremor and weakness. Commonly used perturbation features include local jitter (\%), jitter variants like RAP (relative average perturbation) and PPQ, and shimmer measures like local shimmer, shimmer APQ3, APQ5, APQ11, etc.
 
-\begin{description}
-    \item[Jitter] Quantifies minute fluctuations in pitch period from one glottal cycle to the next
-    \item[Shimmer] Quantifies variability in amplitude across successive glottal cycles
-\end{description}
+Studies (starting from the classic work of Little et al.\ and others) found that these perturbation metrics can distinguish PD voices from healthy voices to a significant extent. For example, \citet{little2009suitability} used a set of 22 features largely composed of jitter, shimmer, and related measures and achieved high accuracy in classifying PD vs HC with an SVM. Perturbation features are typically extracted from sustained vowel recordings (e.g., sustained ``ah'' sounds) where cycle-to-cycle analysis is most reliable, but they can also be computed on longer speech if voiced segments are isolated.
 
-In Parkinson's disease, due to factors like reduced vocal fold adduction, tremor, and inconsistent breath support, jitter and shimmer are often elevated compared to age-matched healthy controls.
-
-\textbf{Harmonics-to-Noise Ratio (HNR)} is another related metric, comparing the level of periodic (harmonic) energy in the voice to aperiodic or noise energy. PD voices tend to have lower HNR values, indicating a higher proportion of noise (breathiness, roughness) in the voice.
+\textbf{Harmonics-to-Noise Ratio (HNR)} is another related metric, comparing the level of periodic (harmonic) energy in the voice to aperiodic or noise energy. HNR quantifies the proportion of harmonic (periodic) energy to noise (aperiodic energy) in the voice. PD voices often have lower HNR, indicating a breathier, noisier signal due to imperfect vocal fold vibration.
 
 \subsection{Spectral and Cepstral Features}
 
-The disease also manifests in spectral characteristics:
+Spectral and cepstral features analyze the frequency-domain characteristics of speech. While prosodic features capture global patterns over time and perturbation features capture cycle-level stability, spectral features provide information about the distribution of energy across frequency bands and the overall quality of the voice signal. One widely used set of spectral features in speech analysis is the \textbf{Mel-Frequency Cepstral Coefficients (MFCCs)}. MFCCs are a compressed representation of the spectral envelope of the sound, using a perceptually motivated mel scale. In PD research, MFCCs (and their derivatives) have been employed to capture vocal tract resonances and changes due to dysarthria \citep{orozco2016automatic}. For instance, studies have used the mean of the first 12 or 13 MFCCs over an utterance to summarize the average spectral shape. In addition, delta MFCCs (first-order time derivatives) capture how the spectrum changes over time; these have also been included, as PD speech may show reduced or abnormal dynamics in the spectral content.
 
-\begin{itemize}
-    \item Altered formant frequencies ($F_1$, $F_2$, $F_3$)
-    \item Changes in Mel-Frequency Cepstral Coefficients (MFCCs)
-    \item Modified spectral envelope characteristics
-\end{itemize}
+Beyond MFCCs, other spectral features include formant frequencies ($F_1$, $F_2$, $F_3$) and their distribution. Formants are resonant frequencies of the vocal tract; in PD, there can be changes in formant central values and variability, potentially reflecting imprecise articulation or reduced articulation range. For example, some works have looked at vowel formant spacing or vowel space area as a marker for articulatory decline in PD (with vowels produced less distinctly).
+
+Other spectral ``shape'' descriptors include measures like spectral centroid (the center of mass of the spectrum), spectral bandwidth, spectral roll-off (frequency below which a certain percentage of energy is concentrated), and spectral flatness. These features characterize the timbre of the voice. For instance, PD voices might have a lower spectral centroid if high-frequency energy is reduced (due to muffled articulation), or a higher spectral flatness if the voice has more noise-like components. Research by \citet{tsanas2010accurate} and others introduced some of these spectral measures, as well as novel nonlinear dynamics features (like correlation dimension, recurrence period density entropy, pitch period entropy, etc.) for PD detection. However, in classical ML focused studies, MFCC-based features and perturbation measures have been most common.
+
+In summary, the literature has identified numerous acoustic features that differ, on average, between PD and healthy speech. Prosodic features capture reduced intonation and loudness variation; perturbation features capture increased vocal instability; and spectral/cepstral features capture changes in voice quality and articulation. An effective feature set for PD classification often draws a bit from each category, providing a holistic characterization of the speech.
 
 \section{Feature Extraction Approaches}
 
@@ -90,37 +73,61 @@ Modern approaches incorporate signal processing features:
 
 \subsection{Deep Learning Features}
 
-Recent work has explored end-to-end learning from spectrograms. However, these approaches require large datasets and lack interpretability---both significant limitations for clinical applications.
+Recent work has explored end-to-end learning from spectrograms. However, these approaches require large datasets and lack interpretability---both significant limitations for clinical applications with small samples.
 
-\section{Machine Learning Approaches}
+\section{Datasets Used in Parkinson's Voice Research}
 
-\subsection{Classical Methods}
+The performance and conclusions of any machine learning study are inherently tied to the datasets used. In PD voice research, a range of datasets have been employed, each with different characteristics. Broadly, these can be divided into \textbf{raw audio datasets} (which consist of recorded speech signals requiring feature extraction) and \textbf{pre-extracted feature datasets} (where the data is already in the form of feature values per sample). Here we review representative examples of each category and their relevance.
 
-Classical ML remains dominant in clinical applications due to interpretability:
+\subsection{Raw Audio Datasets}
 
-\begin{table}[H]
-\centering
-\begin{tabular}{@{}lp{4.5cm}p{5cm}@{}}
-\toprule
-\textbf{Method} & \textbf{Strengths} & \textbf{Limitations} \\
-\midrule
-Logistic Regression & Interpretable coefficients & Linear decision boundary \\
-SVM & Effective in high dimensions & Kernel selection critical \\
-Random Forest & Handles non-linearity, feature importance & Less interpretable than linear models \\
-\bottomrule
-\end{tabular}
-\caption{Comparison of classical ML methods}
-\label{tab:ml-methods}
-\end{table}
+Raw audio datasets for PD typically consist of voice recordings from PD patients and healthy controls, often collected in controlled settings. A classic example is the dataset by \citet{little2007nonlinear} made available via the UCI Machine Learning Repository. This dataset contains 195 sustained vowel phonations (``ah'' sounds) from 31 individuals (23 with PD). Each recording is summarized by 22 dysphonia features (jitter, shimmer, etc.) plus the class label. Little et al.\ used this data to achieve $\sim$91\% accuracy in detecting PD using an SVM, making it a benchmark for early studies. However, one limitation is that multiple recordings from the same subject are present, necessitating careful grouping to avoid bias (something not all early studies did, hence some overly optimistic results).
 
-\subsection{Deep Learning}
+Another raw dataset is the MDVR-KCL corpus (Mobile Device Voice Recordings at King's College London) \citep{mdvr_kcl_2019}. This is a more recent collection (2019) of voice recordings from PD patients and controls performing multiple speech tasks (reading text, speaking spontaneously, etc.). It contains on the order of tens of subjects (for example, 37 subjects in the portion used in this thesis) and multiple recordings per subject per task. Such datasets are valuable for examining within-subject variability and task effects. The MDVR-KCL data are available on Zenodo, and they reflect a more realistic scenario with varied speech content recorded via smartphone. Studies using this dataset (or similar multi-task datasets) emphasize the importance of grouped cross-validation---i.e., ensuring all recordings of a given subject end up in one fold---to properly evaluate generalization to new speakers.
 
-CNNs and RNNs have been applied to PD detection but face challenges:
-\begin{itemize}
-    \item Require large labeled datasets
-    \item Prone to overfitting on small samples
-    \item Limited interpretability for clinical validation
-\end{itemize}
+There also exist larger raw audio datasets, such as the one by \citet{sakar2013collection} which included multiple types of sound recordings (sustained vowels, words, sentences) from 40 PD and 40 HC subjects. In that case, features can be extracted from each recording or summary statistics per subject can be used. The challenge with such multi-recording datasets is to decide how a ``sample'' is defined (each recording as a sample vs.\ each subject as a sample). Different studies have taken different approaches, which makes direct performance comparisons difficult.
+
+In summary, raw audio datasets offer the ability to compute customized feature sets and potentially discover new biomarkers, but they require careful handling of multiple recordings and often suffer from small subject counts. The need for cross-validation strategies that account for subject identity is paramount, as highlighted by recent methodological papers.
+
+\subsection{Pre-Extracted Feature Datasets}
+
+Pre-extracted feature datasets are those where the raw signal processing has essentially been done already---what is provided is a table of feature values for each sample, along with class labels. The Parkinson's Disease Speech Features dataset (PDSF) is a prominent example, available through sources like the UCI repository or Kaggle \citep{pd_speech_features_kaggle}. This dataset comprises 756 samples with 754 features per sample, plus a binary label (PD or HC). Each sample in this context corresponds to a voice recording from one individual. There are 252 unique subjects (188 PD, 64 HC), each contributing exactly three samples (e.g., three sustained vowel recordings). The features include a broad array of acoustic measures: traditional ones like jitter, shimmer, and MFCCs, but also more exotic ones like TQWT (Tunable Q-factor Wavelet Transform) coefficients that capture various signal properties. This dataset was designed to be a comprehensive feature set for benchmarking classifiers.
+
+The advantage of using such a pre-extracted feature dataset is convenience and consistency---researchers can download the CSV and directly apply machine learning, without worrying about signal processing details. Indeed, numerous studies have used the PDSF dataset to test different classification algorithms, feature selection techniques, or ensemble methods. Reported accuracies on this dataset are often quite high (in the 85--95\% range for various classifiers).
+
+A critical caveat with pre-extracted feature datasets like this is the \textbf{lack of subject identifiers}. Since the 756 samples include repeats from the same 252 subjects (3 each), a naive cross-validation that randomly splits samples will inadvertently train and test on samples from the same person. This can lead to overly optimistic performance, because the three recordings of a given patient are not independent (they likely have similar feature patterns). Some papers have overlooked this and thus overestimated classifier accuracy. The proper approach would be to group samples by subject when splitting, but without subject ID provided, one cannot easily do this. Researchers must therefore interpret results on this dataset with caution: high accuracy could partly reflect within-subject consistency rather than true generalization. In this thesis, we address this by treating Dataset~B's results as potentially optimistic and focusing primarily on trends rather than absolute values.
+
+To conclude, datasets in PD voice research range from small, carefully collected raw audio sets to large compiled feature sets. Each has trade-offs. Raw sets allow methodological development (feature extraction and careful validation) on realistic data but often have few subjects. Pre-extracted sets enable quick experimentation with many features and larger sample counts, but one must be mindful of their origin and limitations (e.g., unknown subject overlaps). The literature shows that when evaluating methods, dataset characteristics must be considered---results on one dataset may not transfer to another if, say, one involves sustained vowels recorded in lab conditions while another involves running speech recorded via telephone.
+
+\section{Classical Machine Learning Approaches for PD Voice Classification}
+
+With acoustic features extracted from speech, the next step in many studies is to feed these features into a machine learning model to distinguish PD vs.\ healthy subjects. A variety of classical (non-deep-learning) algorithms have been applied in the literature. This section reviews three commonly used classifiers---Logistic Regression, Support Vector Machines, and ensemble decision tree methods---and their application to PD voice data.
+
+\subsection{Logistic Regression}
+
+Logistic regression (LR) is a simple yet effective baseline classifier widely used in biomedical applications, including PD voice studies \citep{bishop2006pattern}. It is a linear model that estimates the probability of a sample belonging to the PD class using a logistic (sigmoid) function. Logistic regression produces a weight for each feature, making it attractive for interpretability---one can see which acoustic features have positive or negative contributions to the PD likelihood. In the context of PD classification, logistic regression has the form:
+\begin{equation}
+\log \frac{P(\text{PD})}{1 - P(\text{PD})} = w_0 + w_1 x_1 + w_2 x_2 + \cdots + w_n x_n
+\end{equation}
+where $x_i$ are input features (jitter, MFCCs, etc.) and $w_i$ are learned weights. A positive weight indicates higher feature values increase PD probability. Studies have occasionally used LR as a baseline to compare against more complex methods. While logistic regression by itself may not always achieve the highest accuracy, it is valued for its simplicity and interpretability. For example, if we find that the coefficient for pitch variability is strongly negative, it suggests higher pitch variability (more normal intonation) reduces PD likelihood, which aligns with expectations. Because LR is a generalized linear model, it can struggle with complex nonlinear relationships in the data. However, with a reasonably informative feature set, it can perform decently. In PD datasets of moderate size (dozens of samples), logistic regression has achieved respectable accuracy (e.g., 70--85\%), though typically below that of SVMs or ensemble methods. One advantage is that LR is less prone to overfitting in small-sample regimes compared to more flexible models, especially if regularization is used (e.g., L1 or L2 penalties on weights). In summary, logistic regression serves as a good starting point and sanity check in PD voice classification, ensuring that basic linear separability of the classes is evaluated.
+
+\subsection{Support Vector Machines}
+
+The Support Vector Machine (SVM) is a supervised classifier that has been widely used in PD voice detection research, especially throughout the 2000s and 2010s \citep{cortes1995support}. SVMs are well-suited to high-dimensional feature spaces and have strong theoretical foundations in statistical learning theory. In classification, an SVM aims to find the hyperplane that maximizes the margin between two classes in a transformed feature space. In practice, the SVM with a radial basis function (RBF) kernel has been a popular choice for PD classification tasks. The RBF kernel allows mapping the original features into a nonlinear space where a linear separation is found.
+
+Historically, SVMs have shown strong results on the classic PD voice datasets. The oft-cited study by \citet{little2009suitability} used 22 dysphonia measures from sustained vowel recordings and achieved around 91\% accuracy using an SVM (with 10-fold CV). Many subsequent works on that dataset and related ones continued to use SVMs and reported accuracies in the 90\%+ range. A systematic review by \citet{saenz2014methodological} noted that classical ML models such as SVMs and Random Forests tended to achieve high accuracy on small, homogeneous voice pathology datasets. This aligns with the idea that an SVM, with its margin maximization, can perform very well when training and testing data come from the same distribution and the input features (like sustained phonation measures) are relatively low-noise.
+
+In terms of trade-offs: SVMs require careful tuning of hyperparameters, chiefly the regularization parameter $C$ (which controls the trade-off between maximizing margin and minimizing training errors) and any kernel-specific parameters (e.g., $\gamma$ in the RBF kernel which controls kernel width). If not tuned properly (often via inner cross-validation), an SVM can either overfit or underfit. SVMs also require feature scaling (normalization) for optimal performance. Another consideration is that SVMs are less interpretable than logistic regression; the model's decision boundary in the original feature space is not readily explained by feature importance, except in the linear SVM case. Despite these considerations, SVMs have been a go-to algorithm for PD voice tasks due to their strong performance in prior studies. They handle the moderate dimensionality of typical feature sets (tens of features) well, and can be effective even when the number of recordings is limited, thanks to the capacity control via the margin.
+
+\subsection{Ensemble Methods (Random Forest)}
+
+Ensemble methods, particularly those based on decision trees, have become popular in many classification tasks including biomedical voice analysis. Among these, the Random Forest (RF) has seen use in PD detection studies as an interpretable yet powerful classifier \citep{breiman2001random}. A Random Forest comprises an ensemble of decision trees, each trained on a bootstrap sample of the data and typically using a random subset of features for splitting at each node. The ensemble votes to produce the final classification. RFs are known for their robustness and ability to model complex interactions without heavy parameter tuning.
+
+For PD voice classification, Random Forests offer several advantages: (1) They can capture non-linear patterns and interactions between features (e.g., a combination of specific jitter and MFCC values might jointly indicate PD). (2) They provide an intrinsic measure of feature importance (e.g., mean decrease in Gini impurity or in accuracy when a feature is permuted), which is valuable for interpretability---we can identify which acoustic features contribute most to the classification. (3) They are relatively immune to overfitting when the number of trees is large, thanks to the law of large numbers averaging effect, although one must still be cautious with very small sample sizes.
+
+Several studies have reported RF performance on PD datasets comparable to SVM. For instance, in some experiments on the Little et al.\ dataset and others, RF achieved accuracy in the 90\% range as well. In cases with more diverse data (e.g., multiple speech tasks or larger feature sets), RF can sometimes outperform SVM by leveraging the variety of signals in the data. One trade-off is that RF models, while more interpretable than SVM to some extent, are still not as straightforward as logistic regression---the relationships are encoded in many trees. But examining the top features and partial dependence can yield insights (e.g., RF might reveal that shimmer features rank highest in importance, suggesting amplitude stability is a crucial marker). In terms of configuration, we often see RF used with 100 or more trees, and sometimes with shallow depths to avoid overfitting. In PD voice tasks, because data are limited, an RF with a constrained max depth (or using out-of-bag validation for internal checks) can generalize well. It also gracefully handles datasets where features may be redundant or noisy---the ensemble tends to ignore useless features as they won't consistently appear in top splits.
+
+In summary, Random Forest represents a strong choice for PD voice classification due to its balance of accuracy and interpretability. Its feature importance output has been used in literature to corroborate domain knowledge (e.g., showing that certain features like fundamental frequency variability or particular MFCCs are consistently important, aligning with clinical expectations). Ensemble methods in general underscore a trend in the literature from relying solely on single classifiers like SVM to more robust approaches that can exploit complex data structures without elaborate tuning.
 
 \section{Methodological Concerns in Literature}
 
@@ -132,15 +139,15 @@ Many published studies fail to account for subject identity when splitting data:
 ``When multiple recordings exist per subject, random train/test splits can place recordings from the same subject in both sets, leading to optimistic performance estimates.''
 \end{quote}
 
-This thesis addresses this through \textbf{grouped stratified cross-validation}.
+This thesis addresses this through \textbf{grouped stratified cross-validation}, ensuring all recordings from a given subject appear exclusively in either the training set or test set for each fold.
 
 \subsection{Class Imbalance}
 
 Imbalanced class distributions are common but often unaddressed:
 \begin{itemize}
-    \item Simple accuracy can be misleading
-    \item Class weighting or resampling strategies needed
-    \item This thesis investigates \texttt{class\_weight="balanced"} as a mitigation
+    \item Simple accuracy can be misleading when classes are imbalanced
+    \item Class weighting or resampling strategies may be needed
+    \item This thesis investigates class weighting (``balanced'' mode) as a mitigation strategy
 \end{itemize}
 
 \subsection{Reproducibility}
@@ -150,7 +157,10 @@ Many studies lack sufficient detail for reproduction:
     \item Feature extraction parameters unspecified
     \item Random seeds not fixed
     \item Cross-validation strategy unclear
+    \item Hyperparameter tuning procedures not documented
 \end{itemize}
+
+This thesis addresses these concerns by providing fixed random seeds, documented feature extraction parameters, and explicit cross-validation protocols.
 
 \section{Research Gap}
 
