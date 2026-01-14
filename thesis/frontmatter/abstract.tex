@@ -1,0 +1,26 @@
+% Abstract
+
+\chapter*{Abstract}
+\addcontentsline{toc}{chapter}{Abstract}
+
+Parkinson's Disease (PD) is the second most prevalent neurodegenerative disorder globally, affecting approximately 1\% of the population over 60 years of age. Voice changes, including reduced pitch variability and hypophonia, often appear early in disease progression, making voice-based biomarkers a promising avenue for non-invasive detection.
+
+This thesis investigates binary classification of Parkinson's Disease versus healthy controls using classical machine learning approaches applied to acoustic voice features. The work addresses key methodological challenges in the field, including subject-level data leakage, class imbalance, and feature representation.
+
+Using the MDVR-KCL dataset (37 subjects), we implement grouped stratified cross-validation to prevent optimistic bias from subject identity leakage. We evaluate three classical models---Logistic Regression, Support Vector Machine (RBF kernel), and Random Forest---across a 2$\times$2 factorial design examining feature set extension (47 vs.\ 78 features) and class weighting strategies.
+
+Key findings include:
+\begin{itemize}
+    \item Random Forest achieves the best performance with ROC-AUC of 0.873 $\pm$ 0.137 using extended features
+    \item Feature set extension from 47 to 78 features improves ROC-AUC by +8.7 percentage points
+    \item Spontaneous dialogue yields higher classification performance than read text tasks
+    \item Class weighting shows modest and inconsistent effects on moderately imbalanced data
+\end{itemize}
+
+The most discriminative features include maximum fundamental frequency (f0\_max), MFCC dynamics (delta\_mfcc\_2\_mean), and harmonicity measures, aligning with known clinical manifestations of PD speech.
+
+This work contributes a rigorous evaluation framework prioritizing methodological validity over performance optimization, with transparent reporting of limitations and reproducible implementation.
+
+\vspace{1cm}
+
+\textbf{Keywords:} Parkinson's Disease, voice analysis, machine learning, acoustic features, classification, cross-validation

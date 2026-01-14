@@ -27,16 +27,15 @@ from inference_adapter import (
     ModelNotFoundError,
 )
 
+# Import audio preprocessing utilities
+from audio_utils import (
+    normalize_audio_file,
+    cleanup_audio_file,
+    AudioValidationError,
+)
+
 app = Flask(__name__)
 app.secret_key = os.environ.get("FLASK_SECRET_KEY", "dev-secret-key-change-in-prod")
-
-# Allowed audio extensions
-ALLOWED_EXTENSIONS = {".wav"}
-
-
-def allowed_file(filename: str) -> bool:
-    """Check if the uploaded file has an allowed extension."""
-    return Path(filename).suffix.lower() in ALLOWED_EXTENSIONS
 
 
 @app.route("/")
@@ -61,39 +60,45 @@ def index():
 
 @app.route("/analyze", methods=["POST"])
 def analyze():
-    """Process uploaded WAV file or recorded audio and return prediction."""
+    """Process uploaded or recorded audio and return prediction."""
     # Check if file was uploaded or recorded
     file = None
-    filename = "recording.wav"
+    filename = "recording"
     
     if "audio_file" in request.files and request.files["audio_file"].filename:
         # Traditional file upload
         file = request.files["audio_file"]
-        filename = file.filename
-        
-        # Validate filename exists and has correct extension
-        if not filename or not allowed_file(filename):
-            flash("Invalid file type. Please upload a WAV file.", "error")
-            return redirect(url_for("index"))
+        filename = file.filename or "upload"
             
     elif "recorded_audio" in request.files:
-        # Browser recording
+        # Browser recording (WebM or other native format)
         file = request.files["recorded_audio"]
-        filename = "recording.wav"
+        filename = "recording"
     else:
         flash("No audio file provided", "error")
         return redirect(url_for("index"))
 
-    # Save to temp file and run inference
+    # Temporary file paths
+    original_tmp_path = None
+    normalized_tmp_path = None
+
     try:
-        # Create temp file with .wav extension (required by librosa)
-        with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as tmp:
+        # Save uploaded file to temporary location
+        # Use generic suffix since we accept any audio format
+        suffix = Path(filename).suffix if filename else ".audio"
+        with tempfile.NamedTemporaryFile(suffix=suffix, delete=False) as tmp:
             file.save(tmp.name)
-            tmp_path = tmp.name
+            original_tmp_path = tmp.name
 
         try:
+            # Normalize audio (convert to mono 22050 Hz PCM-16 WAV)
+            # Input can be any format (WebM, MP3, etc.)
+            # Output is ALWAYS a standard WAV file for feature extraction
+            normalized_tmp_path, _ = normalize_audio_file(original_tmp_path)
+            
             # Run inference through the adapter (returns enriched data)
-            result = run_inference_with_features(tmp_path, task="ReadText")
+            # normalized_tmp_path is guaranteed to be a PCM-16 WAV file
+            result = run_inference_with_features(normalized_tmp_path, task="ReadText")
 
             return render_template(
                 "result.html",
@@ -101,10 +106,14 @@ def analyze():
                 filename=filename,
             )
 
+        except AudioValidationError as e:
+            flash(f"Invalid audio file: {e}", "error")
+            return redirect(url_for("index"))
+
         finally:
-            # Clean up temp file
-            if os.path.exists(tmp_path):
-                os.unlink(tmp_path)
+            # Clean up both temporary files
+            cleanup_audio_file(original_tmp_path)
+            cleanup_audio_file(normalized_tmp_path)
 
     except ModelNotFoundError as e:
         flash(f"Model not available: {e}", "error")

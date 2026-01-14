@@ -95,16 +95,14 @@ parkinsons-voice-classification/
 │   ├── inference_adapter.py         # Enrichment layer for display
 │   ├── feature_metadata.py          # Display formatting for features
 │   └── templates/                   # HTML templates (index, result, about)
+├── thesis/                           # LaTeX thesis (source of truth)
+│   ├── main.tex                     # Root document
+│   ├── chapters/                    # Chapters 1-9 (.tex)
+│   ├── appendices/                  # Appendices A-B (.tex)
+│   ├── frontmatter/                 # Title, abstract, acknowledgments
+│   └── references/                  # BibTeX bibliography
 ├── docs/                             # Documentation
-│   ├── v2/                          # Thesis chapters
-│   │   ├── CHAPTER_1_INTRODUCTION.md
-│   │   ├── CHAPTER_3_DATA_DESCRIPTION.md
-│   │   ├── CHAPTER_4_METHODOLOGY.md
-│   │   ├── CHAPTER_5_EXPERIMENTAL_DESIGN.md
-│   │   ├── CHAPTER_6_RESULTS.md
-│   │   ├── CHAPTER_7_DISCUSSION.md
-│   │   ├── CHAPTER_8_LIMITATIONS.md
-│   │   └── CHAPTER_9_CONCLUSION.md
+│   ├── v2/                          # [DEPRECATED] Original markdown drafts
 │   ├── DATASET_MDVR_KCL.md          # Dataset A data card
 │   ├── DATASET_PD_SPEECH_FEATURES.md # Dataset B data card
 │   └── WEB_APP_ARCHITECTURE.md      # Demo app architecture
@@ -128,12 +126,11 @@ parkinsons-voice-classification/
 
 **Key Documentation:**
 
-- [docs/v2/CHAPTER_3_DATA_DESCRIPTION.md](docs/v2/CHAPTER_3_DATA_DESCRIPTION.md) — Dataset descriptions and characteristics
-- [docs/v2/CHAPTER_4_METHODOLOGY.md](docs/v2/CHAPTER_4_METHODOLOGY.md) — Experimental design and approach
-- [docs/v2/CHAPTER_5_EXPERIMENTAL_DESIGN.md](docs/v2/CHAPTER_5_EXPERIMENTAL_DESIGN.md) — Experiment protocols
-- [docs/v2/CHAPTER_8_LIMITATIONS.md](docs/v2/CHAPTER_8_LIMITATIONS.md) — Scope boundaries and constraints
+- [thesis/](thesis/) — **LaTeX thesis (source of truth)** — Build with `make thesis`
+- [thesis/README.md](thesis/README.md) — Thesis build instructions
 - [docs/DATASET_MDVR_KCL.md](docs/DATASET_MDVR_KCL.md) — Dataset A data card
 - [docs/DATASET_PD_SPEECH_FEATURES.md](docs/DATASET_PD_SPEECH_FEATURES.md) — Dataset B data card
+- [docs/WEB_APP_ARCHITECTURE.md](docs/WEB_APP_ARCHITECTURE.md) — Demo app architecture
 - [AGENTS.md](AGENTS.md) — AI coding agent rules and pipeline constraints
 
 ## Requirements

@@ -1,0 +1,170 @@
+% Chapter 2: Literature Review
+
+\chapter{Literature Review}
+\label{ch:literature-review}
+
+\section{Parkinson's Disease and Speech Impairment}
+
+Parkinson's disease (PD) is a progressive neurodegenerative disorder primarily known for its motor symptoms such as tremor, rigidity, and bradykinesia. In addition to these well-recognized motor features, PD almost invariably affects speech and voice as the disease progresses. Studies report that approximately 70--90\% of individuals with PD develop measurable speech and voice impairments. This collection of speech symptoms in PD is often referred to as \textit{hypokinetic dysarthria}, indicating a characteristic pattern of speech motor control impairment associated with the disease.
+
+The speech of a person with PD typically exhibits several hallmark changes:
+
+\begin{itemize}
+    \item \textbf{Hypophonia} --- reduced voice loudness; patients often speak in a much softer voice than normal
+    \item \textbf{Monotonic pitch} --- limited range of pitch, resulting in speech that lacks normal intonation
+    \item \textbf{Monoloudness} --- little variation in volume
+    \item \textbf{Articulatory imprecision} --- consonants not enunciated crisply
+    \item \textbf{Breathy or hoarse voice quality} --- reflecting incomplete vocal fold closure
+\end{itemize}
+
+Crucially, speech changes in PD are of interest not just as symptoms affecting communication, but also as potential non-invasive biomarkers of the disease. Voice is relatively easy to capture (e.g., via a short recording on a phone), and vocal changes can manifest early in the disease course. Some research suggests that subtle voice abnormalities may appear even before classic motor symptoms in some patients.
+
+\section{Acoustic Characteristics of Parkinsonian Speech}
+
+\subsection{Prosodic Features}
+
+Prosodic features relate to the pitch (fundamental frequency) and loudness (intensity) patterns in speech. The fundamental frequency of the voice (notated as $F_0$) corresponds to the perceived pitch. Prosodic analysis often examines:
+
+\begin{itemize}
+    \item Mean pitch and pitch range
+    \item Standard deviation of pitch across an utterance
+    \item Overall intensity level and its variability
+\end{itemize}
+
+In Parkinson's disease, a well-documented phenomenon is the reduction of prosodic variability. PD patients often speak in a monotone---their pitch remains relatively flat and at a narrow range. Objectively, one finds a lower standard deviation of $F_0$ and a smaller pitch range in PD speech compared to healthy age-matched controls.
+
+\subsection{Perturbation Measures}
+
+Perturbation measures capture the cycle-to-cycle variations in the voice signal, reflecting stability (or instability) of vocal fold vibration. The two primary perturbation measures are:
+
+\begin{description}
+    \item[Jitter] Quantifies minute fluctuations in pitch period from one glottal cycle to the next
+    \item[Shimmer] Quantifies variability in amplitude across successive glottal cycles
+\end{description}
+
+In Parkinson's disease, due to factors like reduced vocal fold adduction, tremor, and inconsistent breath support, jitter and shimmer are often elevated compared to age-matched healthy controls.
+
+\textbf{Harmonics-to-Noise Ratio (HNR)} is another related metric, comparing the level of periodic (harmonic) energy in the voice to aperiodic or noise energy. PD voices tend to have lower HNR values, indicating a higher proportion of noise (breathiness, roughness) in the voice.
+
+\subsection{Spectral and Cepstral Features}
+
+The disease also manifests in spectral characteristics:
+
+\begin{itemize}
+    \item Altered formant frequencies ($F_1$, $F_2$, $F_3$)
+    \item Changes in Mel-Frequency Cepstral Coefficients (MFCCs)
+    \item Modified spectral envelope characteristics
+\end{itemize}
+
+\section{Feature Extraction Approaches}
+
+\subsection{Traditional Acoustic Features}
+
+Early studies relied on clinically-motivated features:
+
+\begin{table}[H]
+\centering
+\begin{tabular}{@{}llp{6cm}@{}}
+\toprule
+\textbf{Category} & \textbf{Examples} & \textbf{Physiological Basis} \\
+\midrule
+Fundamental Frequency & $F_0$ mean, $F_0$ std & Vocal fold tension \\
+Perturbation & Jitter, Shimmer & Neuromuscular control \\
+Noise & HNR, NHR & Incomplete glottal closure \\
+Formants & $F_1$, $F_2$, $F_3$ & Vocal tract configuration \\
+\bottomrule
+\end{tabular}
+\caption{Traditional acoustic feature categories}
+\label{tab:traditional-features}
+\end{table}
+
+\subsection{Spectral Features}
+
+Modern approaches incorporate signal processing features:
+
+\begin{itemize}
+    \item \textbf{MFCCs} (Mel-Frequency Cepstral Coefficients) --- compact spectral representation
+    \item \textbf{Delta and Delta-Delta MFCCs} --- temporal dynamics
+    \item \textbf{Spectral shape features} --- centroid, bandwidth, rolloff, flatness
+\end{itemize}
+
+\subsection{Deep Learning Features}
+
+Recent work has explored end-to-end learning from spectrograms. However, these approaches require large datasets and lack interpretability---both significant limitations for clinical applications.
+
+\section{Machine Learning Approaches}
+
+\subsection{Classical Methods}
+
+Classical ML remains dominant in clinical applications due to interpretability:
+
+\begin{table}[H]
+\centering
+\begin{tabular}{@{}lp{4.5cm}p{5cm}@{}}
+\toprule
+\textbf{Method} & \textbf{Strengths} & \textbf{Limitations} \\
+\midrule
+Logistic Regression & Interpretable coefficients & Linear decision boundary \\
+SVM & Effective in high dimensions & Kernel selection critical \\
+Random Forest & Handles non-linearity, feature importance & Less interpretable than linear models \\
+\bottomrule
+\end{tabular}
+\caption{Comparison of classical ML methods}
+\label{tab:ml-methods}
+\end{table}
+
+\subsection{Deep Learning}
+
+CNNs and RNNs have been applied to PD detection but face challenges:
+\begin{itemize}
+    \item Require large labeled datasets
+    \item Prone to overfitting on small samples
+    \item Limited interpretability for clinical validation
+\end{itemize}
+
+\section{Methodological Concerns in Literature}
+
+\subsection{Data Leakage}
+
+Many published studies fail to account for subject identity when splitting data:
+
+\begin{quote}
+``When multiple recordings exist per subject, random train/test splits can place recordings from the same subject in both sets, leading to optimistic performance estimates.''
+\end{quote}
+
+This thesis addresses this through \textbf{grouped stratified cross-validation}.
+
+\subsection{Class Imbalance}
+
+Imbalanced class distributions are common but often unaddressed:
+\begin{itemize}
+    \item Simple accuracy can be misleading
+    \item Class weighting or resampling strategies needed
+    \item This thesis investigates \texttt{class\_weight="balanced"} as a mitigation
+\end{itemize}
+
+\subsection{Reproducibility}
+
+Many studies lack sufficient detail for reproduction:
+\begin{itemize}
+    \item Feature extraction parameters unspecified
+    \item Random seeds not fixed
+    \item Cross-validation strategy unclear
+\end{itemize}
+
+\section{Research Gap}
+
+While numerous studies report high classification accuracies, few address:
+
+\begin{enumerate}
+    \item \textbf{Grouped cross-validation} for multi-recording datasets
+    \item \textbf{Controlled feature ablation} studies
+    \item \textbf{Systematic class weighting} analysis
+    \item \textbf{Transparent limitations} acknowledgment
+\end{enumerate}
+
+This thesis aims to fill these gaps through rigorous experimental design prioritizing methodological validity over performance optimization.
+
+\section{Summary}
+
+The literature demonstrates that voice-based PD detection is feasible, with classical ML achieving competitive results. However, methodological rigor varies significantly across studies. This thesis adopts a conservative approach, prioritizing reproducibility and valid comparison over state-of-the-art claims.

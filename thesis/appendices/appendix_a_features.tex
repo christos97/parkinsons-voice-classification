@@ -1,0 +1,183 @@
+% Appendix A: Feature Importance Tables
+
+\chapter{Feature Importance Tables}
+\label{app:feature-importance}
+
+\section{Overview}
+
+This appendix presents the top-20 most important features for each experimental condition, as determined by model-native importance measures:
+
+\begin{itemize}
+    \item \textbf{Logistic Regression:} Absolute coefficient values
+    \item \textbf{Random Forest:} Gini importance (mean decrease in impurity)
+\end{itemize}
+
+\section{Dataset A --- ReadText Task}
+
+\subsection{Random Forest --- Top 20 Features}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{@{}clcc@{}}
+\toprule
+\textbf{Rank} & \textbf{Feature} & \textbf{Importance} & \textbf{Std} \\
+\midrule
+1 & f0\_max & 0.052 & 0.019 \\
+2 & delta\_mfcc\_2\_mean & 0.039 & 0.018 \\
+3 & f3\_std & 0.038 & 0.011 \\
+4 & autocorr\_harmonicity & 0.038 & 0.017 \\
+5 & intensity\_mean & 0.035 & 0.021 \\
+6 & f0\_mean & 0.032 & 0.012 \\
+7 & shimmer\_apq3 & 0.032 & 0.013 \\
+8 & mfcc\_12\_mean & 0.031 & 0.007 \\
+9 & f1\_std & 0.031 & 0.022 \\
+10 & mfcc\_6\_mean & 0.030 & 0.024 \\
+\bottomrule
+\end{tabular}
+\caption{Random Forest feature importance --- ReadText (top 10)}
+\label{tab:rf-readtext-importance}
+\end{table}
+
+\subsection{Logistic Regression --- Top 20 Features}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{@{}clcc@{}}
+\toprule
+\textbf{Rank} & \textbf{Feature} & \textbf{|Coefficient|} & \textbf{Std} \\
+\midrule
+1 & f0\_max & 0.754 & 0.203 \\
+2 & hnr\_mean & 0.649 & 0.178 \\
+3 & shimmer\_apq11 & 0.553 & 0.145 \\
+4 & delta\_mfcc\_4\_mean & 0.496 & 0.163 \\
+5 & delta\_mfcc\_2\_mean & 0.492 & 0.103 \\
+6 & delta\_mfcc\_1\_mean & 0.474 & 0.273 \\
+7 & mfcc\_5\_mean & 0.470 & 0.127 \\
+8 & mfcc\_4\_mean & 0.426 & 0.233 \\
+9 & mfcc\_10\_mean & 0.418 & 0.221 \\
+10 & mfcc\_11\_mean & 0.388 & 0.192 \\
+\bottomrule
+\end{tabular}
+\caption{Logistic Regression feature importance --- ReadText (top 10)}
+\label{tab:lr-readtext-importance}
+\end{table}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{figures/fig_imp_readtext_lr.png}
+    \caption{Logistic Regression coefficient magnitudes (ReadText)}
+    \label{fig:imp-readtext-lr}
+\end{figure}
+
+\section{Dataset A --- SpontaneousDialogue Task}
+
+\subsection{Random Forest --- Top 20 Features}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{@{}clcc@{}}
+\toprule
+\textbf{Rank} & \textbf{Feature} & \textbf{Importance} & \textbf{Std} \\
+\midrule
+1 & mfcc\_5\_mean & 0.080 & 0.022 \\
+2 & shimmer\_apq11 & 0.069 & 0.007 \\
+3 & delta\_mfcc\_8\_mean & 0.051 & 0.015 \\
+4 & jitter\_local & 0.041 & 0.012 \\
+5 & delta\_mfcc\_2\_mean & 0.040 & 0.018 \\
+6 & autocorr\_harmonicity & 0.037 & 0.011 \\
+7 & shimmer\_local & 0.036 & 0.017 \\
+8 & mfcc\_1\_mean & 0.034 & 0.010 \\
+9 & f0\_std & 0.032 & 0.022 \\
+10 & f0\_mean & 0.031 & 0.013 \\
+\bottomrule
+\end{tabular}
+\caption{Random Forest feature importance --- SpontaneousDialogue (top 10)}
+\label{tab:rf-spontaneous-importance}
+\end{table}
+
+\subsection{Logistic Regression --- Top 10 Features}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{@{}clcc@{}}
+\toprule
+\textbf{Rank} & \textbf{Feature} & \textbf{|Coefficient|} & \textbf{Std} \\
+\midrule
+1 & mfcc\_5\_mean & 0.722 & 0.039 \\
+2 & delta\_mfcc\_8\_mean & 0.615 & 0.121 \\
+3 & shimmer\_apq11 & 0.559 & 0.136 \\
+4 & delta\_mfcc\_2\_mean & 0.493 & 0.196 \\
+5 & intensity\_min & 0.459 & 0.170 \\
+6 & mfcc\_3\_mean & 0.388 & 0.271 \\
+\bottomrule
+\end{tabular}
+\caption{Logistic Regression feature importance --- SpontaneousDialogue (top 6)}
+\label{tab:lr-spontaneous-importance}
+\end{table}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{figures/fig_imp_spontaneous_lr.png}
+    \caption{Logistic Regression coefficient magnitudes (Spontaneous Dialogue)}
+    \label{fig:imp-spontaneous-lr}
+\end{figure}
+
+\section{Cross-Task Feature Stability}
+
+Features that appear in top-10 for both tasks indicate robust discriminative power across different speech contexts:
+
+\begin{table}[H]
+\centering
+\begin{tabular}{@{}lcc@{}}
+\toprule
+\textbf{Feature} & \textbf{ReadText Rank} & \textbf{Spontaneous Rank} \\
+\midrule
+delta\_mfcc\_2\_mean & 2 & 5 \\
+autocorr\_harmonicity & 4 & 6 \\
+f0\_mean & 6 & 10 \\
+shimmer\_apq3/apq11 & 7 & 2 \\
+\bottomrule
+\end{tabular}
+\caption{Cross-task stable features}
+\label{tab:cross-task-features}
+\end{table}
+
+\section{Feature Category Analysis}
+
+Aggregating importance by feature category:
+
+\begin{table}[H]
+\centering
+\begin{tabular}{@{}lccc@{}}
+\toprule
+\textbf{Category} & \textbf{Features} & \textbf{ReadText (\%)} & \textbf{Spontaneous (\%)} \\
+\midrule
+MFCC & 13 & 28.4 & 32.1 \\
+Delta MFCC & 13 & 22.7 & 25.3 \\
+Pitch ($F_0$) & 4 & 15.2 & 12.8 \\
+Shimmer & 5 & 11.3 & 14.6 \\
+Formants & 6 & 9.8 & 7.2 \\
+Harmonicity & 2 & 6.1 & 4.3 \\
+Other & 5 & 6.5 & 3.7 \\
+\bottomrule
+\end{tabular}
+\caption{Aggregated feature importance by category}
+\label{tab:category-importance}
+\end{table}
+
+\begin{figure}[H]
+    \centering
+    \begin{subfigure}[b]{0.48\textwidth}
+        \includegraphics[width=\textwidth]{figures/fig_imp_readtext_cats.png}
+        \caption{ReadText}
+        \label{fig:imp-readtext-cats}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.48\textwidth}
+        \includegraphics[width=\textwidth]{figures/fig_imp_spontaneous_cats.png}
+        \caption{Spontaneous}
+        \label{fig:imp-spontaneous-cats}
+    \end{subfigure}
+    \caption{Feature importance aggregated by broad acoustic categories.}
+    \label{fig:imp-categories}
+\end{figure}

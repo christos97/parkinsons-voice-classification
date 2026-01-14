@@ -1,4 +1,4 @@
-.PHONY: help install clean extract-all extract-readtext extract-spontaneous experiments test format lint check-types train-demo-model demo demo-dev demo-install
+.PHONY: help install clean extract-all extract-readtext extract-spontaneous experiments test format lint check-types train-demo-model demo demo-dev demo-install thesis thesis-clean thesis-watch
 
 # Default target
 help:
@@ -28,6 +28,11 @@ help:
 	@echo "  make test                 Run test suite"
 	@echo "  make check-types          Run type checking with Pylance"
 	@echo "  make lint                 Run code linting"
+	@echo ""
+	@echo "Thesis (LaTeX):"
+	@echo "  make thesis               Build thesis PDF (latexmk)"
+	@echo "  make thesis-watch         Build thesis with auto-rebuild on changes"
+	@echo "  make thesis-clean         Remove LaTeX build artifacts"
 	@echo ""
 	@echo "Maintenance:"
 	@echo "  make clean                Remove generated outputs (features + results)"
@@ -234,3 +239,37 @@ info:
 	@echo ""
 	@poetry --version 2>/dev/null || echo "Poetry not installed"
 	@python --version 2>/dev/null || echo "Python not found"
+
+# ============================================================================
+# Thesis (LaTeX)
+# ============================================================================
+
+.PHONY: sync-figures
+sync-figures: ## Sync experiment figures to thesis folder
+	poetry run python scripts/sync_figures.py
+
+thesis: sync-figures
+	@echo "Building thesis PDF..."
+	@echo "Step 1/4: First pdflatex pass (generating aux files)..."
+	@cd thesis && pdflatex -interaction=nonstopmode main.tex > /dev/null 2>&1 || true
+	@echo "Step 2/4: Running bibtex (processing bibliography)..."
+	@cd thesis && bibtex main 2>&1 | grep -v "^Capacity:" | grep -v "^The " | grep -v "^Database file" || true
+	@echo "Step 3/4: Second pdflatex pass (incorporating bibliography)..."
+	@cd thesis && pdflatex -interaction=nonstopmode main.tex > /dev/null 2>&1 || true
+	@echo "Step 4/4: Third pdflatex pass (resolving cross-references)..."
+	@cd thesis && pdflatex -interaction=nonstopmode main.tex > /dev/null 2>&1
+	@echo "✓ Thesis PDF built successfully: thesis/main.pdf"
+	@cd thesis && pdfinfo main.pdf 2>/dev/null | grep "Pages:" | awk '{print "  Pages:", $$2}' || true
+	@cd thesis && grep -c '^\\bibitem\[' main.bbl 2>/dev/null | awk '{print "  Bibliography entries:", $$1}' || echo "  Bibliography entries: 0"
+
+thesis-watch:
+	@echo "Building thesis PDF with auto-rebuild (Ctrl+C to stop)..."
+	cd thesis && latexmk -pdf -pvc -interaction=nonstopmode main.tex
+
+thesis-clean:
+	@echo "Cleaning LaTeX build artifacts..."
+	@rm -f thesis/main.{aux,bbl,blg,log,out,toc,lof,lot,fls,fdb_latexmk,pdf}
+	@rm -f thesis/chapters/*.aux
+	@rm -f thesis/frontmatter/*.aux
+	@rm -f thesis/appendices/*.aux
+	@echo "✓ Cleaned all LaTeX build artifacts"

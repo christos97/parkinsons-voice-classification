@@ -1,0 +1,212 @@
+% Chapter 8: Limitations and Threats to Validity
+
+\chapter{Limitations and Threats to Validity}
+\label{ch:limitations}
+
+\section{Overview}
+
+This chapter provides a transparent assessment of the limitations and potential threats to validity in this research. Acknowledging these constraints is essential for appropriate interpretation of results and identification of future research directions.
+
+\section{Sample Size Limitations}
+
+\subsection{Dataset A: Small Subject Pool}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{@{}lc@{}}
+\toprule
+\textbf{Metric} & \textbf{Value} \\
+\midrule
+Total subjects & 37 \\
+Subjects per test fold & $\sim$7 \\
+PD subjects (minority) & 15--16 \\
+\bottomrule
+\end{tabular}
+\caption{Dataset A sample size metrics}
+\label{tab:sample-size}
+\end{table}
+
+\textbf{Implications:}
+
+\begin{itemize}
+    \item High variance in fold-level metrics (std $> 0.15$ common)
+    \item Limited statistical power for detecting small effects
+    \item Results may not generalize to broader populations
+\end{itemize}
+
+\subsection{Effect on Statistical Confidence}
+
+With 37 subjects and 5-fold CV:
+
+\begin{itemize}
+    \item Each fold has only $\sim$7 test subjects
+    \item A single misclassification shifts accuracy by $\sim$14\%
+    \item Confidence intervals are wide by design
+\end{itemize}
+
+\textbf{Mitigation:} Results focus on \textbf{relative comparisons} rather than absolute performance claims.
+
+\section{Subject Identifier Limitations}
+
+\subsection{Dataset B: Missing Subject IDs}
+
+Dataset B (PD\_SPEECH) provides no subject identifiers. This creates potential for:
+
+\begin{itemize}
+    \item \textbf{Subject leakage:} Same subject in train and test sets
+    \item \textbf{Optimistic bias:} Inflated performance estimates
+    \item \textbf{Unknown generalization:} Cannot assess new-subject performance
+\end{itemize}
+
+\begin{quote}
+\textbf{Caveat:} Results on Dataset B may be optimistic due to unknown subject overlap across folds. The absence of subject identifiers prevents validation of true out-of-subject generalization.
+\end{quote}
+
+\subsection{Comparison Limitations}
+
+Direct comparison between Dataset A (grouped CV) and Dataset B (standard CV) is confounded by:
+
+\begin{itemize}
+    \item Different CV strategies
+    \item Different feature dimensionalities (78 vs 752)
+    \item Different sample sizes (37 vs 756)
+\end{itemize}
+
+\section{Feature Extraction Limitations}
+
+\subsection{Deterministic Feature Set}
+
+The feature set was designed a priori based on literature review, not data-driven optimization. Limitations include:
+
+\begin{itemize}
+    \item \textbf{Potentially suboptimal features:} Other features may be more discriminative
+    \item \textbf{Fixed parameters:} Librosa/Parselmouth defaults used without tuning
+    \item \textbf{No feature selection:} All 78 features used without reduction
+\end{itemize}
+
+\subsection{Audio Quality Assumptions}
+
+Feature extraction assumes:
+
+\begin{itemize}
+    \item Reasonable signal-to-noise ratio
+    \item Consistent recording conditions
+    \item No severe clipping or distortion
+\end{itemize}
+
+The MDVR-KCL dataset's smartphone recordings may violate these assumptions.
+
+\section{Model Limitations}
+
+\subsection{No Hyperparameter Tuning}
+
+All models used default or fixed hyperparameters:
+
+\begin{table}[H]
+\centering
+\begin{tabular}{@{}ll@{}}
+\toprule
+\textbf{Model} & \textbf{Fixed Parameters} \\
+\midrule
+Logistic Regression & $C=1.0$, max\_iter$=1000$ \\
+SVM (RBF) & $C=1.0$, gamma$=$`scale' \\
+Random Forest & n\_estimators$=100$, max\_depth$=10$ \\
+\bottomrule
+\end{tabular}
+\caption{Fixed hyperparameters}
+\label{tab:fixed-params}
+\end{table}
+
+\textbf{Implications:}
+
+\begin{itemize}
+    \item Performance may be suboptimal
+    \item Results represent lower bounds
+    \item Tuned models might change rankings
+\end{itemize}
+
+\textbf{Rationale:} Nested CV on 37 subjects would lead to extreme variance; fixed parameters ensure reproducibility.
+
+\subsection{Classical ML Only}
+
+This thesis explicitly excludes deep learning. Potential missed opportunities:
+
+\begin{itemize}
+    \item End-to-end learning from spectrograms
+    \item Transfer learning from speech models
+    \item Attention mechanisms for temporal modeling
+\end{itemize}
+
+\textbf{Rationale:} Deep learning typically requires larger datasets and offers reduced interpretability.
+
+\section{Methodological Limitations}
+
+\subsection{No External Validation}
+
+All results use internal cross-validation. Limitations:
+
+\begin{itemize}
+    \item No held-out test set from different source
+    \item No multi-site validation
+    \item Generalization to clinical settings unknown
+\end{itemize}
+
+\subsection{Binary Classification Only}
+
+The task is limited to PD vs HC classification. Not addressed:
+
+\begin{itemize}
+    \item Disease severity prediction
+    \item Progression monitoring
+    \item Differential diagnosis (PD vs other conditions)
+\end{itemize}
+
+\subsection{Single Speech Tasks}
+
+Each task analyzed separately. Not addressed:
+
+\begin{itemize}
+    \item Task fusion strategies
+    \item Multi-task learning
+    \item Optimal task selection
+\end{itemize}
+
+\section{Threats to Validity}
+
+\subsection{Internal Validity}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{@{}llp{5cm}@{}}
+\toprule
+\textbf{Threat} & \textbf{Status} & \textbf{Mitigation} \\
+\midrule
+Subject leakage & Controlled (Dataset A) & Grouped CV \\
+Label noise & Unknown & Assumed correct \\
+Feature bugs & Possible & Unit tests, manual verification \\
+\bottomrule
+\end{tabular}
+\caption{Internal validity threats}
+\label{tab:internal-validity}
+\end{table}
+
+\subsection{External Validity}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{@{}llp{5cm}@{}}
+\toprule
+\textbf{Threat} & \textbf{Status} & \textbf{Mitigation} \\
+\midrule
+Population bias & Likely & Document dataset demographics \\
+Recording variability & Present & Standardized extraction \\
+Temporal stability & Unknown & Single recording session \\
+\bottomrule
+\end{tabular}
+\caption{External validity threats}
+\label{tab:external-validity}
+\end{table}
+
+\section{Summary}
+
+This chapter has transparently documented the limitations of this research. These constraints should inform interpretation of results and guide future work. The prioritization of methodological validity over performance optimization means that reported results, while potentially conservative, are more likely to generalize to real-world applications.

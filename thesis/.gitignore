@@ -1,0 +1,32 @@
+# LaTeX build artifacts
+*.aux
+*.bbl
+*.blg
+*.fdb_latexmk
+*.fls
+*.log
+*.out
+*.synctex.gz
+*.toc
+*.lof
+*.lot
+*.idx
+*.ilg
+*.ind
+*.nav
+*.snm
+*.vrb
+
+# Generated PDF (keep in .gitignore, generate fresh)
+# Uncomment if you want to track the PDF:
+# !main.pdf
+*.pdf
+
+# Editor backups
+*~
+*.bak
+*.swp
+
+# OS files
+.DS_Store
+Thumbs.db

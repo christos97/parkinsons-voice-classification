@@ -110,8 +110,8 @@
           Upload Voice Recording
         </h2>
         <p class="text-gray-600 mb-4">
-          Upload a WAV file of a <strong>ReadText</strong> speech task for
-          analysis.
+          Upload an audio file of a <strong>ReadText</strong> speech task for
+          analysis. All common formats supported (WAV, MP3, WebM, etc.).
         </p>
 
         <form
@@ -125,13 +125,13 @@
               for="audio_file"
               class="block text-sm font-medium text-gray-700 mb-2"
             >
-              Audio File (WAV format)
+              Audio File (any format)
             </label>
             <input
               type="file"
               id="audio_file"
               name="audio_file"
-              accept=".wav,audio/wav"
+              accept="audio/*"
               required
               class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
             />
@@ -314,8 +314,15 @@
           };
 
           mediaRecorder.onstop = () => {
-            const audioBlob = new Blob(audioChunks, { type: "audio/webm" });
-            convertToWav(audioBlob);
+            // Store raw WebM blob (no conversion needed - backend handles it)
+            recordedBlob = new Blob(audioChunks, { type: "audio/webm" });
+
+            // Show playback
+            const audioURL = URL.createObjectURL(recordedBlob);
+            $("#recorded-audio").attr("src", audioURL);
+            $("#playback-section").removeClass("hidden");
+
+            // Cleanup
             stream.getTracks().forEach((track) => track.stop());
             clearInterval(timerInterval);
           };
@@ -367,69 +374,6 @@
         }
       }
 
-      // Convert audio to WAV format
-      async function convertToWav(blob) {
-        try {
-          const arrayBuffer = await blob.arrayBuffer();
-          const audioContext = new AudioContext({ sampleRate: 22050 });
-          const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
-
-          // Convert to mono if stereo
-          const channelData =
-            audioBuffer.numberOfChannels === 1
-              ? audioBuffer.getChannelData(0)
-              : audioBuffer.getChannelData(0); // Take first channel
-
-          // Create WAV file
-          const wavBuffer = encodeWAV(channelData, audioBuffer.sampleRate);
-          recordedBlob = new Blob([wavBuffer], { type: "audio/wav" });
-
-          // Show playback
-          const audioURL = URL.createObjectURL(recordedBlob);
-          $("#recorded-audio").attr("src", audioURL);
-          $("#playback-section").removeClass("hidden");
-        } catch (err) {
-          console.error("Error converting audio:", err);
-          alert("Error processing audio. Please try again.");
-        }
-      }
-
-      // Encode PCM to WAV format
-      function encodeWAV(samples, sampleRate) {
-        const buffer = new ArrayBuffer(44 + samples.length * 2);
-        const view = new DataView(buffer);
-
-        // WAV header
-        writeString(view, 0, "RIFF");
-        view.setUint32(4, 36 + samples.length * 2, true);
-        writeString(view, 8, "WAVE");
-        writeString(view, 12, "fmt ");
-        view.setUint32(16, 16, true); // PCM chunk size
-        view.setUint16(20, 1, true); // PCM format
-        view.setUint16(22, 1, true); // Mono
-        view.setUint32(24, sampleRate, true);
-        view.setUint32(28, sampleRate * 2, true); // Byte rate
-        view.setUint16(32, 2, true); // Block align
-        view.setUint16(34, 16, true); // 16-bit
-        writeString(view, 36, "data");
-        view.setUint32(40, samples.length * 2, true);
-
-        // PCM samples
-        let offset = 44;
-        for (let i = 0; i < samples.length; i++, offset += 2) {
-          const s = Math.max(-1, Math.min(1, samples[i]));
-          view.setInt16(offset, s < 0 ? s * 0x8000 : s * 0x7fff, true);
-        }
-
-        return buffer;
-      }
-
-      function writeString(view, offset, string) {
-        for (let i = 0; i < string.length; i++) {
-          view.setUint8(offset + i, string.charCodeAt(i));
-        }
-      }
-
       // Reset recording
       function resetRecording() {
         recordedBlob = null;
@@ -452,6 +396,7 @@
 
         $("#loading-overlay").removeClass("hidden");
 
+        // Submit via form to maintain current URL navigation behavior
         const form = document.createElement("form");
         form.method = "POST";
         form.action = "{{ url_for('analyze') }}";
@@ -463,7 +408,7 @@
 
         const dataTransfer = new DataTransfer();
         dataTransfer.items.add(
-          new File([recordedBlob], "recording.wav", { type: "audio/wav" })
+          new File([recordedBlob], "recording.webm", { type: "audio/webm" })
         );
         fileInput.files = dataTransfer.files;
 
@@ -478,7 +423,7 @@
           const fileInput = $("#audio_file")[0];
           if (!fileInput.files.length) {
             e.preventDefault();
-            alert("Please select a WAV file");
+            alert("Please select an audio file");
             return false;
           }
 

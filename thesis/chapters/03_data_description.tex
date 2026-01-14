@@ -1,0 +1,175 @@
+% Chapter 3: Data Description
+
+\chapter{Data Description}
+\label{ch:data-description}
+
+\section{Overview}
+
+This thesis utilizes two distinct datasets for Parkinson's Disease voice classification:
+
+\begin{table}[H]
+\centering
+\begin{tabular}{@{}lll@{}}
+\toprule
+\textbf{Property} & \textbf{Dataset A (MDVR-KCL)} & \textbf{Dataset B (PD\_SPEECH)} \\
+\midrule
+Data Type & Raw audio (WAV) & Pre-extracted features (CSV) \\
+Source & Zenodo & Kaggle \\
+Unit of Analysis & Subject (multiple recordings) & Sample (row) \\
+Subject IDs Available & Yes & No \\
+Total Samples & 73 recordings (37 subjects) & 756 samples \\
+\bottomrule
+\end{tabular}
+\caption{Dataset comparison summary}
+\label{tab:dataset-comparison}
+\end{table}
+
+\section{Dataset A: MDVR-KCL}
+
+\subsection{Source and Collection}
+
+The Mobile Device Voice Recordings from King's College London (MDVR-KCL) dataset was collected for PD research using smartphone recordings. Available on Zenodo with DOI: \texttt{10.5281/zenodo.2867215}.
+
+\subsection{Speech Tasks}
+
+The dataset includes two distinct speech tasks:
+
+\begin{table}[H]
+\centering
+\begin{tabular}{@{}llccc@{}}
+\toprule
+\textbf{Task} & \textbf{Description} & \textbf{Subjects} & \textbf{HC} & \textbf{PD} \\
+\midrule
+ReadText & Reading a standardized passage & 37 & 21 & 16 \\
+SpontaneousDialogue & Free conversation & 36 & 21 & 15 \\
+\bottomrule
+\end{tabular}
+\caption{Speech tasks in MDVR-KCL dataset}
+\label{tab:speech-tasks}
+\end{table}
+
+\textbf{Note:} Subject ID18 is missing from the SpontaneousDialogue task.
+
+\subsection{Class Distribution}
+
+\begin{verbatim}
+ReadText Task:
++-- HC (Healthy Control): 21 subjects (56.8%)
++-- PD (Parkinson's Disease): 16 subjects (43.2%)
+
+SpontaneousDialogue Task:
++-- HC (Healthy Control): 21 subjects (58.3%)
++-- PD (Parkinson's Disease): 15 subjects (41.7%)
+\end{verbatim}
+
+\textbf{Imbalance Ratio:} Moderate ($\sim$57:43), addressed via class weighting experiments.
+
+\subsection{File Structure}
+
+\begin{verbatim}
+DATASET_MDVR_KCL/
++-- ReadText/
+|   +-- HC/
+|   |   +-- IDxx_hc_*.wav
+|   +-- PD/
+|       +-- IDxx_pd_*.wav
++-- SpontaneousDialogue/
+    +-- HC/
+    +-- PD/
+\end{verbatim}
+
+\subsection{Known Anomalies}
+
+\begin{itemize}
+    \item \textbf{ID22:} Non-standard filename pattern (handled in parsing code)
+    \item \textbf{ID18:} Missing from SpontaneousDialogue task
+    \item Multiple recordings per subject (requires grouped CV)
+\end{itemize}
+
+\subsection{Feature Correlation Analysis}
+
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{fig_heatmap_readtext.png}
+    \caption{Feature correlation heatmap (ReadText task)}
+    \label{fig:heatmap-readtext}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{fig_heatmap_spontaneous.png}
+    \caption{Feature correlation heatmap (Spontaneous Dialogue task)}
+    \label{fig:heatmap-spontaneous}
+\end{figure}
+
+\section{Dataset B: PD Speech Features}
+
+\subsection{Source}
+
+Pre-extracted acoustic features from Kaggle, containing 752 features per sample.
+
+\subsection{Class Distribution}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{@{}lcc@{}}
+\toprule
+\textbf{Class} & \textbf{Samples} & \textbf{Percentage} \\
+\midrule
+HC (0) & 192 & 25.4\% \\
+PD (1) & 564 & 74.6\% \\
+\bottomrule
+\end{tabular}
+\caption{Class distribution in Dataset B}
+\label{tab:dataset-b-distribution}
+\end{table}
+
+\textbf{Imbalance Ratio:} Severe ($\sim$25:75), necessitating class weighting.
+
+\subsection{Feature Categories}
+
+The 752 features span multiple acoustic domains:
+
+\begin{table}[H]
+\centering
+\begin{tabular}{@{}lcl@{}}
+\toprule
+\textbf{Category} & \textbf{Count} & \textbf{Description} \\
+\midrule
+Baseline Features & 22 & Jitter, shimmer, HNR variants \\
+Intensity & 3 & Intensity statistics \\
+Formants & 36 & $F_1$--$F_4$ bandwidth features \\
+MFCCs & 84 & MFCC coefficients \\
+Wavelet & 182 & Wavelet decomposition features \\
+TQWT & 432 & Tunable Q-factor features \\
+\bottomrule
+\end{tabular}
+\caption{Feature categories in Dataset B}
+\label{tab:dataset-b-features}
+\end{table}
+
+\subsection{Important Caveat}
+
+\begin{quote}
+\textbf{Warning:} No subject identifiers are available in Dataset B. Results may be optimistic due to potential subject overlap across cross-validation folds. The absence of subject identifiers prevents validation of true out-of-subject generalization.
+\end{quote}
+
+\section{Dataset Comparison}
+
+\subsection{Key Differences}
+
+\begin{enumerate}
+    \item \textbf{Data format:} Raw audio vs.\ pre-extracted features
+    \item \textbf{Sample size:} 37 subjects vs.\ 756 samples
+    \item \textbf{Subject tracking:} Available vs.\ unavailable
+    \item \textbf{Feature dimensionality:} 47--78 (extracted) vs.\ 752 (provided)
+\end{enumerate}
+
+\subsection{Implications for Evaluation}
+
+\begin{itemize}
+    \item Dataset A enables \textbf{grouped cross-validation} (more conservative, realistic estimates)
+    \item Dataset B requires \textbf{standard cross-validation} (potentially optimistic estimates)
+    \item Direct comparison is confounded by these methodological differences
+\end{itemize}

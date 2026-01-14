@@ -5,7 +5,16 @@ domain: "Speech Signal Processing / Classical Machine Learning"
 task: "Binary classification (Parkinson’s Disease vs Healthy Controls)"
 language: "English"
 last_updated: "2026-01-14"
-
+thesis:
+  source_of_truth: "thesis/"
+  build_command: "make thesis"
+  chapters: "thesis/chapters/*.tex"
+  appendices: "thesis/appendices/*.tex"
+  bibliography: "thesis/references/references.bib"
+  deprecated_markdown: "docs/v2/ (read-only archive, see docs/v2/DEPRECATED.md)"
+  citation_rule: >
+    All external references must be cited via BibTeX entries in references.bib.
+    Internal artifacts (outputs/, assets/, docs/v2/) are never cited as external sources.
 repository_state:
   datasets_downloaded: true
   codebase_status: "Complete (experiments run, thesis chapters 3–8 drafted)"
@@ -150,6 +159,40 @@ This is a **research-only project**.
 
 ✅ Research demonstration (Flask demo app) exists for thesis defense purposes only.
    See `docs/WEB_APP_ARCHITECTURE.md` for architecture details.
+
+---
+
+## 0.1 Thesis Content Source of Truth
+
+> **The LaTeX thesis under `thesis/` is the single authoritative source for all thesis content.**
+
+### Authoritative Sources
+
+| Content Type | Location | Command |
+|--------------|----------|---------|
+| Thesis chapters | `thesis/chapters/*.tex` | `make thesis` |
+| Appendices | `thesis/appendices/*.tex` | `make thesis` |
+| Bibliography | `thesis/references/references.bib` | — |
+
+### Deprecated Sources
+
+| Location | Status |
+|----------|--------|
+| `docs/v2/*.md` | **DEPRECATED** — Read-only archive (see `docs/v2/DEPRECATED.md`) |
+
+### Citation Rules
+
+✅ External papers, datasets, and software **must** be cited via BibTeX in `references.bib`  
+✅ Use `\cite{}` commands in LaTeX for all external references  
+❌ Never cite internal artifacts (`outputs/`, `assets/`, `docs/v2/`) as external sources  
+❌ Never cite GitHub URLs, local file paths, or markdown files as bibliography entries  
+
+### Thesis Editing Rules
+
+✅ Edit **only** LaTeX files under `thesis/` for thesis content changes  
+✅ Add new references to `thesis/references/references.bib`  
+❌ Do **not** edit deprecated markdown files in `docs/v2/`  
+❌ Do **not** duplicate content between markdown and LaTeX  
 
 ---
 

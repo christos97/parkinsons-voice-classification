@@ -1,0 +1,192 @@
+% Chapter 9: Conclusion
+
+\chapter{Conclusion}
+\label{ch:conclusion}
+
+\section{Summary of Work}
+
+This thesis investigated voice-based classification of Parkinson's Disease (PD) versus healthy controls (HC) using classical machine learning approaches. The work addressed key methodological challenges in the field, including subject-level data leakage, class imbalance, and feature representation.
+
+\subsection{Contributions}
+
+\begin{enumerate}
+    \item \textbf{Rigorous Evaluation Framework}
+    \begin{itemize}
+        \item Implemented grouped stratified cross-validation to prevent subject leakage
+        \item Systematic 2$\times$2 factorial design (features $\times$ class weighting)
+        \item Transparent reporting of all conditions with confidence intervals
+    \end{itemize}
+    
+    \item \textbf{Feature Engineering Investigation}
+    \begin{itemize}
+        \item Extended feature set from 47 to 78 acoustic features
+        \item Demonstrated +8.7 percentage point ROC-AUC improvement
+        \item Identified most discriminative features ($F_0$, MFCCs, harmonicity)
+    \end{itemize}
+    
+    \item \textbf{Class Weighting Analysis}
+    \begin{itemize}
+        \item Evaluated \texttt{class\_weight="balanced"} across all models
+        \item Found modest effects on moderately imbalanced data
+        \item Documented interaction between features and weighting
+    \end{itemize}
+    
+    \item \textbf{Reproducible Pipeline}
+    \begin{itemize}
+        \item CLI-based tools for feature extraction and experiments
+        \item Fixed random seeds and documented parameters
+        \item Complete code repository with documentation
+    \end{itemize}
+\end{enumerate}
+
+\section{Key Findings}
+
+\subsection{Primary Results}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{@{}lp{8cm}@{}}
+\toprule
+\textbf{Finding} & \textbf{Evidence} \\
+\midrule
+Best ROC-AUC: $0.873 \pm 0.137$ & Random Forest, Extended Features \\
+Feature extension improves performance & +8.7pp ROC-AUC (baseline $\rightarrow$ extended) \\
+Random Forest outperforms other models & Highest ROC-AUC across all conditions \\
+Grouped CV is essential & Prevents optimistic bias from subject leakage \\
+\bottomrule
+\end{tabular}
+\caption{Primary research findings}
+\label{tab:primary-findings}
+\end{table}
+
+\subsection{Best Configuration}
+
+\begin{verbatim}
+Model:           Random Forest
+Features:        Extended (78)
+Class Weighting: None
+ROC-AUC:         0.873 ± 0.137
+Accuracy:        82.6% ± 12.2%
+\end{verbatim}
+
+\subsection{Feature Importance Insights}
+
+The most discriminative features for PD detection include:
+
+\begin{enumerate}
+    \item \textbf{f0\_max} --- Maximum fundamental frequency (pitch ceiling)
+    \item \textbf{delta\_mfcc\_2\_mean} --- Spectral dynamics
+    \item \textbf{autocorr\_harmonicity} --- Voice quality measure
+    \item \textbf{shimmer\_apq3} --- Amplitude perturbation
+    \item \textbf{intensity\_mean} --- Overall vocal intensity
+\end{enumerate}
+
+These align with known clinical manifestations of PD: reduced pitch range, monotone speech, and hypophonia.
+
+\section{Research Questions Answered}
+
+\subsection{RQ1: How do classical ML models perform on PD voice classification?}
+
+Classical ML achieves \textbf{ROC-AUC up to 0.873} with Random Forest on the MDVR-KCL dataset using grouped cross-validation. This demonstrates the feasibility of voice-based PD screening, though performance varies substantially across folds due to small sample size.
+
+\subsection{RQ2: Does feature set extension improve classification performance?}
+
+\textbf{Yes.} Extending from 47 baseline features to 78 features improved ROC-AUC by \textbf{+8.7 percentage points} for Random Forest. The additional features capturing spectral variability (MFCC std), temporal dynamics (delta-delta MFCC), and spectral shape contributed to this improvement.
+
+\subsection{RQ3: Does class weighting improve performance on imbalanced datasets?}
+
+\textbf{Modestly.} On Dataset A (57:43 imbalance), class weighting improved Random Forest ROC-AUC by +3.5pp with baseline features. However, effects were inconsistent across models, and no benefit was observed when combined with extended features.
+
+\subsection{RQ4: How do results compare between grouped and standard CV?}
+
+Dataset B (standard CV, no subject IDs) showed higher absolute performance than Dataset A (grouped CV), consistent with potential optimistic bias from subject leakage. \textbf{Grouped CV provides more conservative but more realistic estimates} of out-of-subject generalization.
+
+\section{Implications}
+
+\subsection{For Researchers}
+
+\begin{itemize}
+    \item \textbf{Use grouped CV} when multiple recordings per subject exist
+    \item \textbf{Include variability features} (std, delta-delta) in feature sets
+    \item \textbf{Report all conditions} rather than cherry-picking best results
+    \item \textbf{Acknowledge limitations} transparently
+\end{itemize}
+
+\subsection{For Practitioners}
+
+\begin{itemize}
+    \item Voice-based PD screening is feasible but not yet clinical-grade
+    \item Random Forest provides a robust baseline for similar tasks
+    \item Feature interpretability supports clinical understanding
+    \item Results require validation on independent cohorts
+\end{itemize}
+
+\subsection{For Dataset Creators}
+
+\begin{itemize}
+    \item \textbf{Always include subject identifiers} to enable proper CV
+    \item Document recording conditions and equipment
+    \item Provide demographic information
+    \item Consider longitudinal designs
+\end{itemize}
+
+\section{Limitations Recap}
+
+Key limitations that bound the interpretation of results:
+
+\begin{enumerate}
+    \item \textbf{Small sample size} (37 subjects) creates high variance
+    \item \textbf{No hyperparameter tuning} may underestimate potential
+    \item \textbf{Single dataset source} limits generalization claims
+    \item \textbf{Binary classification only} --- no severity prediction
+    \item \textbf{No external validation} on independent test set
+\end{enumerate}
+
+\section{Future Directions}
+
+\subsection{Short-term Extensions}
+
+\begin{itemize}
+    \item Hyperparameter optimization with nested CV
+    \item Feature selection to reduce dimensionality
+    \item Multi-task fusion (ReadText + SpontaneousDialogue)
+    \item Additional acoustic features (wavelets, TQWT)
+\end{itemize}
+
+\subsection{Medium-term Research}
+
+\begin{itemize}
+    \item External validation on independent datasets
+    \item Deep learning with appropriate regularization
+    \item Longitudinal tracking of disease progression
+    \item Multi-class classification (severity levels)
+\end{itemize}
+
+\subsection{Long-term Vision}
+
+\begin{itemize}
+    \item Integration into smartphone applications
+    \item Multi-modal biomarkers (voice + gait + tremor)
+    \item Personalized baselines for individual tracking
+    \item Clinical validation studies
+\end{itemize}
+
+\section{Closing Remarks}
+
+This thesis demonstrates that \textbf{voice-based Parkinson's Disease classification is feasible} using classical machine learning with carefully engineered acoustic features. The \textbf{+8.7pp improvement} from feature extension highlights the importance of capturing speech dynamics beyond simple statistical summaries.
+
+However, the field faces significant challenges:
+
+\begin{itemize}
+    \item Small datasets require rigorous methodology
+    \item Subject identity must be tracked for valid evaluation
+    \item Clinical deployment requires extensive validation
+\end{itemize}
+
+By prioritizing \textbf{methodological validity over performance optimization}, this work provides a foundation for future research that can build toward clinically useful applications. The transparent documentation of limitations ensures that results are interpreted appropriately and that subsequent studies can address identified gaps.
+
+\vspace{1cm}
+
+\begin{quote}
+\textit{``The goal of rigorous science is not to claim perfection, but to understand the boundaries of our knowledge.''}
+\end{quote}

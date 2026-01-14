@@ -1,0 +1,81 @@
+% Chapter 1: Introduction
+
+\chapter{Introduction}
+\label{ch:introduction}
+
+\section{Background and Motivation}
+
+Parkinson's Disease (PD) is the second most prevalent neurodegenerative disorder globally, affecting approximately 1\% of the population over 60 years of age. Early and accurate detection remains a critical clinical challenge, as motor symptoms often manifest only after substantial neurological damage has occurred. Among the earliest observable symptoms are changes in speech and voice production, which can precede motor symptoms by several years.
+
+Voice-based biomarkers offer a promising non-invasive avenue for PD detection \citep{little2009suitability, tsanas2010accurate}. The disease affects the laryngeal muscles and respiratory control, resulting in measurable changes to prosodic features (pitch, intensity, rhythm) and spectral characteristics (formants, harmonics). These acoustic signatures can be captured using standard recording equipment, making voice analysis a cost-effective and accessible screening approach.
+
+\section{Problem Statement}
+
+Despite advances in voice-based PD classification, several methodological challenges persist:
+
+\begin{enumerate}
+    \item \textbf{Small sample sizes} in raw audio datasets limit model generalizability
+    \item \textbf{Subject identity leakage} when multiple recordings per subject are split across folds
+    \item \textbf{Class imbalance} between PD and healthy control (HC) groups
+    \item \textbf{Feature representation choices} significantly impact classification performance
+\end{enumerate}
+
+This thesis addresses these challenges through a rigorous experimental framework that prioritizes methodological validity over raw performance metrics.
+
+\section{Research Objectives}
+
+The primary objectives of this research are:
+
+\begin{enumerate}
+    \item \textbf{Develop a reproducible pipeline} for extracting acoustic features from voice recordings
+    \item \textbf{Evaluate classical machine learning models} (Logistic Regression, SVM, Random Forest) for PD vs HC classification
+    \item \textbf{Compare performance} across two distinct datasets with different characteristics
+    \item \textbf{Investigate the impact} of feature set extension (47 $\rightarrow$ 78 features) through controlled ablation
+    \item \textbf{Assess the effect} of class weighting on imbalanced datasets
+\end{enumerate}
+
+\section{Contributions}
+
+This thesis makes the following contributions:
+
+\begin{itemize}
+    \item A \textbf{subject-grouped cross-validation framework} that prevents data leakage, a common pitfall in multi-recording voice datasets.
+    \item A \textbf{controlled feature ablation study} demonstrating substantial ROC-AUC improvements (+23pp) by extending the feature set from 47 to 78 features for specific speech tasks.
+    \item \textbf{Task-specific analysis} revealing that spontaneous speech yields higher classification performance (ROC-AUC 0.857) compared to read speech (ROC-AUC 0.822).
+    \item \textbf{Benchmarking analysis} contrasting rigorous subject-grouped performance (Dataset A) against optimistic estimates from larger, unstratified public datasets (Dataset B).
+\end{itemize}
+
+\section{Thesis Organization}
+
+The remainder of this thesis is organized as follows:
+
+\begin{table}[H]
+\centering
+\begin{tabular}{@{}llp{8cm}@{}}
+\toprule
+\textbf{Chapter} & \textbf{Title} & \textbf{Description} \\
+\midrule
+2 & Literature Review & Survey of voice-based PD detection methods \\
+3 & Data Description & Detailed analysis of datasets used \\
+4 & Methodology & Feature extraction and ML pipeline design \\
+5 & Experimental Design & Cross-validation and evaluation protocols \\
+6 & Results & Quantitative findings across all conditions \\
+7 & Discussion & Interpretation and comparison with literature \\
+8 & Limitations & Constraints and threats to validity \\
+9 & Conclusion & Summary and future directions \\
+\bottomrule
+\end{tabular}
+\caption{Thesis chapter overview}
+\label{tab:thesis-organization}
+\end{table}
+
+\section{Scope Boundaries}
+
+This research is explicitly bounded by the following constraints:
+
+\begin{itemize}
+    \item \textbf{Binary classification only} (PD vs HC) --- no severity prediction
+    \item \textbf{Classical ML only} --- no deep learning or end-to-end models
+    \item \textbf{Research context only} --- no clinical deployment or diagnostic claims
+    \item \textbf{Reproducibility prioritized} --- over leaderboard-style accuracy maximization
+\end{itemize}

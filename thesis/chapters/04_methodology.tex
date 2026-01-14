@@ -1,0 +1,252 @@
+% Chapter 4: Methodology
+
+\chapter{Methodology}
+\label{ch:methodology}
+
+\section{Overview}
+
+This chapter describes the feature extraction pipeline, machine learning models, and evaluation framework used in this thesis. The methodology emphasizes reproducibility and methodological rigor over raw performance optimization.
+
+\section{Feature Extraction Pipeline}
+
+\subsection{Pipeline Architecture}
+
+\begin{figure}[H]
+\centering
+\begin{verbatim}
++-----------------+     +------------------+     +-----------------+
+|  Raw Audio      | --> | Feature          | --> | Feature         |
+|  (WAV files)    |     | Extraction       |     | Matrix (X, y)   |
++-----------------+     +------------------+     +-----------------+
+                               |
+                               v
+                    +----------------------+
+                    | * Prosodic Features  |
+                    | * Spectral Features  |
+                    +----------------------+
+\end{verbatim}
+\caption{Feature extraction pipeline architecture}
+\label{fig:pipeline-architecture}
+\end{figure}
+
+\subsection{Audio Preprocessing}
+
+Prior to feature extraction:
+
+\begin{enumerate}
+    \item \textbf{Load audio} at native sample rate (typically 44.1 kHz)
+    \item \textbf{Convert to mono} if stereo
+    \item \textbf{Normalize amplitude} to $[-1, 1]$ range
+    \item \textbf{Trim silence} using energy-based detection
+\end{enumerate}
+
+\subsection{Prosodic Features (21 features)}
+
+Prosodic features capture suprasegmental voice characteristics:
+
+\begin{table}[H]
+\centering
+\begin{tabular}{@{}lcll@{}}
+\toprule
+\textbf{Feature Group} & \textbf{Count} & \textbf{Features} & \textbf{Tool} \\
+\midrule
+Pitch ($F_0$) & 4 & mean, std, min, max & Parselmouth \\
+Jitter & 3 & local, RAP, PPQ5 & Parselmouth \\
+Shimmer & 5 & local, APQ3, APQ5, APQ11, DDA & Parselmouth \\
+Harmonicity & 2 & HNR mean, autocorr & Parselmouth \\
+Intensity & 3 & mean, std, range & Parselmouth \\
+Formants & 6 & $F_1$--$F_3$ mean, $F_1$--$F_3$ std & Parselmouth \\
+\bottomrule
+\end{tabular}
+\caption{Prosodic feature breakdown}
+\label{tab:prosodic-features}
+\end{table}
+
+\subsection{Spectral Features}
+
+Spectral features capture frequency-domain characteristics using librosa.
+
+\subsubsection{Baseline Spectral Features (26 features)}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{@{}lcp{7cm}@{}}
+\toprule
+\textbf{Feature} & \textbf{Count} & \textbf{Description} \\
+\midrule
+MFCC mean & 13 & Mean of MFCCs 0--12 \\
+Delta MFCC mean & 13 & Mean of first-order derivatives \\
+\bottomrule
+\end{tabular}
+\caption{Baseline spectral features}
+\label{tab:baseline-spectral}
+\end{table}
+
+\subsubsection{Extended Spectral Features (57 features)}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{@{}lcp{7cm}@{}}
+\toprule
+\textbf{Feature} & \textbf{Count} & \textbf{Description} \\
+\midrule
+MFCC mean & 13 & Mean of MFCCs 0--12 \\
+\textbf{MFCC std} & \textbf{13} & \textbf{Standard deviation of MFCCs} \\
+Delta MFCC mean & 13 & First-order derivatives \\
+\textbf{Delta-Delta MFCC mean} & \textbf{13} & \textbf{Second-order derivatives} \\
+\textbf{Spectral shape} & \textbf{5} & \textbf{Centroid, bandwidth, rolloff, flatness, ZCR} \\
+\bottomrule
+\end{tabular}
+\caption{Extended spectral features (new features in bold)}
+\label{tab:extended-spectral}
+\end{table}
+
+\subsection{Total Feature Counts}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{@{}lccc@{}}
+\toprule
+\textbf{Configuration} & \textbf{Prosodic} & \textbf{Spectral} & \textbf{Total} \\
+\midrule
+Baseline & 21 & 26 & \textbf{47} \\
+Extended & 21 & 57 & \textbf{78} \\
+\bottomrule
+\end{tabular}
+\caption{Total feature counts by configuration}
+\label{tab:feature-counts}
+\end{table}
+
+\section{Feature Set Comparison}
+
+\subsection{Rationale for Extended Features}
+
+The extended feature set was designed as a \textbf{controlled ablation study}:
+
+\begin{enumerate}
+    \item \textbf{MFCC std (13):} Captures within-utterance variability---important for detecting instability in PD speech
+    \item \textbf{Delta-Delta MFCC (13):} Captures acceleration of spectral changes---sensitive to temporal dynamics
+    \item \textbf{Spectral shape (5):} Provides complementary global spectral descriptors
+\end{enumerate}
+
+\section{Machine Learning Models}
+
+\subsection{Model Selection Rationale}
+
+Three classical ML models were selected for:
+\begin{itemize}
+    \item \textbf{Interpretability} --- critical for clinical applications
+    \item \textbf{Robustness} --- well-understood behavior on small datasets
+    \item \textbf{Diversity} --- linear, kernel-based, and ensemble approaches
+\end{itemize}
+
+\subsection{Model Specifications}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{@{}lll@{}}
+\toprule
+\textbf{Model} & \textbf{Type} & \textbf{Key Parameters} \\
+\midrule
+Logistic Regression & Linear & $C=1.0$, max\_iter$=1000$ \\
+SVM (RBF) & Kernel & $C=1.0$, gamma$=$`scale' \\
+Random Forest & Ensemble & n\_estimators$=100$, max\_depth$=10$ \\
+\bottomrule
+\end{tabular}
+\caption{Model specifications}
+\label{tab:model-specs}
+\end{table}
+
+\subsection{Class Weighting}
+
+Class imbalance is addressed via \texttt{class\_weight} parameter:
+
+\begin{lstlisting}[language=Python]
+# Unweighted (baseline)
+class_weight = None
+
+# Weighted
+class_weight = "balanced"  # Inversely proportional to class frequencies
+\end{lstlisting}
+
+All three models support the \texttt{class\_weight} parameter natively.
+
+\section{ML Pipeline Architecture}
+
+\subsection{Pipeline Structure}
+
+\begin{lstlisting}[language=Python]
+Pipeline([
+    ('scaler', StandardScaler()),
+    ('classifier', Model(class_weight=...))
+])
+\end{lstlisting}
+
+\subsection{Standardization}
+
+All features are standardized to zero mean and unit variance:
+
+\begin{equation}
+z = \frac{x - \mu}{\sigma}
+\end{equation}
+
+Standardization is fitted \textbf{only on training data} and applied to test data to prevent leakage.
+
+\section{Evaluation Framework}
+
+\subsection{Cross-Validation Strategy}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{@{}llcl@{}}
+\toprule
+\textbf{Dataset} & \textbf{Strategy} & \textbf{Folds} & \textbf{Grouping} \\
+\midrule
+Dataset A & GroupKFold + Stratified & 5 & By subject\_id \\
+Dataset B & StratifiedKFold & 5 & None (unavailable) \\
+\bottomrule
+\end{tabular}
+\caption{Cross-validation strategies}
+\label{tab:cv-strategies}
+\end{table}
+
+\subsection{Evaluation Metrics}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{@{}lp{4.5cm}p{5cm}@{}}
+\toprule
+\textbf{Metric} & \textbf{Formula} & \textbf{Interpretation} \\
+\midrule
+Accuracy & $\frac{TP+TN}{TP+TN+FP+FN}$ & Overall correctness \\
+Precision & $\frac{TP}{TP+FP}$ & Positive predictive value \\
+Recall & $\frac{TP}{TP+FN}$ & Sensitivity \\
+F1 Score & $\frac{2 \cdot P \cdot R}{P+R}$ & Harmonic mean of P and R \\
+ROC-AUC & Area under ROC curve & Discrimination ability \\
+\bottomrule
+\end{tabular}
+\caption{Evaluation metrics}
+\label{tab:metrics}
+\end{table}
+
+\textbf{Primary metric:} ROC-AUC (threshold-independent, handles imbalance)
+
+\section{Experimental Conditions}
+
+\subsection{\texorpdfstring{2$\times$2 Factorial Design}{2x2 Factorial Design}}
+
+The experiments follow a 2$\times$2 factorial design:
+
+\begin{table}[H]
+\centering
+\begin{tabular}{@{}lcc@{}}
+\toprule
+ & \textbf{Baseline (47)} & \textbf{Extended (78)} \\
+\midrule
+\textbf{Unweighted} & Condition 1 & Condition 2 \\
+\textbf{Weighted} & Condition 3 & Condition 4 \\
+\bottomrule
+\end{tabular}
+\caption{2$\times$2 factorial design}
+\label{tab:factorial-design}
+\end{table}

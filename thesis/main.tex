@@ -1,0 +1,210 @@
+% Parkinson's Disease Voice Classification - MSc Thesis
+% Main document file
+
+\documentclass[12pt,a4paper,twoside]{report}
+
+%% ============================================================================
+%% PACKAGES
+%% ============================================================================
+
+% Encoding and fonts
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+
+% Language
+\usepackage[english]{babel}
+
+% Page layout
+\usepackage[
+    top=2.5cm,
+    bottom=2.5cm,
+    left=3cm,
+    right=2.5cm,
+    headheight=15pt
+]{geometry}
+
+% Headers and footers
+\usepackage{fancyhdr}
+
+% Graphics and figures
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{subcaption}
+
+% Tables
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{multirow}
+\usepackage{array}
+
+% Math
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm}
+
+% Code listings
+\usepackage{listings}
+\usepackage{xcolor}
+
+% Hyperlinks
+\usepackage[
+    colorlinks=true,
+    linkcolor=blue,
+    citecolor=blue,
+    urlcolor=blue,
+    bookmarksdepth=3,
+    pdfencoding=auto
+]{hyperref}
+\usepackage{bookmark}
+
+% Bibliography
+\usepackage[numbers,sort&compress]{natbib}
+
+% Miscellaneous
+\usepackage{enumitem}
+\usepackage{parskip}
+\usepackage{setspace}
+
+%% ============================================================================
+%% CONFIGURATION
+%% ============================================================================
+
+% Line spacing
+\onehalfspacing
+
+% Code listing style
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,
+    breaklines=true,
+    captionpos=b,
+    keepspaces=true,
+    numbers=left,
+    numbersep=5pt,
+    showspaces=false,
+    showstringspaces=false,
+    showtabs=false,
+    tabsize=2,
+    frame=single
+}
+\lstset{style=mystyle}
+
+% Python style for code
+\lstdefinelanguage{Python}{
+    keywords={def, class, return, if, elif, else, for, while, import, from, as, with, try, except, raise, True, False, None, and, or, not, in, is, lambda, yield, pass, break, continue, global, nonlocal, assert, del},
+    keywordstyle=\color{blue}\bfseries,
+    ndkeywords={self, __init__, __name__, print, range, len, int, str, float, list, dict, set, tuple},
+    ndkeywordstyle=\color{magenta},
+    sensitive=true,
+    comment=[l]{\#},
+    morecomment=[s]{'''}{'''},
+    morecomment=[s]{"""}{"""},
+    commentstyle=\color{codegreen}\itshape,
+    stringstyle=\color{codepurple},
+    morestring=[b]',
+    morestring=[b]"
+}
+
+% Header style
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[LE,RO]{\thepage}
+\fancyhead[RE]{\nouppercase{\leftmark}}
+\fancyhead[LO]{\nouppercase{\rightmark}}
+\renewcommand{\headrulewidth}{0.4pt}
+
+% Chapter heading style
+\usepackage{titlesec}
+\titleformat{\chapter}[display]
+    {\normalfont\huge\bfseries}
+    {\chaptertitlename\ \thechapter}
+    {20pt}
+    {\Huge}
+
+% Graphics path
+\graphicspath{{figures/}{../outputs/plots/}{../assets/images/}}
+
+%% ============================================================================
+%% DOCUMENT METADATA
+%% ============================================================================
+
+\title{Voice-Based Classification of Parkinson's Disease\\Using Classical Machine Learning}
+\author{[Author Name]}
+\date{January 2026}
+
+%% ============================================================================
+%% DOCUMENT START
+%% ============================================================================
+
+\begin{document}
+
+%% ----------------------------------------------------------------------------
+%% FRONT MATTER
+%% ----------------------------------------------------------------------------
+
+\pagenumbering{roman}
+
+% Title page
+\IfFileExists{frontmatter/titlepage.tex}{\include{frontmatter/titlepage}}{\maketitle}
+
+% Abstract
+\IfFileExists{frontmatter/abstract.tex}{\include{frontmatter/abstract}}{}
+
+% Acknowledgments
+\IfFileExists{frontmatter/acknowledgments.tex}{\include{frontmatter/acknowledgments}}{}
+
+% Table of contents
+\tableofcontents
+
+% List of figures
+\listoffigures
+\addcontentsline{toc}{chapter}{List of Figures}
+
+% List of tables
+\listoftables
+\addcontentsline{toc}{chapter}{List of Tables}
+
+%% ----------------------------------------------------------------------------
+%% MAIN MATTER
+%% ----------------------------------------------------------------------------
+
+\cleardoublepage
+\pagenumbering{arabic}
+
+% Chapters
+\IfFileExists{chapters/01_introduction.tex}{\include{chapters/01_introduction}}{}
+\IfFileExists{chapters/02_literature_review.tex}{\include{chapters/02_literature_review}}{}
+\IfFileExists{chapters/03_data_description.tex}{\include{chapters/03_data_description}}{}
+\IfFileExists{chapters/04_methodology.tex}{\include{chapters/04_methodology}}{}
+\IfFileExists{chapters/05_experimental_design.tex}{\include{chapters/05_experimental_design}}{}
+\IfFileExists{chapters/06_results.tex}{\include{chapters/06_results}}{}
+\IfFileExists{chapters/07_discussion.tex}{\include{chapters/07_discussion}}{}
+\IfFileExists{chapters/08_limitations.tex}{\include{chapters/08_limitations}}{}
+\IfFileExists{chapters/09_conclusion.tex}{\include{chapters/09_conclusion}}{}
+
+%% ----------------------------------------------------------------------------
+%% BACK MATTER
+%% ----------------------------------------------------------------------------
+
+% Appendices
+\appendix
+\IfFileExists{appendices/appendix_a_features.tex}{\include{appendices/appendix_a_features}}{}
+\IfFileExists{appendices/appendix_b_results.tex}{\include{appendices/appendix_b_results}}{}
+
+% Bibliography
+\nocite{*}
+\bibliographystyle{plainnat}
+\bibliography{references/references}
+
+\end{document}

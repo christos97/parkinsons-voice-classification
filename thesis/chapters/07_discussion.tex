@@ -1,0 +1,211 @@
+% Chapter 7: Discussion
+
+\chapter{Discussion}
+\label{ch:discussion}
+
+\section{Overview}
+
+This chapter interprets the experimental results, situates the findings within the broader literature on Parkinson's disease (PD) voice analysis, and discusses their methodological and practical implications.
+
+\section{Interpretation of Key Findings}
+
+\subsection{Feature Extension Impact}
+
+Extending the raw-audio feature set from 47 to 78 features resulted in substantial performance gains, particularly for the ReadText task. Under the Random Forest classifier, ROC-AUC increased from 0.590 to 0.822 (+23 percentage points), elevating performance from near chance level to clinically meaningful discrimination.
+
+\textbf{Interpretation:}
+
+The extended features capture three complementary aspects of speech dynamics:
+
+\begin{table}[H]
+\centering
+\begin{tabular}{@{}lp{7cm}@{}}
+\toprule
+\textbf{Feature Group} & \textbf{Contribution} \\
+\midrule
+MFCC standard deviations & Within-utterance spectral variability \\
+Delta--delta MFCCs & Second-order temporal dynamics \\
+Spectral shape descriptors & Global distribution of spectral energy \\
+\bottomrule
+\end{tabular}
+\caption{Extended feature contributions}
+\label{tab:extended-contributions}
+\end{table}
+
+These additions are particularly relevant for PD detection because:
+
+\begin{enumerate}
+    \item \textbf{Reduced variability} is a hallmark of PD speech (monotone)
+    \item \textbf{Temporal dynamics} are affected by motor control deficits
+    \item \textbf{Spectral flatness} may indicate breathiness/reduced harmonic content
+\end{enumerate}
+
+\subsection{Class Weighting Effects}
+
+Class weighting showed \textbf{modest and inconsistent effects} on Dataset A:
+
+\begin{table}[H]
+\centering
+\begin{tabular}{@{}lc@{}}
+\toprule
+\textbf{Model} & \textbf{$\Delta$ ROC-AUC (weighted vs unweighted)} \\
+\midrule
+Random Forest & +3.5pp (baseline), $-1.4$pp (extended) \\
+Logistic Regression & 0.0pp \\
+SVM (RBF) & $-1.3$pp (baseline), $-1.4$pp (extended) \\
+\bottomrule
+\end{tabular}
+\caption{Class weighting effects}
+\label{tab:weighting-effects}
+\end{table}
+
+\textbf{Interpretation:}
+
+The moderate imbalance in Dataset A (57:43 HC:PD) is not severe enough to substantially degrade unweighted classifiers. Class weighting becomes more critical when:
+
+\begin{itemize}
+    \item Imbalance exceeds 70:30
+    \item Minority class has high cost of misclassification
+    \item Sample size is very small
+\end{itemize}
+
+\subsection{Model Performance Hierarchy}
+
+Across all conditions, Random Forest consistently outperformed other models:
+
+\begin{equation*}
+\text{Random Forest} > \text{Logistic Regression} \approx \text{SVM (RBF)}
+\end{equation*}
+
+Random Forest's advantages for this task include:
+
+\begin{enumerate}
+    \item \textbf{Ensemble averaging} reduces variance on small datasets
+    \item \textbf{Feature importance} provides interpretability
+    \item \textbf{Non-linear decision boundaries} capture complex patterns
+    \item \textbf{Robustness} to irrelevant features through feature subsampling
+\end{enumerate}
+
+\subsection{High Variance Across Folds}
+
+Standard deviations frequently exceeded 0.15 (15\%), indicating substantial fold-to-fold variability.
+
+\textbf{Causes:}
+
+\begin{enumerate}
+    \item \textbf{Small sample size} (37 subjects $\rightarrow$ $\sim$7 subjects per test fold)
+    \item \textbf{Subject heterogeneity} in disease severity
+    \item \textbf{Recording variability} (smartphone recordings)
+\end{enumerate}
+
+\textbf{Implications:}
+
+\begin{itemize}
+    \item Absolute performance numbers should be interpreted cautiously
+    \item Relative comparisons across conditions are more reliable
+    \item Confidence intervals overlap for many comparisons
+\end{itemize}
+
+\section{Comparison with Literature}
+
+\subsection{Performance Context}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{@{}llcl@{}}
+\toprule
+\textbf{Study} & \textbf{Dataset} & \textbf{Best ROC-AUC} & \textbf{Method} \\
+\midrule
+Little et al.\ (2009) & UCI & 0.92 & SVM \\
+Sakar et al.\ (2013) & Custom & 0.86 & SVM \\
+\textbf{This thesis} & \textbf{MDVR-KCL} & \textbf{0.87} & \textbf{RF} \\
+\bottomrule
+\end{tabular}
+\caption{Comparison with literature}
+\label{tab:literature-comparison}
+\end{table}
+
+Our results are competitive with literature, though direct comparison is limited due to:
+
+\begin{itemize}
+    \item Different datasets and features
+    \item Different CV strategies (many studies do not use grouped CV)
+    \item Different sample sizes
+\end{itemize}
+
+\subsection{Methodological Comparison}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{@{}lll@{}}
+\toprule
+\textbf{Aspect} & \textbf{Typical Literature} & \textbf{This Thesis} \\
+\midrule
+CV Strategy & Random split & Grouped stratified \\
+Subject handling & Often ignored & Explicit grouping \\
+Feature selection & Ad-hoc & Systematic ablation \\
+Reporting & Best result only & All conditions \\
+\bottomrule
+\end{tabular}
+\caption{Methodological comparison}
+\label{tab:methodological-comparison}
+\end{table}
+
+Our grouped CV approach provides \textbf{more conservative} but \textbf{more realistic} estimates of generalization performance.
+
+\section{Feature Importance Analysis}
+
+\subsection{Most Discriminative Features}
+
+The top features across models consistently include:
+
+\begin{table}[H]
+\centering
+\begin{tabular}{@{}llp{5cm}@{}}
+\toprule
+\textbf{Feature} & \textbf{Category} & \textbf{Relevance to PD} \\
+\midrule
+f0\_max & Pitch & Reduced pitch range in PD \\
+delta\_mfcc\_2\_mean & Spectral dynamics & Temporal variability \\
+autocorr\_harmonicity & Voice quality & Breathiness indicator \\
+shimmer\_apq3 & Perturbation & Amplitude instability \\
+intensity\_mean & Prosody & Hypophonia marker \\
+\bottomrule
+\end{tabular}
+\caption{Most discriminative features}
+\label{tab:top-features}
+\end{table}
+
+\section{Addressing Research Questions}
+
+\subsection{RQ1: ML Model Performance}
+
+\begin{quote}
+\textbf{How do classical ML models perform on PD voice classification?}
+\end{quote}
+
+Classical ML achieves ROC-AUC up to 0.873, demonstrating feasibility of voice-based PD detection. Random Forest outperforms linear models.
+
+\subsection{RQ2: Feature Extension Impact}
+
+\begin{quote}
+\textbf{Does feature set extension improve classification performance?}
+\end{quote}
+
+\textbf{Yes.} Extending from 47 to 78 features improved ROC-AUC by +8.7pp (Random Forest). The improvement is most pronounced for non-linear models.
+
+\subsection{RQ3: Class Weighting Impact}
+
+\begin{quote}
+\textbf{Does class weighting improve performance on imbalanced datasets?}
+\end{quote}
+
+\textbf{Marginally.} On Dataset A (moderate imbalance), class weighting improved RF by +3.5pp with baseline features but showed inconsistent effects elsewhere.
+
+\subsection{RQ4: Cross-Dataset Comparison}
+
+\begin{quote}
+\textbf{How do results compare between Dataset A and Dataset B?}
+\end{quote}
+
+Dataset B achieves higher absolute performance (ROC-AUC 0.94 vs 0.87), but this comparison is confounded by methodological differences. Dataset A's grouped CV provides more realistic generalization estimates.

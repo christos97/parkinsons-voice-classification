@@ -1,0 +1,214 @@
+% Chapter 5: Experimental Design
+
+\chapter{Experimental Design}
+\label{ch:experimental-design}
+
+\section{Overview}
+
+This chapter details the experimental design, including the 2$\times$2 factorial structure, cross-validation protocols, and evaluation procedures. The design prioritizes methodological rigor over performance optimization.
+
+\section{Research Questions}
+
+The experiments address the following research questions:
+
+\begin{description}
+    \item[RQ1:] How do classical ML models perform on PD voice classification?
+    \item[RQ2:] Does feature set extension (47 $\rightarrow$ 78) improve classification performance?
+    \item[RQ3:] Does class weighting improve performance on imbalanced datasets?
+    \item[RQ4:] How do results compare between Dataset A (grouped CV) and Dataset B (standard CV)?
+\end{description}
+
+\section{Experimental Matrix}
+
+\subsection{\texorpdfstring{2$\times$2 Factorial Design}{2x2 Factorial Design}}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{@{}cllp{4cm}@{}}
+\toprule
+\textbf{Condition} & \textbf{Features} & \textbf{Weighting} & \textbf{Output Directory} \\
+\midrule
+C1 & Baseline (47) & None & \texttt{baseline/baseline/} \\
+C2 & Extended (78) & None & \texttt{baseline/extended/} \\
+C3 & Baseline (47) & Balanced & \texttt{weighted/baseline/} \\
+C4 & Extended (78) & Balanced & \texttt{weighted/extended/} \\
+\bottomrule
+\end{tabular}
+\caption{Experimental conditions}
+\label{tab:conditions}
+\end{table}
+
+\subsection{Models Under Evaluation}
+
+Each condition evaluates three models:
+
+\begin{table}[H]
+\centering
+\begin{tabular}{@{}lll@{}}
+\toprule
+\textbf{Model} & \textbf{Abbreviation} & \textbf{Parameters} \\
+\midrule
+Logistic Regression & LR & $C=1.0$, max\_iter$=1000$ \\
+Support Vector Machine (RBF) & SVM & $C=1.0$, gamma$=$`scale' \\
+Random Forest & RF & n\_estimators$=100$, max\_depth$=10$ \\
+\bottomrule
+\end{tabular}
+\caption{Models under evaluation}
+\label{tab:models}
+\end{table}
+
+\subsection{Datasets}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{@{}lll@{}}
+\toprule
+\textbf{Dataset} & \textbf{Task(s)} & \textbf{CV Strategy} \\
+\midrule
+Dataset A (MDVR-KCL) & ReadText, SpontaneousDialogue & Grouped Stratified 5-Fold \\
+Dataset B (PD\_SPEECH) & N/A & Stratified 5-Fold \\
+\bottomrule
+\end{tabular}
+\caption{Datasets and cross-validation strategies}
+\label{tab:datasets-cv}
+\end{table}
+
+\section{Cross-Validation Protocols}
+
+\subsection{Dataset A: Grouped Stratified K-Fold}
+
+\begin{verbatim}
+Subject Pool (37 subjects)
++-- Fold 1: Train on 30 subjects, Test on 7 subjects
++-- Fold 2: Train on 30 subjects, Test on 7 subjects
++-- Fold 3: Train on 30 subjects, Test on 7 subjects
++-- Fold 4: Train on 30 subjects, Test on 7 subjects
++-- Fold 5: Train on 29 subjects, Test on 8 subjects
+
+Key constraint: All recordings from a subject appear in ONE fold only
+\end{verbatim}
+
+This prevents \textbf{subject identity leakage}, which would occur if recordings from the same subject appeared in both training and test sets.
+
+\subsection{Dataset B: Stratified K-Fold}
+
+\begin{verbatim}
+Sample Pool (756 samples)
++-- Fold 1: Train on ~605 samples, Test on ~151 samples
++-- Fold 2: Train on ~605 samples, Test on ~151 samples
+...
++-- Fold 5: Train on ~605 samples, Test on ~151 samples
+
+Key constraint: Class proportions maintained across folds
+\end{verbatim}
+
+\textbf{Caveat:} Without subject identifiers, potential subject overlap cannot be controlled.
+
+\section{Evaluation Metrics}
+
+\subsection{Primary Metric}
+
+\textbf{ROC-AUC} is the primary metric because:
+\begin{itemize}
+    \item Threshold-independent evaluation
+    \item Robust to class imbalance
+    \item Standard in clinical ML literature
+\end{itemize}
+
+\subsection{Secondary Metrics}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{@{}lp{8cm}@{}}
+\toprule
+\textbf{Metric} & \textbf{Purpose} \\
+\midrule
+Accuracy & Overall performance (reference only) \\
+Precision & False positive analysis \\
+Recall & False negative analysis (critical for screening) \\
+F1 Score & Balance between precision and recall \\
+\bottomrule
+\end{tabular}
+\caption{Secondary evaluation metrics}
+\label{tab:secondary-metrics}
+\end{table}
+
+\subsection{Statistical Reporting}
+
+All metrics reported as: \textbf{mean $\pm$ std} across 5 folds
+
+\section{Experimental Procedure}
+
+\subsection{Step-by-Step Protocol}
+
+\begin{enumerate}
+    \item \textbf{Feature Extraction (Dataset A only)}
+    \begin{itemize}
+        \item Command: \texttt{pvc-extract --task all}
+    \end{itemize}
+    
+    \item \textbf{For each condition (C1--C4):}
+    \begin{itemize}
+        \item For each model (LR, SVM, RF):
+        \begin{itemize}
+            \item For each dataset/task:
+            \begin{itemize}
+                \item 5-fold cross-validation
+                \item Fit scaler on train
+                \item Transform train and test
+                \item Fit model on train
+                \item Predict on test
+                \item Compute metrics
+            \end{itemize}
+        \end{itemize}
+    \end{itemize}
+    
+    \item \textbf{Aggregate results}
+    \begin{itemize}
+        \item Mean $\pm$ std across folds
+    \end{itemize}
+\end{enumerate}
+
+\subsection{Feature Extraction Settings}
+
+Extracted features stored in:
+\begin{itemize}
+    \item \texttt{outputs/features/baseline/} (47 features)
+    \item \texttt{outputs/features/extended/} (78 features)
+\end{itemize}
+
+\subsection{Random Seed}
+
+All experiments use \texttt{random\_state=42} for reproducibility.
+
+\section{Implementation}
+
+\subsection{CLI Commands}
+
+\begin{lstlisting}[language=bash]
+# Feature extraction (both baseline and extended)
+pvc-extract --task all
+
+# Run experiments (all conditions)
+pvc-experiment
+\end{lstlisting}
+
+\subsection{Output Structure}
+
+\begin{verbatim}
+outputs/
+|-- features/
+|   |-- baseline/
+|   |   |-- features_readtext.csv
+|   |   +-- features_spontaneousdialogue.csv
+|   +-- extended/
+|       |-- features_readtext.csv
+|       +-- features_spontaneousdialogue.csv
++-- results/
+    |-- baseline/
+    |   |-- baseline/
+    |   +-- extended/
+    +-- weighted/
+        |-- baseline/
+        +-- extended/
+\end{verbatim}
