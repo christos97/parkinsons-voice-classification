@@ -1,147 +1,155 @@
-# Parkinson's Disease Classification from Voice Data
+# Parkinson's Disease Voice Classification
 
-## Overview
+MSc thesis investigating classical ML approaches to PD/HC classification using voice data.
 
-This repository contains the implementation and documentation for a Master's thesis investigating machine learning approaches to Parkinson's Disease (PD) classification using voice data.
+**Domain:** Speech Signal Processing / Classical Machine Learning  
+**Task:** Binary classification (Parkinson's Disease vs Healthy Controls)  
+**Status:** Complete (experiments run, thesis drafted)
 
 ## Research Objective
 
-> To evaluate and compare machine-learning performance for Parkinson's Disease classification using (a) raw voice recordings and (b) pre-extracted acoustic speech features.
-
-The thesis explores whether classification performance differs when models are trained on:
-
-1. Features extracted from raw audio recordings
-2. Pre-computed acoustic speech features from existing datasets
-3. Combined or compared datasets under controlled experimental conditions
+> Evaluate and compare classification performance using (a) features extracted from raw audio recordings and (b) pre-extracted acoustic features.
 
 ## Datasets
 
-This research utilises two publicly available datasets from Kaggle:
+| Dataset | Source | Type | Local Path |
+|---------|--------|------|------------|
+| **A: MDVR-KCL** | [Zenodo](https://zenodo.org/records/2867215) (DOI: 10.5281/zenodo.2867215) | Raw WAV | `assets/DATASET_MDVR_KCL/` |
+| **B: PD Speech Features** | [Kaggle](https://www.kaggle.com/datasets/dipayanbiswas/parkinsons-disease-speech-signal-features) | Pre-extracted CSV | `assets/PD_SPEECH_FEATURES.csv` |
 
-### Dataset A — Raw Audio Recordings
+## Quick Start
 
-**URL:** <https://www.kaggle.com/datasets/asthamishra96/parkinson-multi-model-dataset-2-0>
-
-- Contains raw `.wav` voice recordings
-- Includes samples from Parkinson's Disease patients and Healthy Controls
-- Requires acoustic feature extraction before classification
-
-### Dataset B — Pre-Extracted Acoustic Features
-
-**URL:** <https://www.kaggle.com/datasets/dipayanbiswas/parkinsons-disease-speech-signal-features>
-
-- Contains tabular acoustic speech features
-- Labels are provided for binary classification
-- Directly usable for machine learning without additional preprocessing
-
-## Demo Application
-
-A Flask-based web demonstration is included for thesis defense purposes.
-
-### Quick Start
+### Run Experiments
 
 ```bash
-make extract-readtext    # Extract features from Dataset A ReadText task
-make demo-install        # Install Flask dependency
-make train-demo-model    # Train RandomForest model for inference
-make demo                # Run demo app at http://127.0.0.1:5000
+make extract-all    # Extract features from Dataset A
+make experiments    # Run all classification experiments
+make results        # Display results summary
 ```
 
-### Architecture Overview
+### Run Demo App
 
-The demo application follows a clean layered architecture:
-
-```text
-User Upload → Flask Validation → Adapter Enrichment → Core Inference → Feature Extraction → Model Prediction → Result Display
+```bash
+make extract-readtext    # Extract features (ReadText task)
+make demo-install        # Install Flask
+make train-demo-model    # Train inference model
+make demo                # http://127.0.0.1:5000
 ```
 
-**Key Design Principles:**
+### Build Thesis
 
-- **Single Import Rule**: Flask app imports only the adapter module (not core inference directly)
-- **Config-Driven**: Model selection, feature sets, and tasks configured in `src/parkinsons_voice_classification/config.py`
-- **Zero Knowledge**: Web app has no knowledge of feature counts, extraction algorithms, or model internals
-- **Metadata Validation**: Runtime checks prevent mismatches between trained model and configured features
-
-**Components:**
-
-- `demo_app/app.py` — Flask routes and file upload handling
-- `demo_app/inference_adapter.py` — Enrichment layer between Flask and core inference
-- `demo_app/feature_metadata.py` — Display formatting for 8 curated features (from 47 baseline)
-- `src/parkinsons_voice_classification/inference.py` — Core prediction engine
-
-### Important Disclaimers
-
-⚠️ **Research Demonstration Only** — This web app is for thesis defense and academic presentation purposes.
-
-⚠️ **Not for Clinical Use** — No diagnostic validity is claimed. Results should not be used for medical decision-making.
-
-⚠️ **No Production Deployment** — This is an experimental interface for research evaluation only.
-
-**Documentation:**
-
-- [docs/WEB_APP_ARCHITECTURE.md](docs/WEB_APP_ARCHITECTURE.md) — Comprehensive architecture documentation
-- [docs/DATASET_MDVR_KCL.md](docs/DATASET_MDVR_KCL.md) — **Dataset A** data card
-- [docs/DATASET_PD_SPEECH_FEATURES.md](docs/DATASET_PD_SPEECH_FEATURES.md) — **Dataset B** data card
+```bash
+make thesis         # Build PDF via latexmk
+make thesis-watch   # Continuous rebuild on changes
+```
 
 ## Repository Structure
 
 ```text
 parkinsons-voice-classification/
 ├── assets/                           # Datasets
-│   ├── DATASET_MDVR_KCL/            # Raw voice recordings (Dataset A)
+│   ├── DATASET_MDVR_KCL/            # Raw WAV recordings (Dataset A)
 │   └── PD_SPEECH_FEATURES.csv       # Pre-extracted features (Dataset B)
-├── demo_app/                         # Flask demonstration application
-│   ├── app.py                       # Flask routes and upload handling
-│   ├── inference_adapter.py         # Enrichment layer for display
-│   ├── feature_metadata.py          # Display formatting for features
-│   └── templates/                   # HTML templates (index, result, about)
-├── thesis/                           # LaTeX thesis (source of truth)
-│   ├── main.tex                     # Root document
-│   ├── chapters/                    # Chapters 1-9 (.tex)
-│   ├── appendices/                  # Appendices A-B (.tex)
-│   ├── frontmatter/                 # Title, abstract, acknowledgments
-│   └── references/                  # BibTeX bibliography
+├── demo_app/                         # Flask demo application
+│   ├── app.py                       # Routes and upload handling
+│   ├── inference_adapter.py         # Adapter layer (Flask → core inference)
+│   ├── audio_utils.py               # Audio normalization (any format → WAV)
+│   ├── feature_metadata.py          # Display formatting for curated features
+│   └── templates/                   # HTML templates
 ├── docs/                             # Documentation
-│   ├── v2/                          # [DEPRECATED] Original markdown drafts
+│   ├── CLI_REFERENCE.md             # CLI commands reference
 │   ├── DATASET_MDVR_KCL.md          # Dataset A data card
 │   ├── DATASET_PD_SPEECH_FEATURES.md # Dataset B data card
 │   └── WEB_APP_ARCHITECTURE.md      # Demo app architecture
-├── outputs/                          # Generated outputs
-│   ├── features/                    # Extracted features from Dataset A
-│   ├── models/                      # Trained model artifacts (.joblib + metadata)
+├── outputs/                          # Generated artifacts
+│   ├── features/                    # Extracted features (baseline/extended)
+│   ├── models/                      # Trained model artifacts (.joblib)
 │   ├── results/                     # Experiment results (CSV)
 │   └── plots/                       # Visualizations
-├── src/parkinsons_voice_classification/  # Main package
-│   ├── cli/                         # Command-line interfaces (pvc-*)
+├── scripts/
+│   └── sync_figures.py              # Copy plots to thesis/figures/
+├── src/parkinsons_voice_classification/
+│   ├── cli/                         # CLI entry points (pvc-*)
 │   ├── data/                        # Dataset loaders
-│   ├── features/                    # Feature extraction modules
-│   ├── models/                      # Classifier wrappers and evaluation
+│   ├── features/                    # Feature extraction
+│   ├── models/                      # Classifier wrappers
 │   ├── visualization/               # Plotting utilities
 │   ├── config.py                    # Central configuration
 │   └── inference.py                 # Core prediction API
+├── thesis/                           # LaTeX thesis (source of truth)
+│   ├── chapters/                    # Chapters 1-9
+│   ├── appendices/                  # Appendices A-B
+│   ├── references/                  # BibTeX bibliography
+│   └── figures/                     # Auto-synced from outputs/plots/
+├── _legacy_/v2/                      # DEPRECATED markdown drafts (read-only)
 ├── AGENTS.md                         # AI agent rules and constraints
 ├── Makefile                          # Automation targets
 └── pyproject.toml                    # Poetry dependencies
 ```
 
-**Key Documentation:**
+## Makefile Targets
 
-- [thesis/](thesis/) — **LaTeX thesis (source of truth)** — Build with `make thesis`
-- [thesis/README.md](thesis/README.md) — Thesis build instructions
-- [docs/DATASET_MDVR_KCL.md](docs/DATASET_MDVR_KCL.md) — Dataset A data card
-- [docs/DATASET_PD_SPEECH_FEATURES.md](docs/DATASET_PD_SPEECH_FEATURES.md) — Dataset B data card
-- [docs/WEB_APP_ARCHITECTURE.md](docs/WEB_APP_ARCHITECTURE.md) — Demo app architecture
-- [AGENTS.md](AGENTS.md) — AI coding agent rules and pipeline constraints
+| Category | Command | Description |
+|----------|---------|-------------|
+| **Setup** | `make install` | Install dependencies via Poetry |
+| | `make dev-install` | Install with dev dependencies |
+| **Extraction** | `make extract-all` | Extract features for all tasks |
+| | `make extract-readtext` | Extract ReadText features only |
+| | `make extract-spontaneous` | Extract SpontaneousDialogue only |
+| **Experiments** | `make experiments` | Run all classification experiments |
+| | `make results` | Display results summary |
+| **Demo** | `make demo-install` | Install Flask dependency |
+| | `make train-demo-model` | Train inference model |
+| | `make demo` | Run Flask demo app |
+| | `make demo-dev` | Run in debug mode (auto-reload) |
+| **Thesis** | `make thesis` | Build PDF (latexmk) |
+| | `make thesis-watch` | Continuous rebuild |
+| | `make thesis-clean` | Remove LaTeX artifacts |
+| **QA** | `make test` | Run test suite |
+| | `make lint` | Run ruff linter |
+| | `make format` | Format with black |
+| **Cleanup** | `make clean` | Remove outputs |
+| | `make clean-all` | Remove outputs + cache |
+| **Info** | `make help` | Show all commands |
+| | `make info` | Project information |
+| | `make check-dataset` | Verify dataset structure |
+
+## CLI Commands
+
+| Command | Purpose |
+|---------|---------|
+| `pvc-extract` | Extract acoustic features from MDVR-KCL dataset |
+| `pvc-experiment` | Run all classification experiments |
+| `pvc-train` | Train and serialize model for inference |
+| `pvc-importance` | Run feature importance analysis |
+
+See [docs/CLI_REFERENCE.md](docs/CLI_REFERENCE.md) for full usage.
+
+## Documentation
+
+| Document | Purpose |
+|----------|---------|
+| [AGENTS.md](AGENTS.md) | AI agent rules and constraints |
+| [docs/CLI_REFERENCE.md](docs/CLI_REFERENCE.md) | CLI commands reference |
+| [docs/DATASET_MDVR_KCL.md](docs/DATASET_MDVR_KCL.md) | Dataset A data card |
+| [docs/DATASET_PD_SPEECH_FEATURES.md](docs/DATASET_PD_SPEECH_FEATURES.md) | Dataset B data card |
+| [docs/WEB_APP_ARCHITECTURE.md](docs/WEB_APP_ARCHITECTURE.md) | Demo app architecture |
+| [thesis/README.md](thesis/README.md) | Thesis build instructions |
+
+## Demo App Disclaimers
+
+⚠️ **Research Demonstration Only** — For thesis defense and academic presentation.
+
+⚠️ **Not for Clinical Use** — No diagnostic validity claimed.
+
+⚠️ **No Production Deployment** — Experimental research interface only.
 
 ## Requirements
 
 - Python 3.10+
-- Poetry for dependency management
+- Poetry
+- LaTeX distribution (for thesis build)
 
 ## License
 
-This project is licensed under the MIT License. See LICENSE for details.
-
-## Author
-
-Master's Thesis Project — 2026
+MIT License

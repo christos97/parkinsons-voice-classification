@@ -1,169 +1,173 @@
-# Dataset Documentation  
-## Mobile Device Voice Recordings at King’s College London (MDVR-KCL)
+---
+title: "MDVR-KCL Dataset Data Card"
+dataset_name: "Mobile Device Voice Recordings at King's College London"
+alias: "Dataset A"
+last_updated: "2026-01-14"
 
+source:
+  repository: "Zenodo"
+  doi: "10.5281/zenodo.2867215"
+  url: "https://zenodo.org/records/2867215"
+
+local_path: "assets/DATASET_MDVR_KCL/"
+
+creators:
+  - "Hagen Jaeger"
+  - "Dhaval Trivedi"
+  - "Michael Stadtschnitzer"
+
+collection:
+  period: "26-29 September 2017"
+  location: "King's College London Hospital, Denmark Hill, London, UK"
+  device: "Motorola Moto G4 smartphone"
+  environment: "Clinical examination room (~10 m²)"
+
+audio_specs:
+  format: "WAV"
+  sample_rate: 44100
+  bit_depth: 16
+  channels: "Mono"
+
+tasks:
+  - name: "ReadText"
+    description: "The North Wind and the Sun passage"
+    subjects: { total: 37, HC: 21, PD: 16 }
+  - name: "SpontaneousDialogue"
+    description: "Spontaneous conversation with examiner"
+    subjects: { total: 36, HC: 21, PD: 15 }
+
+filename_format: "ID{XX}_{label}_{H&Y}_{UPDRS_speech}_{UPDRS_total}.wav"
+
+labels:
+  hc: "Healthy Control"
+  pd: "Parkinson's Disease"
 ---
 
-## Dataset Overview
+# MDVR-KCL Dataset Documentation
 
-**Name:**  
-Mobile Device Voice Recordings at King’s College London (MDVR-KCL)
+## Overview
 
-**Source / Publication:**  
-Zenodo  
-DOI: 10.5281/zenodo.2867215
+| Property | Value |
+|----------|-------|
+| **Name** | Mobile Device Voice Recordings at King's College London |
+| **Source** | [Zenodo](https://zenodo.org/records/2867215) |
+| **DOI** | 10.5281/zenodo.2867215 |
+| **Local Path** | `assets/DATASET_MDVR_KCL/` |
+| **Type** | Raw audio (WAV) |
 
-**Creators:**  
-- Hagen Jaeger  
-- Dhaval Trivedi  
-- Michael Stadtschnitzer  
+## Creators
 
-**Collection Period:**  
-26–29 September 2017
+- Hagen Jaeger
+- Dhaval Trivedi
+- Michael Stadtschnitzer
 
-**Location:**  
-King’s College London Hospital, Denmark Hill, London, UK
+## Collection Context
 
----
+| Property | Value |
+|----------|-------|
+| **Period** | 26–29 September 2017 |
+| **Location** | King's College London Hospital |
+| **Device** | Motorola Moto G4 smartphone |
+| **Environment** | Clinical examination room (~10 m²) |
+| **Reverberation** | ~500 ms |
 
-## Dataset Description
-
-The MDVR-KCL dataset contains high-quality voice recordings collected from individuals diagnosed with Parkinson’s Disease (PD) and from Healthy Control (HC) participants. Recordings were obtained using a smartphone device in a controlled clinical environment designed to replicate realistic phone-call conditions.
-
-The dataset was originally created to support research into voice-based biomarkers for Parkinson’s Disease and includes clinically annotated labels provided by expert assessors.
-
----
-
-## Recording Conditions
-
-- **Recording device:** Motorola Moto G4 smartphone  
-- **Microphone placement:** Handheld phone positioned close to the mouth  
-- **Environment:** Typical clinical examination room (~10 m²)  
-- **Reverberation time:** Approximately 500 ms  
-- **Recording context:** Simulated phone calls  
-
-Because recordings were captured within the reverberation radius and directly from the microphone signal (not GSM-compressed audio), the resulting audio files are considered acoustically clean.
-
----
+Recordings were captured within the reverberation radius directly from the microphone signal (not GSM-compressed), resulting in acoustically clean audio.
 
 ## Audio Specifications
 
 | Property | Value |
-|--------|------|
-| File format | WAV |
-| Sampling rate | 44.1 kHz |
-| Bit depth | 16-bit |
+|----------|-------|
+| Format | WAV |
+| Sample Rate | 44.1 kHz |
+| Bit Depth | 16-bit |
 | Channels | Mono |
-| Compression | None (raw audio) |
+| Compression | None |
 
----
+## Speech Tasks
 
-## Recording Procedure
+### ReadText
 
-Each recording followed a standardised workflow:
+Participants read "The North Wind and the Sun" passage.
 
-1. The participant relaxed briefly before recording.
-2. A simulated phone call was initiated (off-hook signal).
-3. The participant read **“The North Wind and the Sun”** passage.
-4. Depending on participant condition, an additional technical text excerpt was read.
-5. A spontaneous dialogue was conducted with the test executor.
-6. The call was terminated (on-hook signal).
+| Class | Count |
+|-------|-------|
+| HC | 21 |
+| PD | 16 |
+| **Total** | **37** |
 
-This procedure ensured both structured and spontaneous speech samples.
+### SpontaneousDialogue
 
----
+Spontaneous conversation with test executor.
 
-## Annotation and Labeling Scheme
+| Class | Count |
+|-------|-------|
+| HC | 21 |
+| PD | 15 |
+| **Total** | **36** |
 
-Each audio file is annotated directly via its filename using the following format:
+## Filename Format
 
+```
+ID{XX}_{label}_{H&Y}_{UPDRS_speech}_{UPDRS_total}.wav
+```
 
-```sh
-assets/DATASET_MDVR_KCL
-├── ReadText
-│   ├── HC
+| Field | Description |
+|-------|-------------|
+| `ID{XX}` | Subject identifier (00-99) |
+| `label` | `hc` or `pd` |
+| `H&Y` | Hoehn & Yahr stage (0 for HC) |
+| `UPDRS_speech` | UPDRS Item 18 score (0 for HC) |
+| `UPDRS_total` | Total UPDRS score (0 for HC) |
+
+**Example:** `ID05_pd_2_1_45.wav`
+
+## Directory Structure
+
+```
+assets/DATASET_MDVR_KCL/
+├── ReadText/
+│   ├── HC/
 │   │   ├── ID00_hc_0_0_0.wav
 │   │   ├── ID01_hc_0_0_0.wav
-│   │   ├── ID03_hc_0_0_0.wav
-│   │   ├── ID05_hc_0_0_0.wav
-│   │   ├── ID08_hc_0_0_0.wav
-│   │   ├── ID09_hc_0_0_0.wav
-│   │   ├── ID10_hc_0_0_0.wav
-│   │   ├── ID11_hc_0_0_0.wav
-│   │   ├── ID12_hc_0_0_0.wav
-│   │   ├── ID14_hc_0_0_0.wav
-│   │   ├── ID15_hc_0_0_0.wav
-│   │   ├── ID19_hc_0_0_0.wav
-│   │   ├── ID21_hc_0_0_0.wav
-│   │   ├── ID22_hc_0_0_0.wav
-│   │   ├── ID23_hc_0_0_0.wav
-│   │   ├── ID25_hc_0_0_0.wav
-│   │   ├── ID26_hc_0_0_0.wav
-│   │   ├── ID28_hc_0_0_0.wav
-│   │   ├── ID31_hc_0_1_1.wav
-│   │   ├── ID35_hc_0_0_0.wav
-│   │   └── ID36_hc_0_0_0.wav
-│   └── PD
-│       ├── ID02_pd_2_0_0.wav
-│       ├── ID04_pd_2_0_1.wav
-│       ├── ID06_pd_3_1_1.wav
-│       ├── ID07_pd_2_0_0.wav
-│       ├── ID13_pd_3_2_2.wav
-│       ├── ID16_pd_2_0_0.wav
-│       ├── ID17_pd_2_1_0.wav
-│       ├── ID18_pd_4_3_3.wav
-│       ├── ID20_pd_3_0_1.wav
-│       ├── ID24_pd_2_0_0.wav
-│       ├── ID27_pd_4_1_1.wav
-│       ├── ID29_pd_3_1_2.wav
-│       ├── ID30_pd_2_1_1.wav
-│       ├── ID32_pd_3_1_1.wav
-│       ├── ID33_pd_3_2_2.wav
-│       └── ID34_pd_2_0_0.wav
-└── SpontaneousDialogue
-    ├── HC
-    │   ├── ID00_hc_0_0_0.wav
-    │   ├── ID01_hc_0_0_0.wav
-    │   ├── ID03_hc_0_0_0.wav
-    │   ├── ID05_hc_0_0_0.wav
-    │   ├── ID08_hc_0_0_0.wav
-    │   ├── ID09_hc_0_0_0.wav
-    │   ├── ID10_hc_0_0_0.wav
-    │   ├── ID11_hc_0_0_0.wav
-    │   ├── ID12_hc_0_0_0.wav
-    │   ├── ID14_hc_0_0_0.wav
-    │   ├── ID15_hc_0_0_0.wav
-    │   ├── ID19_hc_0_0_0.wav
-    │   ├── ID21_hc_0_0_0.wav
-    │   ├── ID22hc_0_0_0.wav
-    │   ├── ID23_hc_0_0_0.wav
-    │   ├── ID25_hc_0_0_0.wav
-    │   ├── ID26_hc_0_0_0.wav
-    │   ├── ID28_hc_0_0_0.wav
-    │   ├── ID31_hc_0_1_1.wav
-    │   ├── ID35_hc_0_0_0.wav
-    │   └── ID36_hc_0_0_0.wav
-    └── PD
-        ├── ID02_pd_2_0_0.wav
-        ├── ID04_pd_2_0_1.wav
-        ├── ID06_pd_3_1_1.wav
-        ├── ID07_pd_2_0_0.wav
-        ├── ID13_pd_3_2_2.wav
-        ├── ID16_pd_2_0_0.wav
-        ├── ID17_pd_2_1_0.wav
-        ├── ID20_pd_3_0_1.wav
-        ├── ID24_pd_2_0_0.wav
-        ├── ID27_pd_4_1_1.wav
-        ├── ID29_pd_3_1_2.wav
-        ├── ID30_pd_2_1_1.wav
-        ├── ID32_pd_3_1_1.wav
-        ├── ID33_pd_3_2_2.wav
-        └── ID34_pd_2_0_0.wav
+│   │   └── ... (21 files)
+│   └── PD/
+│       ├── ID02_pd_2_1_32.wav
+│       └── ... (16 files)
+└── SpontaneousDialogue/
+    ├── HC/
+    │   └── ... (21 files)
+    └── PD/
+        └── ... (15 files)
+```
 
-7 directories, 73 files
+## Usage in This Thesis
+
+- **Pipeline:** Raw audio → Feature extraction → Classification
+- **Cross-validation:** Grouped Stratified 5-Fold (subject-level splits)
+- **Unit of analysis:** One recording per subject per task
+
+## Methodological Constraints
+
+1. All recordings from same subject must stay in same CV fold
+2. Tasks must be analyzed separately or task encoded as feature
+3. No mixing with Dataset B at subject level
+
+## Citation
+
+```bibtex
+@misc{mdvr_kcl_2019,
+  author = {Jaeger, Hagen and Trivedi, Dhaval and Stadtschnitzer, Michael},
+  title = {Mobile Device Voice Recordings at King's College London (MDVR-KCL)},
+  year = {2019},
+  publisher = {Zenodo},
+  doi = {10.5281/zenodo.2867215},
+  url = {https://zenodo.org/records/2867215}
+}
 ```
 
 ---
 
+## Dataset Metadata
 
 ```json
 {
