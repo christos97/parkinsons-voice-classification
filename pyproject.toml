@@ -2,7 +2,7 @@
 name = "parkinsons-voice-classification"
 version = "0.1.0"
 description = "Master's thesis: Parkinson's Disease classification from voice data using classical machine learning"
-authors = ["Author Name <author@example.com>"]
+authors = ["Christos Syrmakezis <sirmchristos@gmail.com>"]
 readme = "README.md"
 license = "MIT"
 packages = [{include = "parkinsons_voice_classification", from = "src"}]

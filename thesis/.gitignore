@@ -19,8 +19,7 @@
 
 # Generated PDF (keep in .gitignore, generate fresh)
 # Uncomment if you want to track the PDF:
-# !main.pdf
-*.pdf
+!main.pdf
 
 # Editor backups
 *~

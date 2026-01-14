@@ -14,10 +14,10 @@ thesis:
   chapters: "thesis/chapters/*.tex"
   appendices: "thesis/appendices/*.tex"
   bibliography: "thesis/references/references.bib"
-  deprecated_markdown: "docs/v2/ (read-only archive, see docs/v2/DEPRECATED.md)"
+  deprecated_markdown: "_legacy_/v2/ (read-only archive, see _legacy_/v2/DEPRECATED.md)"
   citation_rule: >
     All external references must be cited via BibTeX entries in references.bib.
-    Internal artifacts (outputs/, assets/, docs/v2/) are never cited as external sources.
+    Internal artifacts (outputs/, assets/, _legacy_/v2/) are never cited as external sources.
   troubleshooting: >
     If "Bibliography entries: 0", run: make thesis-clean && make thesis
 repository_state:
@@ -186,20 +186,20 @@ This is a **research-only project**.
 
 | Location | Status |
 |----------|--------|
-| `docs/v2/*.md` | **DEPRECATED** — Read-only archive (see `docs/v2/DEPRECATED.md`) |
+| `_legacy_/v2/*.md` | **DEPRECATED** — Read-only archive (see `_legacy_/v2/DEPRECATED.md`) |
 
 ### Citation Rules
 
 ✅ External papers, datasets, and software **must** be cited via BibTeX in `references.bib`  
 ✅ Use `\cite{}` commands in LaTeX for all external references  
-❌ Never cite internal artifacts (`outputs/`, `assets/`, `docs/v2/`) as external sources  
+❌ Never cite internal artifacts (`outputs/`, `assets/`, `_legacy_/v2/`) as external sources  
 ❌ Never cite GitHub URLs, local file paths, or markdown files as bibliography entries  
 
 ### Thesis Editing Rules
 
 ✅ Edit **only** LaTeX files under `thesis/` for thesis content changes  
 ✅ Add new references to `thesis/references/references.bib`  
-❌ Do **not** edit deprecated markdown files in `docs/v2/`  
+❌ Do **not** edit deprecated markdown files in `_legacy_/v2/`  
 ❌ Do **not** duplicate content between markdown and LaTeX  
 
 ---

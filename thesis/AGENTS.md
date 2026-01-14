@@ -27,7 +27,7 @@ notes:
 # LaTeX Thesis Editing Guide for AI Agents
 
 > **Source of Truth:** LaTeX files in `thesis/` are authoritative.  
-> Markdown files in `docs/v2/` are **DEPRECATED** (read-only archive).
+> Markdown files in `_legacy_/v2/` are **DEPRECATED** (read-only archive).
 
 ---
 
@@ -115,7 +115,7 @@ make thesis-clean   # Remove all build artifacts
 
 ❌ **Forbidden:**
 
-- Citing internal outputs (e.g., `outputs/`, `assets/`, `docs/v2/`)
+- Citing internal outputs (e.g., `outputs/`, `assets/`, `_legacy_/v2/`)
 - Using URLs directly in text instead of BibTeX entries
 - Citing GitHub repos without proper `@software` entry
 - Adding citations without corresponding BibTeX entry

@@ -191,7 +191,7 @@ Update these files with your details:
 
 > **LaTeX files in `thesis/` are the authoritative source for all thesis content.**
 
-⚠️ **DEPRECATED:** Markdown files in `docs/v2/` are a read-only archive.
+⚠️ **DEPRECATED:** Markdown files in `_legacy_/v2/` are a read-only archive.
 - Do NOT edit markdown files for thesis content
 - All thesis changes must be made in LaTeX files under `thesis/`
-- See `docs/v2/DEPRECATED.md` for details
+- See `_legacy_/v2/DEPRECATED.md` for details
