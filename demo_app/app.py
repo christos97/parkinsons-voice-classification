@@ -61,22 +61,27 @@ def index():
 
 @app.route("/analyze", methods=["POST"])
 def analyze():
-    """Process uploaded WAV file and return prediction."""
-    # Check if file was uploaded
-    if "audio_file" not in request.files:
-        flash("No file uploaded", "error")
-        return redirect(url_for("index"))
-
-    file = request.files["audio_file"]
-
-    # Check if file was selected
-    if file.filename == "":
-        flash("No file selected", "error")
-        return redirect(url_for("index"))
-
-    # Validate file extension
-    if not file.filename or not allowed_file(file.filename):
-        flash("Invalid file type. Please upload a WAV file.", "error")
+    """Process uploaded WAV file or recorded audio and return prediction."""
+    # Check if file was uploaded or recorded
+    file = None
+    filename = "recording.wav"
+    
+    if "audio_file" in request.files and request.files["audio_file"].filename:
+        # Traditional file upload
+        file = request.files["audio_file"]
+        filename = file.filename
+        
+        # Validate filename exists and has correct extension
+        if not filename or not allowed_file(filename):
+            flash("Invalid file type. Please upload a WAV file.", "error")
+            return redirect(url_for("index"))
+            
+    elif "recorded_audio" in request.files:
+        # Browser recording
+        file = request.files["recorded_audio"]
+        filename = "recording.wav"
+    else:
+        flash("No audio file provided", "error")
         return redirect(url_for("index"))
 
     # Save to temp file and run inference
@@ -93,7 +98,7 @@ def analyze():
             return render_template(
                 "result.html",
                 result=result,
-                filename=file.filename,
+                filename=filename,
             )
 
         finally:

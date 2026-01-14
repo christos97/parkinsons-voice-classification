@@ -20,7 +20,7 @@ This research utilises two publicly available datasets from Kaggle:
 
 ### Dataset A — Raw Audio Recordings
 
-**URL:** https://www.kaggle.com/datasets/asthamishra96/parkinson-multi-model-dataset-2-0
+**URL:** <https://www.kaggle.com/datasets/asthamishra96/parkinson-multi-model-dataset-2-0>
 
 - Contains raw `.wav` voice recordings
 - Includes samples from Parkinson's Disease patients and Healthy Controls
@@ -28,7 +28,7 @@ This research utilises two publicly available datasets from Kaggle:
 
 ### Dataset B — Pre-Extracted Acoustic Features
 
-**URL:** https://www.kaggle.com/datasets/dipayanbiswas/parkinsons-disease-speech-signal-features
+**URL:** <https://www.kaggle.com/datasets/dipayanbiswas/parkinsons-disease-speech-signal-features>
 
 - Contains tabular acoustic speech features
 - Labels are provided for binary classification
@@ -51,7 +51,7 @@ make demo                # Run demo app at http://127.0.0.1:5000
 
 The demo application follows a clean layered architecture:
 
-```
+```text
 User Upload → Flask Validation → Adapter Enrichment → Core Inference → Feature Extraction → Model Prediction → Result Display
 ```
 
@@ -80,27 +80,12 @@ User Upload → Flask Validation → Adapter Enrichment → Core Inference → F
 **Documentation:**
 
 - [docs/WEB_APP_ARCHITECTURE.md](docs/WEB_APP_ARCHITECTURE.md) — Comprehensive architecture documentation
-- [demo_app/README.md](demo_app/README.md) — Demo app quick start guide
-
-## Scope
-
-This project is strictly **research-oriented** and aims to:
-
-- Compare classification approaches across different data representations
-- Evaluate classical machine learning models under controlled conditions
-- Provide reproducible experimental results for academic review
-
-### Important Disclaimers
-
-⚠️ **This is not a diagnostic tool.** The models and results presented in this repository are intended solely for academic research purposes.
-
-⚠️ **Results are research-only.** No clinical validity is claimed, and the outputs should not be used for medical decision-making.
-
-⚠️ **No deployment or real-time system is provided.** This repository contains experimental code for thesis evaluation only.
+- [docs/DATASET_MDVR_KCL.md](docs/DATASET_MDVR_KCL.md) — **Dataset A** data card
+- [docs/DATASET_PD_SPEECH_FEATURES.md](docs/DATASET_PD_SPEECH_FEATURES.md) — **Dataset B** data card
 
 ## Repository Structure
 
-```
+```text
 parkinsons-voice-classification/
 ├── assets/                           # Datasets
 │   ├── DATASET_MDVR_KCL/            # Raw voice recordings (Dataset A)

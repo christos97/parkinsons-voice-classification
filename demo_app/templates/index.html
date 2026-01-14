@@ -84,8 +84,28 @@
       </div>
       {% else %}
 
+      <!-- Mode Selection Tabs -->
+      <div class="bg-white shadow-md rounded-lg mb-6">
+        <div class="flex border-b">
+          <button
+            id="tab-upload"
+            class="flex-1 py-3 px-4 text-center font-semibold border-b-2 border-blue-600 text-blue-600"
+            onclick="switchMode('upload')"
+          >
+            Upload File
+          </button>
+          <button
+            id="tab-record"
+            class="flex-1 py-3 px-4 text-center font-semibold border-b-2 border-transparent text-gray-500 hover:text-gray-700"
+            onclick="switchMode('record')"
+          >
+            Record Audio
+          </button>
+        </div>
+      </div>
+
       <!-- Upload Form -->
-      <div class="bg-white shadow-md rounded-lg p-6 mb-6">
+      <div id="upload-mode" class="bg-white shadow-md rounded-lg p-6 mb-6">
         <h2 class="text-xl font-semibold text-gray-800 mb-4">
           Upload Voice Recording
         </h2>
@@ -127,6 +147,80 @@
         </form>
       </div>
 
+      <!-- Recording Mode -->
+      <div
+        id="record-mode"
+        class="hidden bg-white shadow-md rounded-lg p-6 mb-6"
+      >
+        <h2 class="text-xl font-semibold text-gray-800 mb-4">
+          Record Voice Sample
+        </h2>
+
+        <!-- Text to Read -->
+        <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
+          <h3 class="font-semibold text-blue-900 mb-2">ReadText Task Prompt</h3>
+          <p class="text-gray-700 leading-relaxed">
+            "The quick brown fox jumps over the lazy dog. Peter Piper picked a
+            peck of pickled peppers. How much wood would a woodchuck chuck if a
+            woodchuck could chuck wood?"
+          </p>
+          <p class="text-sm text-gray-600 mt-2 italic">
+            Read this text clearly and naturally at a comfortable pace.
+          </p>
+        </div>
+
+        <!-- Recording Controls -->
+        <div class="space-y-4">
+          <!-- Status Display -->
+          <div
+            id="recording-status"
+            class="hidden text-center py-2 px-4 rounded"
+          >
+            <span id="status-text" class="font-semibold"></span>
+            <span id="recording-timer" class="ml-2 text-sm"></span>
+          </div>
+
+          <!-- Control Buttons -->
+          <div class="flex gap-3">
+            <button
+              id="start-record-btn"
+              onclick="startRecording()"
+              class="flex-1 bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded transition duration-200"
+            >
+              🎤 Start Recording
+            </button>
+            <button
+              id="stop-record-btn"
+              onclick="stopRecording()"
+              disabled
+              class="flex-1 bg-gray-400 text-white font-semibold py-2 px-4 rounded cursor-not-allowed"
+            >
+              ⏹ Stop Recording
+            </button>
+          </div>
+
+          <!-- Audio Playback -->
+          <div id="playback-section" class="hidden space-y-3">
+            <audio id="recorded-audio" controls class="w-full"></audio>
+            <div class="flex gap-3">
+              <button
+                onclick="resetRecording()"
+                class="flex-1 bg-gray-500 hover:bg-gray-600 text-white font-semibold py-2 px-4 rounded transition duration-200"
+              >
+                🔄 Record Again
+              </button>
+              <button
+                id="submit-recording-btn"
+                onclick="submitRecording()"
+                class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded transition duration-200"
+              >
+                ✓ Analyze Recording
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <!-- Model Info -->
       {% if model_info %}
       <div class="bg-gray-50 rounded-lg p-4">
@@ -159,6 +253,225 @@
     </div>
 
     <script>
+      // Global state for recording
+      let mediaRecorder;
+      let audioChunks = [];
+      let recordedBlob = null;
+      let recordingStartTime;
+      let timerInterval;
+
+      // Mode switching
+      function switchMode(mode) {
+        if (mode === "upload") {
+          $("#upload-mode").removeClass("hidden");
+          $("#record-mode").addClass("hidden");
+          $("#tab-upload")
+            .addClass("border-blue-600 text-blue-600")
+            .removeClass("border-transparent text-gray-500");
+          $("#tab-record")
+            .addClass("border-transparent text-gray-500")
+            .removeClass("border-blue-600 text-blue-600");
+        } else {
+          $("#upload-mode").addClass("hidden");
+          $("#record-mode").removeClass("hidden");
+          $("#tab-record")
+            .addClass("border-blue-600 text-blue-600")
+            .removeClass("border-transparent text-gray-500");
+          $("#tab-upload")
+            .addClass("border-transparent text-gray-500")
+            .removeClass("border-blue-600 text-blue-600");
+        }
+      }
+
+      // Check browser support
+      function checkRecordingSupport() {
+        if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+          alert(
+            "Audio recording is not supported in your browser. Please use Chrome or Firefox."
+          );
+          return false;
+        }
+        return true;
+      }
+
+      // Start recording
+      async function startRecording() {
+        if (!checkRecordingSupport()) return;
+
+        try {
+          const stream = await navigator.mediaDevices.getUserMedia({
+            audio: {
+              channelCount: 1,
+              sampleRate: 22050,
+            },
+          });
+
+          audioChunks = [];
+          mediaRecorder = new MediaRecorder(stream);
+
+          mediaRecorder.ondataavailable = (event) => {
+            audioChunks.push(event.data);
+          };
+
+          mediaRecorder.onstop = () => {
+            const audioBlob = new Blob(audioChunks, { type: "audio/webm" });
+            convertToWav(audioBlob);
+            stream.getTracks().forEach((track) => track.stop());
+            clearInterval(timerInterval);
+          };
+
+          mediaRecorder.start();
+          recordingStartTime = Date.now();
+
+          // Update UI
+          $("#start-record-btn")
+            .prop("disabled", true)
+            .addClass("opacity-50 cursor-not-allowed");
+          $("#stop-record-btn")
+            .prop("disabled", false)
+            .removeClass("bg-gray-400 cursor-not-allowed")
+            .addClass("bg-red-600 hover:bg-red-700");
+          $("#recording-status")
+            .removeClass("hidden")
+            .removeClass("bg-green-100 text-green-800")
+            .addClass("bg-red-100 text-red-800");
+          $("#status-text").text("🔴 Recording...");
+
+          // Start timer
+          timerInterval = setInterval(() => {
+            const elapsed = Math.floor(
+              (Date.now() - recordingStartTime) / 1000
+            );
+            $("#recording-timer").text(`${elapsed}s`);
+          }, 1000);
+        } catch (err) {
+          console.error("Error accessing microphone:", err);
+          alert("Could not access microphone. Please grant permission.");
+        }
+      }
+
+      // Stop recording
+      function stopRecording() {
+        if (mediaRecorder && mediaRecorder.state !== "inactive") {
+          mediaRecorder.stop();
+
+          // Update UI
+          $("#stop-record-btn")
+            .prop("disabled", true)
+            .removeClass("bg-red-600 hover:bg-red-700")
+            .addClass("bg-gray-400 cursor-not-allowed");
+          $("#recording-status")
+            .removeClass("bg-red-100 text-red-800")
+            .addClass("bg-green-100 text-green-800");
+          $("#status-text").text("✓ Recording Complete");
+        }
+      }
+
+      // Convert audio to WAV format
+      async function convertToWav(blob) {
+        try {
+          const arrayBuffer = await blob.arrayBuffer();
+          const audioContext = new AudioContext({ sampleRate: 22050 });
+          const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
+
+          // Convert to mono if stereo
+          const channelData =
+            audioBuffer.numberOfChannels === 1
+              ? audioBuffer.getChannelData(0)
+              : audioBuffer.getChannelData(0); // Take first channel
+
+          // Create WAV file
+          const wavBuffer = encodeWAV(channelData, audioBuffer.sampleRate);
+          recordedBlob = new Blob([wavBuffer], { type: "audio/wav" });
+
+          // Show playback
+          const audioURL = URL.createObjectURL(recordedBlob);
+          $("#recorded-audio").attr("src", audioURL);
+          $("#playback-section").removeClass("hidden");
+        } catch (err) {
+          console.error("Error converting audio:", err);
+          alert("Error processing audio. Please try again.");
+        }
+      }
+
+      // Encode PCM to WAV format
+      function encodeWAV(samples, sampleRate) {
+        const buffer = new ArrayBuffer(44 + samples.length * 2);
+        const view = new DataView(buffer);
+
+        // WAV header
+        writeString(view, 0, "RIFF");
+        view.setUint32(4, 36 + samples.length * 2, true);
+        writeString(view, 8, "WAVE");
+        writeString(view, 12, "fmt ");
+        view.setUint32(16, 16, true); // PCM chunk size
+        view.setUint16(20, 1, true); // PCM format
+        view.setUint16(22, 1, true); // Mono
+        view.setUint32(24, sampleRate, true);
+        view.setUint32(28, sampleRate * 2, true); // Byte rate
+        view.setUint16(32, 2, true); // Block align
+        view.setUint16(34, 16, true); // 16-bit
+        writeString(view, 36, "data");
+        view.setUint32(40, samples.length * 2, true);
+
+        // PCM samples
+        let offset = 44;
+        for (let i = 0; i < samples.length; i++, offset += 2) {
+          const s = Math.max(-1, Math.min(1, samples[i]));
+          view.setInt16(offset, s < 0 ? s * 0x8000 : s * 0x7fff, true);
+        }
+
+        return buffer;
+      }
+
+      function writeString(view, offset, string) {
+        for (let i = 0; i < string.length; i++) {
+          view.setUint8(offset + i, string.charCodeAt(i));
+        }
+      }
+
+      // Reset recording
+      function resetRecording() {
+        recordedBlob = null;
+        audioChunks = [];
+        $("#recorded-audio").attr("src", "");
+        $("#playback-section").addClass("hidden");
+        $("#recording-status").addClass("hidden");
+        $("#recording-timer").text("");
+        $("#start-record-btn")
+          .prop("disabled", false)
+          .removeClass("opacity-50 cursor-not-allowed");
+      }
+
+      // Submit recording to server
+      function submitRecording() {
+        if (!recordedBlob) {
+          alert("No recording available");
+          return;
+        }
+
+        $("#loading-overlay").removeClass("hidden");
+
+        const form = document.createElement("form");
+        form.method = "POST";
+        form.action = "{{ url_for('analyze') }}";
+        form.enctype = "multipart/form-data";
+
+        const fileInput = document.createElement("input");
+        fileInput.type = "file";
+        fileInput.name = "recorded_audio";
+
+        const dataTransfer = new DataTransfer();
+        dataTransfer.items.add(
+          new File([recordedBlob], "recording.wav", { type: "audio/wav" })
+        );
+        fileInput.files = dataTransfer.files;
+
+        form.appendChild(fileInput);
+        document.body.appendChild(form);
+        form.submit();
+      }
+
       $(document).ready(function () {
         $("#analysis-form").on("submit", function (e) {
           // Validate file is selected

@@ -33,7 +33,7 @@ from parkinsons_voice_classification.config import (
 
 # Default number of parallel workers
 _CPU_COUNT = os.cpu_count() or 4
-_DEFAULT_JOBS = min(8, max(1, _CPU_COUNT - 1))
+_DEFAULT_JOBS = min(15, max(1, _CPU_COUNT - 1))
 
 
 def main():
