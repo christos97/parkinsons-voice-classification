@@ -42,15 +42,29 @@ Install a LaTeX distribution:
 ### Build Commands
 
 ```bash
-# Build PDF once (automatically runs sync-figures)
+# Build PDF (automatic figure sync + latexmk compilation)
 make thesis
 
 # Build with auto-rebuild on file changes (watch mode)
 make thesis-watch
 
-# Clean build artifacts
+# Clean all build artifacts (aux, bbl, log, pdf, etc.)
 make thesis-clean
 ```
+
+**Build Process:**
+
+1. `make thesis` automatically runs `make sync-figures` first
+2. `latexmk -pdf` handles all compilation passes:
+   - Runs pdflatex → bibtex → pdflatex (as many times as needed)
+   - Automatically resolves cross-references and citations
+3. Uses `-f` flag to complete even with non-fatal warnings
+
+**Why latexmk instead of manual pdflatex/bibtex?**
+
+- Automatically determines correct number of passes
+- Handles stale aux files gracefully
+- More reliable than manual compilation sequences
 
 ### VS Code Integration
 
@@ -60,6 +74,18 @@ With the LaTeX Workshop extension installed:
 2. Press `Ctrl+Alt+B` to build
 3. Press `Ctrl+Alt+V` to view PDF
 4. Enable auto-build on save in settings
+
+### Citation Styles (natbib)
+
+This thesis uses `natbib` with numerical citations:
+
+```latex
+\cite{author2023}          % [1]
+\citep{author2023}         % [1] (parenthetical)
+\citet{author2023}         % Author et al. [1] (textual)
+\citep{auth1,auth2}        % [1, 2]
+\citep[see][]{author2023}  % [see 1]
+```
 
 ## Figure Management
 
@@ -112,7 +138,41 @@ To include a new figure in the thesis:
 
 1. Add entries to `references/references.bib`
 2. Cite in text: `\cite{little2009suitability}`
-3. Rebuild to update bibliography
+3. Rebuild: `make thesis`
+
+### Bibliography Troubleshooting
+
+If you see "Bibliography entries: 0" after building:
+
+1. **Most common fix**: Stale aux files from previous build
+   ```bash
+   make thesis-clean && make thesis
+   ```
+
+2. **Check for citations**: Ensure at least one `\cite{}` command exists in chapter files
+   - Using only `\nocite{*}` in `main.tex` is insufficient
+   - BibTeX requires actual citations to process entries
+
+3. **Verify entry types**: Use supported BibTeX types
+   - ✅ `@article`, `@book`, `@inproceedings`, `@misc`
+   - ❌ `@software` (not supported by plainnat.bst)
+   - Fix: Change `@software` to `@misc` with `howpublished = {Software}`
+
+4. **Check document structure**: Bibliography must come AFTER appendices in `main.tex`
+
+5. **Manual debugging** (only if latexmk fails):
+   ```bash
+   cd thesis
+   pdflatex -interaction=nonstopmode main.tex
+   bibtex main  # Check for errors here
+   pdflatex -interaction=nonstopmode main.tex
+   pdflatex -interaction=nonstopmode main.tex
+   ```
+
+6. **Verify .bbl file**: After build, should contain bibliography entries
+   ```bash
+   grep -c 'bibitem\[' thesis/main.bbl  # Should be > 0
+   ```
 
 ## Customization
 
@@ -127,10 +187,11 @@ Update these files with your details:
 - `frontmatter/titlepage.tex` — Name, supervisor, university
 - `frontmatter/acknowledgments.tex` — Personal acknowledgments
 
-## Markdown Source
+## Source of Truth
 
-The original content is maintained in `docs/v2/` as Markdown files. Use these for:
+> **LaTeX files in `thesis/` are the authoritative source for all thesis content.**
 
-- Quick edits and AI-assisted writing
-- Reference when editing LaTeX
-- Converting with pandoc: `pandoc chapter.md -o chapter.tex`
+⚠️ **DEPRECATED:** Markdown files in `docs/v2/` are a read-only archive.
+- Do NOT edit markdown files for thesis content
+- All thesis changes must be made in LaTeX files under `thesis/`
+- See `docs/v2/DEPRECATED.md` for details

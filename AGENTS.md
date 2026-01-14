@@ -8,6 +8,9 @@ last_updated: "2026-01-14"
 thesis:
   source_of_truth: "thesis/"
   build_command: "make thesis"
+  build_engine: "latexmk -pdf (automatic multi-pass compilation)"
+  clean_command: "make thesis-clean"
+  watch_command: "make thesis-watch"
   chapters: "thesis/chapters/*.tex"
   appendices: "thesis/appendices/*.tex"
   bibliography: "thesis/references/references.bib"
@@ -15,6 +18,8 @@ thesis:
   citation_rule: >
     All external references must be cited via BibTeX entries in references.bib.
     Internal artifacts (outputs/, assets/, docs/v2/) are never cited as external sources.
+  troubleshooting: >
+    If "Bibliography entries: 0", run: make thesis-clean && make thesis
 repository_state:
   datasets_downloaded: true
   codebase_status: "Complete (experiments run, thesis chapters 3–8 drafted)"
@@ -35,6 +40,9 @@ repository_state:
     demo_install: "make demo-install  # install Flask"
     train_demo: "make train-demo-model  # train inference model"
     demo: "make demo  # run Flask demo app"
+    thesis: "make thesis  # build PDF via latexmk"
+    thesis_clean: "make thesis-clean  # remove LaTeX artifacts"
+    thesis_watch: "make thesis-watch  # continuous rebuild on changes"
 
 demo_app:
   purpose: "Research demonstration for thesis defense"

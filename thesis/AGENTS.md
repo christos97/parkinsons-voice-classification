@@ -36,24 +36,47 @@ notes:
 ### Build Commands
 
 ```bash
-make thesis         # Build PDF (includes automatic figure sync)
+make thesis         # Build PDF (automatic figure sync + latexmk)
 make thesis-watch   # Continuous rebuild on file changes
-make thesis-clean   # Remove build artifacts
+make thesis-clean   # Remove all build artifacts
 ```
 
 **Build Process:**
 
 1. `make thesis` automatically runs `make sync-figures` first
 2. Figures are synced from `outputs/plots/` → `thesis/figures/`
-3. LaTeX compilation happens via `latexmk -pdf`
-4. Multiple passes ensure citations and references resolve
+3. **`latexmk -pdf`** handles all compilation passes automatically:
+   - Runs pdflatex to generate aux files
+   - Runs bibtex to process bibliography
+   - Runs pdflatex again (as many times as needed) to resolve references
+4. The `-f` flag ensures completion even with warnings
+
+**Why latexmk?**
+
+- Automatically determines how many passes are needed
+- Handles bibliography and cross-reference resolution correctly
+- Recovers gracefully from stale aux files (no need to clean first)
+- More reliable than manual pdflatex/bibtex sequences
 
 **Troubleshooting:**
 
-- "Undefined references" → Normal on first build, run `make thesis` again
-- "Citation undefined" → Check BibTeX entry exists in `references/references.bib`
-- "File not found" → Run `make sync-figures` or check figure path
-- Persistent errors → Try `make thesis-clean` then `make thesis`
+- **"Bibliography entries: 0"** → Common causes:
+  1. No `\cite{}` commands in any chapter (only `\nocite{*}` in main.tex)
+  2. BibTeX entry type unsupported (use `@misc` instead of `@software`)
+  3. Bibliography placed incorrectly (must be after appendices)
+  4. Stale aux files → Run `make thesis-clean && make thesis`
+- **"Undefined references"** → Normal on first build; latexmk handles this automatically
+- **"Citation undefined"** → Check BibTeX entry exists in `references/references.bib`
+- **"File not found"** → Run `make sync-figures` or check figure path
+- **Manual debugging:**
+  ```bash
+  cd thesis
+  pdflatex -interaction=nonstopmode main.tex  # Generate aux files
+  bibtex main                                  # See BibTeX errors
+  pdflatex -interaction=nonstopmode main.tex  # Incorporate bibliography
+  pdflatex -interaction=nonstopmode main.tex  # Resolve cross-refs
+  ```
+- **Persistent errors** → `make thesis-clean && make thesis`
 
 ---
 
@@ -61,11 +84,18 @@ make thesis-clean   # Remove build artifacts
 
 ### Citation Rules (CRITICAL)
 
+⚠️ **IMPORTANT:** The bibliography requires **at least one actual \cite{} command** in the document.
+- Using only `\nocite{*}` in main.tex is insufficient
+- BibTeX will not process entries without citations present in chapters
+- Solution: Add citations to relevant papers in chapter content
+
 ✅ **Always cite external sources** using BibTeX:
 
 ```latex
 \cite{little2009suitability}           % Single citation
 \cite{tsanas2010accurate,breiman2001random}  % Multiple citations
+\citep{author2023}                     % Parenthetical citation (natbib)
+\citet{author2023}                     % Textual citation (natbib)
 ```
 
 ✅ **Required BibTeX entry in `references/references.bib`:**
@@ -105,8 +135,25 @@ Examples:
 **@article:** author, title, journal, year, volume, pages, doi  
 **@inproceedings:** author, title, booktitle, year, pages  
 **@book:** author, title, publisher, year, isbn  
-**@software:** author, title, year, url  
-**@misc:** author, title, year, howpublished, url/doi
+**@misc:** author, title, year, howpublished, url/doi (use for software, datasets, web resources)  
+
+⚠️ **Entry Type Compatibility (plainnat.bst):**
+
+- ❌ `@software` — Not supported by plainnat.bst
+- ✅ Use `@misc` with `howpublished = {Software}` instead
+- ✅ Use `@article` if software has a published paper (e.g., scikit-learn)
+
+**Example software citation:**
+
+```bibtex
+@misc{parselmouth2018,
+  title = {Parselmouth: {Praat} in {Python}},
+  author = {Jadoul, Yannick and Thompson, Bill and de Boer, Bart},
+  year = {2018},
+  howpublished = {Software},
+  url = {https://github.com/YannickJadoul/Parselmouth}
+}
+```
 
 ---
 
@@ -153,7 +200,31 @@ outputs/plots/heatmap_readtext.png → thesis/figures/fig_heatmap_readtext.png
 
 ---
 
-## 4. LaTeX Editing Conventions
+## 4. Document Structure
+
+### LaTeX Compilation Order (main.tex)
+
+**Critical:** The bibliography must be placed correctly in the document:
+
+```latex
+% Main chapters
+\include{chapters/01_introduction}
+% ... more chapters ...
+
+% Appendices BEFORE bibliography
+\appendix
+\include{appendices/appendix_a_features}
+\include{appendices/appendix_b_results}
+
+% Bibliography AFTER appendices
+\nocite{*}  % Include all entries (requires at least one \cite{} in chapters)
+\bibliographystyle{plainnat}
+\bibliography{references/references}
+
+\end{document}
+```
+
+❌ **Do not place bibliography before appendices** — causes BibTeX processing errors
 
 ### Chapter Structure
 
@@ -303,8 +374,10 @@ thesis/
 
 Before completing any LaTeX editing task:
 
+- [ ] At least one `\cite{}` command exists in chapter content (not just `\nocite{*}`)
 - [ ] All external claims have `\cite{}` commands
 - [ ] All citations have BibTeX entries in `references/references.bib`
+- [ ] BibTeX entries use supported types (`@article`, `@book`, `@misc` — not `@software`)
 - [ ] All figures referenced exist in `thesis/figures/`
 - [ ] All labels are unique and follow naming convention
 - [ ] Statistical results reported as mean ± std
@@ -312,6 +385,7 @@ Before completing any LaTeX editing task:
 - [ ] Cross-references use `~` (non-breaking space)
 - [ ] Tables use `booktabs` formatting
 - [ ] Build succeeds: `make thesis` completes without errors
+- [ ] Bibliography count > 0 in final build output
 
 ---
 

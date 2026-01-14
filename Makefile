@@ -249,18 +249,11 @@ sync-figures: ## Sync experiment figures to thesis folder
 	poetry run python scripts/sync_figures.py
 
 thesis: sync-figures
-	@echo "Building thesis PDF..."
-	@echo "Step 1/4: First pdflatex pass (generating aux files)..."
-	@cd thesis && pdflatex -interaction=nonstopmode main.tex > /dev/null 2>&1 || true
-	@echo "Step 2/4: Running bibtex (processing bibliography)..."
-	@cd thesis && bibtex main 2>&1 | grep -v "^Capacity:" | grep -v "^The " | grep -v "^Database file" || true
-	@echo "Step 3/4: Second pdflatex pass (incorporating bibliography)..."
-	@cd thesis && pdflatex -interaction=nonstopmode main.tex > /dev/null 2>&1 || true
-	@echo "Step 4/4: Third pdflatex pass (resolving cross-references)..."
-	@cd thesis && pdflatex -interaction=nonstopmode main.tex > /dev/null 2>&1
+	@echo "Building thesis PDF (using latexmk)..."
+	@cd thesis && latexmk -pdf -interaction=nonstopmode -quiet -f main.tex 2>/dev/null || latexmk -pdf -interaction=nonstopmode -quiet main.tex
 	@echo "✓ Thesis PDF built successfully: thesis/main.pdf"
 	@cd thesis && pdfinfo main.pdf 2>/dev/null | grep "Pages:" | awk '{print "  Pages:", $$2}' || true
-	@cd thesis && grep -c '^\\bibitem\[' main.bbl 2>/dev/null | awk '{print "  Bibliography entries:", $$1}' || echo "  Bibliography entries: 0"
+	@cd thesis && test -s main.bbl && grep -c '\\bibitem\[' main.bbl 2>/dev/null | awk '{print "  Bibliography entries:", $$1}' || echo "  Bibliography entries: 0"
 
 thesis-watch:
 	@echo "Building thesis PDF with auto-rebuild (Ctrl+C to stop)..."
