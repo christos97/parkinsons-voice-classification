@@ -55,6 +55,7 @@ make sync-figures   # Copy outputs/plots/ → thesis/figures/
 ```
 
 To add new figures:
+
 1. Generate plot (saves to `outputs/plots/`)
 2. Update `FIGURE_MAPPING` in `scripts/sync_figures.py`
 3. Run `make thesis` (auto-syncs)
@@ -78,11 +79,13 @@ sudo apt install texlive-full latexmk   # Linux
 ## Troubleshooting
 
 **"Bibliography entries: 0"**
+
 ```bash
 make thesis-clean && make thesis
 ```
 
 **Missing figures**
+
 ```bash
 make sync-figures
 ```

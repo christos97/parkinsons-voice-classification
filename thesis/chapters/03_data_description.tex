@@ -5,7 +5,7 @@
 
 \section{Overview}
 
-This thesis utilizes two distinct datasets for Parkinson's Disease voice classification:
+This thesis utilizes two distinct datasets for Parkinson's Disease voice classification, each representing a different paradigm in the feature extraction pipeline:
 
 \begin{table}[H]
 \centering
@@ -14,10 +14,12 @@ This thesis utilizes two distinct datasets for Parkinson's Disease voice classif
 \textbf{Property} & \textbf{Dataset A (MDVR-KCL)} & \textbf{Dataset B (PD\_SPEECH)} \\
 \midrule
 Data Type & Raw audio (WAV) & Pre-extracted features (CSV) \\
-Source & Zenodo & Kaggle \\
-Unit of Analysis & Subject (multiple recordings) & Sample (row) \\
-Subject IDs Available & Yes & No \\
-Total Samples & 73 recordings (37 subjects) & 756 samples \\
+Source & Zenodo & Kaggle/UCI \\
+Unit of Analysis & Subject (grouped recordings) & Sample row (unknown subjects) \\
+Subject IDs Available & Yes (37 unique) & No \\
+Total Samples & 73 recordings & 756 rows \\
+Speech Task & Read text / Dialogue & Sustained /a/ phonation \\
+Feature Extraction & Performed in this work & Pre-computed by authors \\
 \bottomrule
 \end{tabular}
 \caption{Dataset comparison summary}
@@ -28,11 +30,55 @@ Total Samples & 73 recordings (37 subjects) & 756 samples \\
 
 \subsection{Source and Collection}
 
-The Mobile Device Voice Recordings from King's College London (MDVR-KCL) dataset was collected for PD research using smartphone recordings. Available on Zenodo with DOI: \texttt{10.5281/zenodo.2867215}.
+The Mobile Device Voice Recordings from King's College London (MDVR-KCL) dataset~\cite{mdvr_kcl_2019} was collected specifically for Parkinson's Disease research using smartphone recordings. The dataset is publicly available on Zenodo with DOI \texttt{10.5281/zenodo.2867215}.
+
+\subsubsection{Collection Context}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{@{}ll@{}}
+\toprule
+\textbf{Property} & \textbf{Value} \\
+\midrule
+Collection Period & 26--29 September 2017 \\
+Location & King's College London Hospital, Denmark Hill, London, UK \\
+Recording Device & Motorola Moto G4 smartphone \\
+Environment & Clinical examination room ($\sim$10 m²) \\
+Reverberation Time & $\sim$500 ms \\
+Audio Capture & Direct microphone signal (no GSM compression) \\
+\bottomrule
+\end{tabular}
+\caption{MDVR-KCL data collection context}
+\label{tab:collection-context}
+\end{table}
+
+Recordings were captured within the reverberation radius directly from the microphone signal (not GSM-compressed), resulting in acoustically clean audio suitable for feature extraction.
+
+\subsection{Audio Specifications}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{@{}ll@{}}
+\toprule
+\textbf{Property} & \textbf{Value} \\
+\midrule
+Format & WAV (uncompressed PCM) \\
+Native Sample Rate & 44.1 kHz \\
+Processing Sample Rate & 22.05 kHz (resampled) \\
+Bit Depth & 16-bit signed integer \\
+Channels & Mono \\
+Compression & None \\
+\bottomrule
+\end{tabular}
+\caption{Audio specifications for Dataset A}
+\label{tab:audio-specs}
+\end{table}
+
+All audio files are resampled to 22.05 kHz for feature extraction to ensure consistency and computational efficiency while preserving sufficient frequency resolution for speech analysis (Nyquist frequency: 11.025 kHz).
 
 \subsection{Speech Tasks}
 
-The dataset includes two distinct speech tasks:
+The dataset includes two distinct speech tasks designed to capture different aspects of vocal production:
 
 \begin{table}[H]
 \centering
@@ -40,15 +86,15 @@ The dataset includes two distinct speech tasks:
 \toprule
 \textbf{Task} & \textbf{Description} & \textbf{Subjects} & \textbf{HC} & \textbf{PD} \\
 \midrule
-ReadText & Reading a standardized passage & 37 & 21 & 16 \\
-SpontaneousDialogue & Free conversation & 36 & 21 & 15 \\
+ReadText & "The North Wind and the Sun" passage & 37 & 21 & 16 \\
+SpontaneousDialogue & Free conversation with examiner & 36 & 21 & 15 \\
 \bottomrule
 \end{tabular}
 \caption{Speech tasks in MDVR-KCL dataset}
 \label{tab:speech-tasks}
 \end{table}
 
-\textbf{Note:} Subject ID18 is missing from the SpontaneousDialogue task.
+\textbf{Note:} Subject ID18 is missing from the SpontaneousDialogue task, resulting in one fewer recording for that condition.
 
 \subsection{Class Distribution}
 
@@ -62,7 +108,42 @@ SpontaneousDialogue Task:
 +-- PD (Parkinson's Disease): 15 subjects (41.7%)
 \end{verbatim}
 
-\textbf{Imbalance Ratio:} Moderate ($\sim$57:43), addressed via class weighting experiments.
+\textbf{Imbalance Ratio:} Moderate ($\sim$57:43 HC:PD). Class weighting experiments were conducted to assess impact on classification performance.
+
+\subsection{Filename Format and Clinical Metadata}
+
+Filenames encode clinical metadata in the format:
+
+\begin{verbatim}
+ID{XX}_{label}_{H&Y}_{UPDRS_speech}_{UPDRS_total}.wav
+\end{verbatim}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{@{}ll@{}}
+\toprule
+\textbf{Field} & \textbf{Description} \\
+\midrule
+ID\{XX\} & Subject identifier (00--99) \\
+label & \texttt{hc} (Healthy Control) or \texttt{pd} (Parkinson's Disease) \\
+H\&Y & Hoehn \& Yahr stage (0 for HC, 1--5 for PD) \\
+UPDRS\_speech & UPDRS Item 18 score (0 for HC, 0--4 for PD) \\
+UPDRS\_total & Total UPDRS score (0 for HC) \\
+\bottomrule
+\end{tabular}
+\caption{Filename encoding for clinical metadata}
+\label{tab:filename-format}
+\end{table}
+
+\textbf{Example:} \texttt{ID05\_pd\_2\_1\_45.wav} indicates:
+\begin{itemize}
+    \item Subject 05, Parkinson's Disease
+    \item Hoehn \& Yahr stage 2
+    \item UPDRS speech score: 1
+    \item Total UPDRS score: 45
+\end{itemize}
+
+\textbf{Note:} Clinical metadata were not used as features in this work to maintain consistency with Dataset B, which lacks such information.
 
 \subsection{File Structure}
 
@@ -70,36 +151,143 @@ SpontaneousDialogue Task:
 DATASET_MDVR_KCL/
 +-- ReadText/
 |   +-- HC/
-|   |   +-- IDxx_hc_*.wav
+|   |   +-- IDxx_hc_*.wav (21 files)
 |   +-- PD/
-|       +-- IDxx_pd_*.wav
+|       +-- IDxx_pd_*.wav (16 files)
 +-- SpontaneousDialogue/
     +-- HC/
+    |   +-- IDxx_hc_*.wav (21 files)
     +-- PD/
+        +-- IDxx_pd_*.wav (15 files)
 \end{verbatim}
 
-\subsection{Known Anomalies}
+\subsection{Known Anomalies and Handling}
 
 \begin{itemize}
-    \item \textbf{ID22:} Non-standard filename pattern (handled in parsing code)
-    \item \textbf{ID18:} Missing from SpontaneousDialogue task
-    \item Multiple recordings per subject (requires grouped CV)
+    \item \textbf{ID22:} Non-standard filename pattern in source data (handled in parsing code via fallback logic)
+    \item \textbf{ID18:} Missing from SpontaneousDialogue task (36 subjects vs.\ 37 in ReadText)
+    \item \textbf{Multiple recordings per subject:} Requires grouped cross-validation to prevent data leakage
 \end{itemize}
+
+\subsection{Feature Extraction Pipeline}
+
+For Dataset A, features are extracted from raw audio in four preprocessing steps followed by feature computation:
+
+\subsubsection{Preprocessing Steps}
+
+\begin{enumerate}
+    \item \textbf{Load audio} at native sample rate (44.1 kHz)
+    \item \textbf{Convert to mono} if stereo (via channel averaging)
+    \item \textbf{Resample to 22.05 kHz} for computational efficiency
+    \item \textbf{Normalize amplitude} to $[-1, 1]$ range
+\end{enumerate}
+
+\subsubsection{Feature Sets}
+
+Two feature configurations were evaluated:
+
+\textbf{Baseline Features (47 total):}
+\begin{itemize}
+    \item \textbf{Prosodic (21):} Pitch ($F_0$), jitter, shimmer, harmonicity, intensity, formants
+    \item \textbf{Spectral (26):} MFCC mean (13) + Delta MFCC mean (13)
+\end{itemize}
+
+\textbf{Extended Features (78 total):}
+\begin{itemize}
+    \item \textbf{Prosodic (21):} Unchanged
+    \item \textbf{Spectral (57):} Baseline (26) + MFCC std (13) + Delta-delta MFCC mean (13) + Spectral shape (5)
+\end{itemize}
+
+\subsubsection{Prosodic Feature Breakdown}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{@{}lcll@{}}
+\toprule
+\textbf{Feature Group} & \textbf{Count} & \textbf{Features} & \textbf{Tool} \\
+\midrule
+Pitch ($F_0$) & 4 & mean, std, min, max & Parselmouth \\
+Jitter & 3 & local, RAP, PPQ5 & Parselmouth \\
+Shimmer & 3 & local, APQ3, APQ11 & Parselmouth \\
+Harmonicity & 2 & HNR mean, autocorr harmonicity & Parselmouth \\
+Intensity & 3 & mean, min, max & Parselmouth \\
+Formants & 6 & $F_1$--$F_3$ mean, $F_1$--$F_3$ std & Parselmouth \\
+\bottomrule
+\end{tabular}
+\caption{Prosodic feature breakdown (21 features)}
+\label{tab:prosodic-features-ch3}
+\end{table}
+
+\textbf{Extraction parameters:}
+\begin{itemize}
+    \item $F_0$ range: 75--500 Hz (covers male, female, and pathological voices)
+    \item Jitter/shimmer computed on \textbf{voiced frames only}
+    \item Formants extracted via Burg's method (LPC order: 5)
+\end{itemize}
+
+\subsubsection{Spectral Feature Breakdown}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{@{}lcll@{}}
+\toprule
+\textbf{Feature Group} & \textbf{Count} & \textbf{Description} & \textbf{Tool} \\
+\midrule
+\textbf{Baseline (26):} & & & \\
+MFCC mean & 13 & Mean of MFCCs 0--12 & librosa \\
+Delta MFCC mean & 13 & Mean of first-order derivatives & librosa \\
+\midrule
+\textbf{Extended only (+31):} & & & \\
+MFCC std & 13 & Std deviation of MFCCs 0--12 & librosa \\
+Delta-delta MFCC mean & 13 & Mean of second-order derivatives & librosa \\
+Spectral shape & 5 & Centroid, bandwidth, rolloff, flatness, ZCR & librosa \\
+\bottomrule
+\end{tabular}
+\caption{Spectral feature breakdown}
+\label{tab:spectral-features}
+\end{table}
+
+\subsubsection{Technical Feature Extraction Parameters}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{@{}ll@{}}
+\toprule
+\textbf{Parameter} & \textbf{Value} \\
+\midrule
+Target Sample Rate & 22.05 kHz \\
+MFCC Coefficients & 13 (0--12) \\
+FFT Window Size & 2048 samples ($\sim$93 ms) \\
+Hop Length & 512 samples ($\sim$23 ms) \\
+Mel Filter Banks & 128 \\
+$F_0$ Range & 75--500 Hz \\
+\bottomrule
+\end{tabular}
+\caption{Feature extraction technical parameters}
+\label{tab:extraction-params}
+\end{table}
 
 \subsection{Feature Correlation Analysis}
 
+Figure~\ref{fig:heatmap-readtext} and Figure~\ref{fig:heatmap-spontaneous} show feature correlation matrices for ReadText and SpontaneousDialogue tasks, respectively. These heatmaps reveal:
+
+\begin{itemize}
+    \item Strong correlations within feature families (e.g., adjacent MFCC coefficients)
+    \item Minimal correlation between prosodic and spectral features
+    \item Task-specific correlation patterns suggesting different information content
+\end{itemize}
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.9\textwidth]{fig_heatmap_readtext.png}
-    \caption{Feature correlation heatmap (ReadText task)}
+    \caption{Feature correlation heatmap for ReadText task. Darker colors indicate stronger correlations. MFCC coefficients show expected sequential correlation structure.}
     \label{fig:heatmap-readtext}
 \end{figure}
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.9\textwidth]{fig_heatmap_spontaneous.png}
-    \caption{Feature correlation heatmap (Spontaneous Dialogue task)}
+    \caption{Feature correlation heatmap for SpontaneousDialogue task. Correlation patterns differ from ReadText, particularly in prosodic features, reflecting the unstructured nature of spontaneous speech.}
     \label{fig:heatmap-spontaneous}
 \end{figure}
 
@@ -107,7 +295,40 @@ DATASET_MDVR_KCL/
 
 \subsection{Source}
 
-Pre-extracted acoustic features from Kaggle, containing 752 features per sample.
+Pre-extracted acoustic features from the UCI Machine Learning Repository, distributed via Kaggle~\cite{pd_speech_features_kaggle}. The dataset contains 752 acoustic features pre-computed from sustained vowel phonations.
+
+\subsection{Collection Context}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{@{}ll@{}}
+\toprule
+\textbf{Property} & \textbf{Value} \\
+\midrule
+Institution & Istanbul University, Cerrahpaşa Faculty of Medicine \\
+Collection Period & Not specified in metadata \\
+PD Subjects & 188 \\
+HC Subjects & 64 \\
+Age Range (PD) & 33--87 years \\
+Age Range (HC) & 41--82 years \\
+Speech Task & Sustained phonation of vowel /a/ \\
+Repetitions & 3 per subject \\
+Native Sample Rate & 44.1 kHz (reported in metadata) \\
+\bottomrule
+\end{tabular}
+\caption{Collection context for Dataset B}
+\label{tab:dataset-b-context}
+\end{table}
+
+\subsection{Data Format}
+
+\begin{itemize}
+    \item \textbf{Format:} CSV (comma-separated values)
+    \item \textbf{Rows:} 756 samples (multiple per subject)
+    \item \textbf{Columns:} 753 total (752 features + 1 binary label)
+    \item \textbf{Label encoding:} 1 = PD, 0 = HC
+    \item \textbf{Subject IDs:} \textbf{Not provided} (critical limitation)
+\end{itemize}
 
 \subsection{Class Distribution}
 
@@ -125,51 +346,120 @@ PD (1) & 564 & 74.6\% \\
 \label{tab:dataset-b-distribution}
 \end{table}
 
-\textbf{Imbalance Ratio:} Severe ($\sim$25:75), necessitating class weighting.
+\textbf{Imbalance Ratio:} Severe ($\sim$25:75 HC:PD), necessitating class weighting strategies in model training.
 
 \subsection{Feature Categories}
 
-The 752 features span multiple acoustic domains:
+The 752 features span multiple acoustic domains computed by the original authors:
 
 \begin{table}[H]
 \centering
-\begin{tabular}{@{}lcl@{}}
+\begin{tabular}{@{}lcp{7cm}@{}}
 \toprule
 \textbf{Category} & \textbf{Count} & \textbf{Description} \\
 \midrule
-Baseline Features & 22 & Jitter, shimmer, HNR variants \\
-Intensity & 3 & Intensity statistics \\
-Formants & 36 & $F_1$--$F_4$ bandwidth features \\
-MFCCs & 84 & MFCC coefficients \\
-Wavelet & 182 & Wavelet decomposition features \\
-TQWT & 432 & Tunable Q-factor features \\
+Baseline & 22 & Jitter variants, shimmer variants, HNR, NHR \\
+Intensity & 3 & Min, max, mean intensity \\
+Formants & 36 & $F_1$--$F_4$ frequency and bandwidth statistics \\
+MFCCs & 84 & Mean, std, delta for MFCC 0--12 \\
+Wavelet (DWT) & 182 & Discrete wavelet decomposition features \\
+TQWT & 432 & Tunable Q-factor wavelet transform features \\
+Other & 7 & PPE, DFA, RPDE, numPulses, GQ, GNE, VFER \\
 \bottomrule
 \end{tabular}
-\caption{Feature categories in Dataset B}
+\caption{Feature categories in Dataset B (752 total)}
 \label{tab:dataset-b-features}
 \end{table}
 
-\subsection{Important Caveat}
+\subsection{Methodological Caveats}
 
 \begin{quote}
-\textbf{Warning:} No subject identifiers are available in Dataset B. Results may be optimistic due to potential subject overlap across cross-validation folds. The absence of subject identifiers prevents validation of true out-of-subject generalization.
+\textbf{Critical Limitation:} No subject identifiers are available in Dataset B. This prevents validation of true out-of-subject generalization, as the same subject may appear in both training and test folds during cross-validation.
 \end{quote}
 
-\section{Dataset Comparison}
+Given that 756 samples were collected from 252 subjects (188 PD + 64 HC) with 3 repetitions each, standard stratified 5-fold cross-validation may place samples from the same subject in different folds, leading to:
+
+\begin{itemize}
+    \item \textbf{Optimistically biased performance estimates} (overestimation of generalization)
+    \item \textbf{Violation of independence assumption} in cross-validation
+    \item \textbf{Inability to assess subject-level generalization}
+\end{itemize}
+
+Results on Dataset B should be interpreted cautiously with these limitations in mind.
+
+\subsection{Additional Limitations}
+
+\begin{itemize}
+    \item \textbf{No raw audio:} Cannot verify or modify feature extraction process
+    \item \textbf{Feature extraction pipeline unavailable:} Cannot reproduce or extend feature set
+    \item \textbf{Sustained vowel only:} Does not represent connected speech or natural communication
+    \item \textbf{High feature dimensionality:} 752 features may lead to overfitting with small sample size
+\end{itemize}
+
+\section{Cross-Dataset Comparison}
 
 \subsection{Key Differences}
 
-\begin{enumerate}
-    \item \textbf{Data format:} Raw audio vs.\ pre-extracted features
-    \item \textbf{Sample size:} 37 subjects vs.\ 756 samples
-    \item \textbf{Subject tracking:} Available vs.\ unavailable
-    \item \textbf{Feature dimensionality:} 47--78 (extracted) vs.\ 752 (provided)
-\end{enumerate}
+\begin{table}[H]
+\centering
+\begin{tabular}{@{}lll@{}}
+\toprule
+\textbf{Aspect} & \textbf{Dataset A} & \textbf{Dataset B} \\
+\midrule
+Data format & Raw audio (WAV) & Pre-extracted features (CSV) \\
+Sample size & 37 subjects (73 recordings) & 756 rows (subjects unknown) \\
+Subject tracking & Available & \textbf{Unavailable} \\
+Feature dimensionality & 47 (baseline) or 78 (extended) & 752 (fixed) \\
+Speech task & Read text / Dialogue & Sustained /a/ phonation \\
+Feature extraction & Controlled (this work) & Pre-computed (black box) \\
+Cross-validation & Grouped (subject-level) & Standard (row-level) \\
+Clinical metadata & H\&Y, UPDRS available & None \\
+\bottomrule
+\end{tabular}
+\caption{Detailed cross-dataset comparison}
+\label{tab:cross-dataset-comparison}
+\end{table}
 
-\subsection{Implications for Evaluation}
+\subsection{Cross-Validation Strategy}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{@{}lll@{}}
+\toprule
+\textbf{Dataset} & \textbf{CV Strategy} & \textbf{Rationale} \\
+\midrule
+Dataset A & Grouped Stratified 5-Fold & Ensures all recordings from one subject stay in same fold \\
+Dataset B & Standard Stratified 5-Fold & No subject IDs available for grouping \\
+\bottomrule
+\end{tabular}
+\caption{Cross-validation strategies by dataset}
+\label{tab:cv-strategies-ch3}
+\end{table}
+
+\textbf{Implications:}
+\begin{itemize}
+    \item Dataset A provides \textbf{conservative, realistic} out-of-subject generalization estimates
+    \item Dataset B may provide \textbf{optimistic} estimates due to potential within-subject correlation
+    \item Direct performance comparison is confounded by these methodological differences
+\end{itemize}
+
+\subsection{Complementary Value}
+
+Despite their differences, the datasets provide complementary perspectives:
 
 \begin{itemize}
-    \item Dataset A enables \textbf{grouped cross-validation} (more conservative, realistic estimates)
-    \item Dataset B requires \textbf{standard cross-validation} (potentially optimistic estimates)
-    \item Direct comparison is confounded by these methodological differences
+    \item \textbf{Dataset A:} Explores effect of \textbf{task} (read vs.\ spontaneous) and \textbf{feature engineering} (baseline vs.\ extended)
+    \item \textbf{Dataset B:} Tests generalization to \textbf{high-dimensional feature space} with different acoustic representations (wavelet transforms)
+    \item \textbf{Together:} Enable assessment of classifier robustness across different data collection protocols, feature extraction pipelines, and speech tasks
 \end{itemize}
+
+\section{Summary}
+
+This chapter presented two complementary datasets for PD voice classification:
+
+\begin{enumerate}
+    \item \textbf{Dataset A (MDVR-KCL):} 37 subjects with raw smartphone recordings enabling controlled feature extraction (47/78 features) and rigorous subject-level evaluation
+    \item \textbf{Dataset B (PD Speech Features):} 756 samples with 752 pre-extracted features enabling high-dimensional classification exploration, with caveats regarding unknown subject overlap
+\end{enumerate}
+
+These datasets should be interpreted cautiously given the small sample size (Dataset A: $n=37$) and the absence of subject identifiers in Dataset B. Results represent exploratory analyses rather than definitive performance benchmarks.

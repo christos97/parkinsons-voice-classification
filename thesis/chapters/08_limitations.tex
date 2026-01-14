@@ -17,9 +17,11 @@ This chapter provides a transparent assessment of the limitations and potential 
 \toprule
 \textbf{Metric} & \textbf{Value} \\
 \midrule
-Total subjects & 37 \\
-Subjects per test fold & $\sim$7 \\
+Total subjects (ReadText) & 37 \\
+Total subjects (SpontaneousDialogue) & 36 \\
+Subjects per test fold & $\sim$7--8 \\
 PD subjects (minority) & 15--16 \\
+HC subjects (majority) & 21 \\
 \bottomrule
 \end{tabular}
 \caption{Dataset A sample size metrics}
@@ -39,27 +41,30 @@ PD subjects (minority) & 15--16 \\
 With 37 subjects and 5-fold CV:
 
 \begin{itemize}
-    \item Each fold has only $\sim$7 test subjects
-    \item A single misclassification shifts accuracy by $\sim$14\%
-    \item Confidence intervals are wide by design
+    \item Each fold has only $\sim$7--8 test subjects
+    \item A single misclassification shifts accuracy by $\sim$13--14\%
+    \item Observed standard deviations range from 0.13 to 0.42 across metrics
+    \item F1 and recall metrics show particularly high variance (std $> 0.24$)
+    \item Some folds produced ROC-AUC $< 0.5$ for SVM, indicating instability
 \end{itemize}
 
-\textbf{Mitigation:} Results focus on \textbf{relative comparisons} rather than absolute performance claims.
+\textbf{Mitigation:} Results focus on \textbf{relative comparisons} rather than absolute performance claims, acknowledging that confidence intervals overlap substantially.
 
 \section{Subject Identifier Limitations}
 
 \subsection{Dataset B: Missing Subject IDs}
 
-Dataset B (PD\_SPEECH) provides no subject identifiers. This creates potential for:
+Dataset B contains 756 samples (192 HC, 564 PD) with no subject identifiers. This creates potential for:
 
 \begin{itemize}
-    \item \textbf{Subject leakage:} Same subject in train and test sets
-    \item \textbf{Optimistic bias:} Inflated performance estimates
+    \item \textbf{Subject leakage:} Same subject's multiple samples in train and test sets
+    \item \textbf{Optimistic bias:} Inflated performance estimates due to within-subject correlation
     \item \textbf{Unknown generalization:} Cannot assess new-subject performance
+    \item \textbf{Severe class imbalance:} HC:PD ratio of 1:2.94 (compared to 1.3:1 in Dataset A)
 \end{itemize}
 
 \begin{quote}
-\textbf{Caveat:} Results on Dataset B may be optimistic due to unknown subject overlap across folds. The absence of subject identifiers prevents validation of true out-of-subject generalization.
+\textbf{Caveat:} Results on Dataset B may be optimistic due to unknown subject overlap across folds. The absence of subject identifiers prevents validation of true out-of-subject generalization. The severe class imbalance (74.6\% PD) further complicates interpretation.
 \end{quote}
 
 \subsection{Comparison Limitations}
@@ -67,9 +72,12 @@ Dataset B (PD\_SPEECH) provides no subject identifiers. This creates potential f
 Direct comparison between Dataset A (grouped CV) and Dataset B (standard CV) is confounded by:
 
 \begin{itemize}
-    \item Different CV strategies
-    \item Different feature dimensionalities (78 vs 752)
-    \item Different sample sizes (37 vs 756)
+    \item Different CV strategies (Grouped Stratified vs Stratified)
+    \item Different sample sizes (37 subjects vs 756 samples)
+    \item Different speech tasks (read/spontaneous vs sustained /a/ phonation)
+    \item Different feature extraction pipelines (custom Librosa/Parselmouth vs unknown)
+    \item Different class imbalance ratios (1.3:1 vs 2.94:1)
+    \item Unknown subject overlap in Dataset B (potential data leakage)
 \end{itemize}
 
 \section{Feature Extraction Limitations}
@@ -80,8 +88,9 @@ The feature set was designed a priori based on literature review, not data-drive
 
 \begin{itemize}
     \item \textbf{Potentially suboptimal features:} Other features may be more discriminative
-    \item \textbf{Fixed parameters:} Librosa/Parselmouth defaults used without tuning
-    \item \textbf{No feature selection:} All 78 features used without reduction
+    \item \textbf{Fixed parameters:} F0 range 75--500 Hz, MFCC n\_coeffs=13, n\_fft=2048, hop\_length=512
+    \item \textbf{No feature selection:} All 47 (baseline) or 78 (extended) features used without reduction
+    \item \textbf{No feature engineering:} No interaction terms, polynomial features, or domain-specific transformations
 \end{itemize}
 
 \subsection{Audio Quality Assumptions}
@@ -90,17 +99,18 @@ Feature extraction assumes:
 
 \begin{itemize}
     \item Reasonable signal-to-noise ratio
-    \item Consistent recording conditions
+    \item Consistent recording conditions (Dataset A: clinical examination room, $\sim$500 ms reverberation)
     \item No severe clipping or distortion
+    \item Mono audio at 22050 Hz (Dataset A downsampled from 44100 Hz)
 \end{itemize}
 
-The MDVR-KCL dataset's smartphone recordings may violate these assumptions.
+The MDVR-KCL dataset's smartphone recordings (Motorola Moto G4) may introduce device-specific artifacts. Dataset B's recording conditions are unknown.
 
 \section{Model Limitations}
 
 \subsection{No Hyperparameter Tuning}
 
-All models used default or fixed hyperparameters:
+All models used sklearn default hyperparameters with only random seed and class weighting as controlled variables:
 
 \begin{table}[H]
 \centering
@@ -108,24 +118,25 @@ All models used default or fixed hyperparameters:
 \toprule
 \textbf{Model} & \textbf{Fixed Parameters} \\
 \midrule
-Logistic Regression & $C=1.0$, max\_iter$=1000$ \\
-SVM (RBF) & $C=1.0$, gamma$=$`scale' \\
-Random Forest & n\_estimators$=100$, max\_depth$=10$ \\
+Logistic Regression & $C=1.0$, max\_iter$=1000$, solver=`lbfgs' \\
+SVM (RBF) & $C=1.0$, gamma=`scale' (auto-computed) \\
+Random Forest & n\_estimators$=100$, max\_depth=None (unlimited) \\
 \bottomrule
 \end{tabular}
-\caption{Fixed hyperparameters}
+\caption{Fixed hyperparameters (all experiments)}
 \label{tab:fixed-params}
 \end{table}
 
 \textbf{Implications:}
 
 \begin{itemize}
-    \item Performance may be suboptimal
-    \item Results represent lower bounds
-    \item Tuned models might change rankings
+    \item Performance may be suboptimal compared to tuned baselines
+    \item Results represent out-of-the-box sklearn performance
+    \item Hyperparameter tuning might change relative model rankings
+    \item Class weighting explored separately (USE\_CLASS\_WEIGHT\_BALANCED flag)
 \end{itemize}
 
-\textbf{Rationale:} Nested CV on 37 subjects would lead to extreme variance; fixed parameters ensure reproducibility.
+\textbf{Rationale:} Nested CV on 37 subjects would lead to extreme variance (inner folds $\sim$5--6 subjects); fixed parameters ensure reproducibility and fair model comparison.
 
 \subsection{Classical ML Only}
 
@@ -143,22 +154,44 @@ This thesis explicitly excludes deep learning. Potential missed opportunities:
 
 \subsection{No External Validation}
 
-All results use internal cross-validation. Limitations:
+All results use internal cross-validation (5-fold) without external test sets. Limitations:
 
 \begin{itemize}
-    \item No held-out test set from different source
-    \item No multi-site validation
-    \item Generalization to clinical settings unknown
+    \item No held-out test set from different data source or collection protocol
+    \item No multi-site validation (Dataset A: single hospital; Dataset B: single institution)
+    \item Generalization to clinical settings with different recording devices unknown
+    \item Temporal stability not assessed (all recordings from single time point per subject)
+    \item Cross-language and cross-dialect generalization not evaluated
 \end{itemize}
+
+\subsection{Class Imbalance Handling}
+
+Class imbalance was present in both datasets:
+
+\begin{itemize}
+    \item Dataset A: HC:PD ratio 1.31:1 (ReadText) and 1.40:1 (SpontaneousDialogue)
+    \item Dataset B: HC:PD ratio 1:2.94 (severe imbalance)
+\end{itemize}
+
+The USE\_CLASS\_WEIGHT\_BALANCED flag was explored as a mitigation strategy, but:
+
+\begin{itemize}
+    \item Did not systematically improve performance across all metrics
+    \item May have increased variance in some conditions
+    \item Optimal weighting strategy may vary by model and dataset
+\end{itemize}
+
+\textbf{Alternative approaches not explored:} SMOTE, undersampling, cost-sensitive learning, or threshold adjustment.
 
 \subsection{Binary Classification Only}
 
 The task is limited to PD vs HC classification. Not addressed:
 
 \begin{itemize}
-    \item Disease severity prediction
-    \item Progression monitoring
-    \item Differential diagnosis (PD vs other conditions)
+    \item Disease severity prediction (UPDRS scoring)
+    \item Progression monitoring (longitudinal data)
+    \item Differential diagnosis (PD vs other movement disorders)
+    \item Multi-class classification (HC vs PD vs atypical parkinsonism)
 \end{itemize}
 
 \subsection{Single Speech Tasks}
@@ -181,9 +214,12 @@ Each task analyzed separately. Not addressed:
 \toprule
 \textbf{Threat} & \textbf{Status} & \textbf{Mitigation} \\
 \midrule
-Subject leakage & Controlled (Dataset A) & Grouped CV \\
+Subject leakage & Controlled (Dataset A) & GroupedStratifiedKFold \\
+Subject leakage & Uncontrolled (Dataset B) & No subject IDs available \\
 Label noise & Unknown & Assumed correct \\
-Feature bugs & Possible & Unit tests, manual verification \\
+Feature extraction bugs & Mitigated & Unit tests + manual verification \\
+Random seed dependence & Controlled & RANDOM\_SEED=42 (fixed) \\
+Data preprocessing errors & Mitigated & Standardized audio normalization \\
 \bottomrule
 \end{tabular}
 \caption{Internal validity threats}

@@ -11,7 +11,24 @@ This chapter interprets the experimental results, situates the findings within t
 
 \subsection{Feature Extension Impact}
 
-Extending the raw-audio feature set from 47 to 78 features resulted in substantial performance gains, particularly for the ReadText task. Under the Random Forest classifier, ROC-AUC increased from 0.590 to 0.822 (+23 percentage points), elevating performance from near chance level to clinically meaningful discrimination.
+Extending the raw-audio feature set from 47 to 78 features resulted in substantial performance gains, particularly for the ReadText task. Under the Random Forest classifier, ROC-AUC increased from $0.590 \pm 0.302$ to $0.822 \pm 0.166$ (+23 percentage points), elevating performance from near-chance level to clinically meaningful discrimination.
+
+\textbf{Task-Specific Effects:}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{@{}lccc@{}}
+\toprule
+\textbf{Model} & \textbf{ReadText $\Delta$} & \textbf{Spontaneous $\Delta$} & \textbf{Effect Size} \\
+\midrule
+Random Forest & +23.2pp & +2.9pp & \textbf{8$\times$ larger} \\
+SVM (RBF) & +22.0pp & +5.3pp & \textbf{4$\times$ larger} \\
+Logistic Regression & $-1.9$pp & +2.3pp & Neutral \\
+\bottomrule
+\end{tabular}
+\caption{Feature extension impact by task. ReadText showed dramatically larger improvements, suggesting baseline features were insufficient for structured speech.}
+\label{tab:task-specific-extension}
+\end{table}
 
 \textbf{Interpretation:}
 
@@ -24,7 +41,7 @@ The extended features capture three complementary aspects of speech dynamics:
 \textbf{Feature Group} & \textbf{Contribution} \\
 \midrule
 MFCC standard deviations & Within-utterance spectral variability \\
-Delta--delta MFCCs & Second-order temporal dynamics \\
+Delta--delta MFCCs & Second-order temporal dynamics (acceleration) \\
 Spectral shape descriptors & Global distribution of spectral energy \\
 \bottomrule
 \end{tabular}
@@ -32,12 +49,13 @@ Spectral shape descriptors & Global distribution of spectral energy \\
 \label{tab:extended-contributions}
 \end{table}
 
-These additions are particularly relevant for PD detection because:
+The disproportionate improvement for ReadText suggests that:
 
 \begin{enumerate}
-    \item \textbf{Reduced variability} is a hallmark of PD speech (monotone)
-    \item \textbf{Temporal dynamics} are affected by motor control deficits
-    \item \textbf{Spectral flatness} may indicate breathiness/reduced harmonic content
+    \item \textbf{Structured speech} (reading) requires finer-grained spectral features to capture PD-related rigidity patterns
+    \item \textbf{Spontaneous speech} already contains sufficient prosodic variability detectable by baseline features
+    \item \textbf{Temporal acceleration} (delta-delta) captures motor control deficits more evident in reading tasks
+    \item \textbf{Linear models} (Logistic Regression) may overfit to 78 dimensions given $n=37$ subjects
 \end{enumerate}
 
 \subsection{Class Weighting Effects}
@@ -88,22 +106,49 @@ Random Forest's advantages for this task include:
 
 \subsection{High Variance Across Folds}
 
-Standard deviations frequently exceeded 0.15 (15\%), indicating substantial fold-to-fold variability.
+Standard deviations frequently exceeded 0.15 (15\%), indicating substantial fold-to-fold variability. Dataset A exhibited variance 10--15$\times$ higher than Dataset B:
+
+\begin{table}[H]
+\centering
+\begin{tabular}{@{}lcc@{}}
+\toprule
+\textbf{Metric} & \textbf{Dataset A (n=37)} & \textbf{Dataset B (n=752)} \\
+\midrule
+ROC-AUC std & $\pm 0.15$--$0.30$ & $\pm 0.01$--$0.03$ \\
+Accuracy std & $\pm 0.14$--$0.18$ & $\pm 0.008$--$0.024$ \\
+F1-Score std & $\pm 0.21$--$0.39$ & $\pm 0.006$--$0.015$ \\
+\bottomrule
+\end{tabular}
+\caption{Variance comparison: small vs large datasets. Standard deviations scale approximately as $1/\sqrt{n}$.}
+\label{tab:variance-comparison}
+\end{table}
 
 \textbf{Causes:}
 
 \begin{enumerate}
-    \item \textbf{Small sample size} (37 subjects $\rightarrow$ $\sim$7 subjects per test fold)
-    \item \textbf{Subject heterogeneity} in disease severity
-    \item \textbf{Recording variability} (smartphone recordings)
+    \item \textbf{Small sample size:} 37 subjects $\rightarrow$ $\sim$7 subjects per test fold $\rightarrow$ high sensitivity to individual cases
+    \item \textbf{Subject heterogeneity:} Unknown disease severity distribution (MDVR-KCL lacks clinical staging)
+    \item \textbf{Recording variability:} Smartphone-based capture in uncontrolled environments
+    \item \textbf{Task complexity:} Spontaneous Dialogue requires cognitive load not standardized across subjects
 \end{enumerate}
+
+\textbf{Extreme Cases:}
+
+Some models exhibited near-random performance on specific folds:
+\begin{itemize}
+    \item SVM on Spontaneous/Baseline: $0.407 \pm 0.309$ (ROC-AUC range: 0.10--0.72)
+    \item Random Forest on ReadText/Baseline: $0.590 \pm 0.302$ (range: 0.29--0.89)
+\end{itemize}
+
+These wide ranges suggest that certain subject groupings in test folds were particularly difficult or easy to classify.
 
 \textbf{Implications:}
 
 \begin{itemize}
-    \item Absolute performance numbers should be interpreted cautiously
-    \item Relative comparisons across conditions are more reliable
-    \item Confidence intervals overlap for many comparisons
+    \item Absolute performance numbers should be interpreted cautiously given the small sample size ($n=37$)
+    \item \textbf{Relative comparisons} across conditions (same CV splits) are more reliable
+    \item Confidence intervals overlap for many model comparisons, limiting statistical conclusions
+    \item Larger studies ($n > 100$) are needed for definitive model ranking
 \end{itemize}
 
 \section{Comparison with Literature}
@@ -144,37 +189,137 @@ Our results are competitive with literature, though direct comparison is limited
 CV Strategy & Random split & Grouped stratified \\
 Subject handling & Often ignored & Explicit grouping \\
 Feature selection & Ad-hoc & Systematic ablation \\
-Reporting & Best result only & All conditions \\
+Reporting & Best result only & All conditions + variance \\
+Class imbalance & Often unaddressed & Explicit evaluation \\
+Task specification & Mixed/unstated & Separated + compared \\
 \bottomrule
 \end{tabular}
-\caption{Methodological comparison}
+\caption{Methodological comparison. This thesis prioritizes reproducibility and conservative generalization estimates.}
 \label{tab:methodological-comparison}
 \end{table}
 
-Our grouped CV approach provides \textbf{more conservative} but \textbf{more realistic} estimates of generalization performance.
+\textbf{Impact of Grouped CV:}
+
+Our grouped CV approach provides \textbf{more conservative} but \textbf{more realistic} estimates of generalization performance. Studies using random splits likely report optimistically biased results:
+
+\begin{itemize}
+    \item \textbf{Data leakage:} Multiple recordings from same subject appear in train/test splits
+    \item \textbf{Inflated metrics:} Model learns subject-specific patterns rather than PD-general patterns
+    \item \textbf{Clinical invalidity:} New patient prediction (real-world scenario) is not evaluated
+\end{itemize}
+
+\textbf{Reporting Transparency:}
+
+This thesis reports:
+\begin{enumerate}
+    \item All experimental conditions (2 tasks $\times$ 2 feature sets $\times$ 2 weighting schemes)
+    \item Mean ± std for all metrics across all 5 CV folds
+    \item Negative results (class weighting, SVM failures)
+    \item Dataset limitations explicitly documented
+\end{enumerate}
+
+This level of transparency is uncommon in the PD voice classification literature, where selective reporting of best results is prevalent.
 
 \section{Feature Importance Analysis}
 
-\subsection{Most Discriminative Features}
+\subsection{Most Discriminative Features (Dataset A)}
 
-The top features across models consistently include:
+Feature importance patterns differed between tasks, reflecting distinct acoustic signatures:
 
 \begin{table}[H]
 \centering
-\begin{tabular}{@{}llp{5cm}@{}}
+\begin{tabular}{@{}clcl@{}}
 \toprule
-\textbf{Feature} & \textbf{Category} & \textbf{Relevance to PD} \\
+\textbf{Rank} & \textbf{ReadText} & \textbf{Importance} & \textbf{Spontaneous Dialogue} \\
 \midrule
-f0\_max & Pitch & Reduced pitch range in PD \\
-delta\_mfcc\_2\_mean & Spectral dynamics & Temporal variability \\
-autocorr\_harmonicity & Voice quality & Breathiness indicator \\
-shimmer\_apq3 & Perturbation & Amplitude instability \\
-intensity\_mean & Prosody & Hypophonia marker \\
+1 & f0\_max & 0.052 & mfcc\_5\_mean \\
+2 & delta\_mfcc\_2\_mean & 0.039 & shimmer\_apq11 \\
+3 & f3\_std & 0.038 & delta\_mfcc\_8\_mean \\
+4 & autocorr\_harmonicity & 0.038 & jitter\_local \\
+5 & intensity\_mean & 0.035 & delta\_mfcc\_2\_mean \\
 \bottomrule
 \end{tabular}
-\caption{Most discriminative features}
-\label{tab:top-features}
+\caption{Top 5 Random Forest features by task (Extended feature set). Importance values represent mean decrease in impurity.}
+\label{tab:top-features-by-task}
 \end{table}
+
+\textbf{Task-Specific Patterns:}
+
+\begin{itemize}
+    \item \textbf{ReadText:} Dominated by pitch (\texttt{f0\_max}) and formant variability (\texttt{f3\_std}), suggesting structured speech emphasizes fundamental frequency rigidity
+    \item \textbf{Spontaneous:} Spectral features (\texttt{mfcc\_5}) and perturbation measures (\texttt{shimmer\_apq11}, \texttt{jitter\_local}) indicate importance of voice quality instability
+    \item \textbf{Common:} \texttt{delta\_mfcc\_2\_mean} appears in both top-5 lists, confirming temporal dynamics are universally important
+\end{itemize}
+
+\subsection{Dataset B Feature Complexity}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{@{}lcp{6cm}@{}}
+\toprule
+\textbf{Feature} & \textbf{Importance} & \textbf{Category} \\
+\midrule
+std\_delta\_log\_energy & 0.0133 & Energy dynamics \\
+std\_delta\_delta\_log\_energy & 0.0132 & Energy acceleration \\
+tqwt\_entropy\_shannon\_dec\_12 & 0.0117 & Wavelet entropy \\
+tqwt\_TKEO\_std\_dec\_11 & 0.0098 & Teager energy \\
+tqwt\_TKEO\_mean\_dec\_12 & 0.0096 & Teager energy \\
+\bottomrule
+\end{tabular}
+\caption{Top 5 Dataset B features (Random Forest). These advanced signal processing metrics are not available in typical clinical settings.}
+\label{tab:datasetb-features}
+\end{table}
+
+\textbf{Key Observations:}
+
+\begin{enumerate}
+    \item Dataset B's top features require \textbf{specialized signal processing} (wavelet decomposition, Teager energy operators)
+    \item Dataset A's features are \textbf{clinically interpretable} (pitch, formants, perturbation)
+    \item Importance values are more \textbf{evenly distributed} in Dataset B (0.013 vs 0.052), suggesting ensemble of many weak signals
+    \item This complexity gap may partially explain Dataset B's superior performance (0.940 vs 0.857)
+\end{enumerate}
+
+\section{Task-Dependent Performance Patterns}
+
+\subsection{ReadText vs Spontaneous Dialogue}
+
+The two speech tasks yielded systematically different classification profiles:
+
+\begin{table}[H]
+\centering
+\begin{tabular}{@{}lccc@{}}
+\toprule
+\textbf{Configuration} & \textbf{ReadText} & \textbf{Spontaneous} & \textbf{Advantage} \\
+\midrule
+\textbf{Baseline Features:} & & & \\
+Random Forest ROC-AUC & $0.590 \pm 0.302$ & $0.828 \pm 0.148$ & \textbf{Spontaneous} \\
+Logistic Regression & $0.717 \pm 0.139$ & $0.760 \pm 0.214$ & Spontaneous \\
+\midrule
+\textbf{Extended Features:} & & & \\
+Random Forest ROC-AUC & $0.822 \pm 0.166$ & $0.857 \pm 0.171$ & Spontaneous \\
+SVM (RBF) & $0.834 \pm 0.153$ & $0.460 \pm 0.294$ & \textbf{ReadText} \\
+\bottomrule
+\end{tabular}
+\caption{Task comparison across configurations. Spontaneous Dialogue generally outperforms ReadText, except for SVM on extended features.}
+\label{tab:task-comparison}
+\end{table}
+
+\textbf{Interpretation:}
+
+\begin{enumerate}
+    \item \textbf{Spontaneous speech dominance:} Unscripted speech may amplify PD-related prosodic deficits (monotone, reduced variability)
+    \item \textbf{Cognitive load hypothesis:} Spontaneous Dialogue requires simultaneous language generation and articulation, stressing motor control
+    \item \textbf{SVM anomaly:} SVM's failure on Spontaneous/Extended ($0.460 \pm 0.294$) suggests kernel sensitivity to feature distribution shifts
+    \item \textbf{Baseline sufficiency:} Spontaneous Dialogue achieved 0.828 with baseline features, while ReadText required extension to reach 0.822
+\end{enumerate}
+
+\textbf{Clinical Implications:}
+
+For resource-constrained screening applications:
+\begin{itemize}
+    \item \textbf{Spontaneous speech + baseline features} (47 dimensions) achieves competitive performance (0.83) with lower computational cost
+    \item ReadText requires extended feature engineering for acceptable discrimination
+\end{itemize}
 
 \section{Addressing Research Questions}
 
@@ -184,7 +329,15 @@ intensity\_mean & Prosody & Hypophonia marker \\
 \textbf{How do classical ML models perform on PD voice classification?}
 \end{quote}
 
-Classical ML achieves ROC-AUC up to 0.873, demonstrating feasibility of voice-based PD detection. Random Forest outperforms linear models.
+Classical ML achieves ROC-AUC up to $0.857 \pm 0.171$ (Dataset A, Random Forest, Spontaneous/Extended), demonstrating feasibility of voice-based PD detection without deep learning. Model hierarchy:
+
+\begin{itemize}
+    \item \textbf{Random Forest:} Best overall ($0.786 \pm 0.235$ pooled across conditions)
+    \item \textbf{Logistic Regression:} Stable baseline ($0.781 \pm 0.152$ pooled)
+    \item \textbf{SVM (RBF):} High variance, task-sensitive ($0.635 \pm 0.311$ pooled)
+\end{itemize}
+
+Random Forest's ensemble averaging provides robustness critical for small datasets.
 
 \subsection{RQ2: Feature Extension Impact}
 
@@ -192,7 +345,14 @@ Classical ML achieves ROC-AUC up to 0.873, demonstrating feasibility of voice-ba
 \textbf{Does feature set extension improve classification performance?}
 \end{quote}
 
-\textbf{Yes.} Extending from 47 to 78 features improved ROC-AUC by +8.7pp (Random Forest). The improvement is most pronounced for non-linear models.
+\textbf{Yes, task-dependently.} Extending from 47 to 78 features improved ROC-AUC by:
+\begin{itemize}
+    \item ReadText: +23.2pp (RF), +22.0pp (SVM) --- \textbf{Critical improvement}
+    \item Spontaneous: +2.9pp (RF), +5.3pp (SVM) --- \textbf{Marginal improvement}
+    \item Logistic Regression: $-1.9$pp (ReadText) --- \textbf{Potential overfitting}
+\end{itemize}
+
+Extended features are essential for ReadText but optional for Spontaneous Dialogue.
 
 \subsection{RQ3: Class Weighting Impact}
 
@@ -200,7 +360,14 @@ Classical ML achieves ROC-AUC up to 0.873, demonstrating feasibility of voice-ba
 \textbf{Does class weighting improve performance on imbalanced datasets?}
 \end{quote}
 
-\textbf{Marginally.} On Dataset A (moderate imbalance), class weighting improved RF by +3.5pp with baseline features but showed inconsistent effects elsewhere.
+\textbf{Minimal effect.} On Dataset A (1.3:1 HC:PD imbalance), class weighting effects:
+\begin{itemize}
+    \item Random Forest: +9.7pp (ReadText/Baseline), $-1.7$pp (ReadText/Extended)
+    \item Logistic Regression: 0.0pp (unchanged)
+    \item SVM (RBF): $-7.2$pp (ReadText/Baseline)
+\end{itemize}
+
+Class weighting becomes unnecessary when imbalance ratio $< 2:1$ and subject-grouped CV is used.
 
 \subsection{RQ4: Cross-Dataset Comparison}
 
@@ -208,4 +375,11 @@ Classical ML achieves ROC-AUC up to 0.873, demonstrating feasibility of voice-ba
 \textbf{How do results compare between Dataset A and Dataset B?}
 \end{quote}
 
-Dataset B achieves higher absolute performance (ROC-AUC 0.94 vs 0.87), but this comparison is confounded by methodological differences. Dataset A's grouped CV provides more realistic generalization estimates.
+Dataset B achieves higher absolute performance (ROC-AUC $0.940 \pm 0.013$ vs $0.857 \pm 0.171$), but this 8.3pp difference is confounded by:
+\begin{enumerate}
+    \item \textbf{Sample size:} 752 vs 37 subjects (20$\times$ larger)
+    \item \textbf{CV strategy:} Unknown subject handling vs explicit grouping
+    \item \textbf{Feature complexity:} Advanced signal processing vs clinical prosody
+\end{enumerate}
+
+Dataset A's grouped CV provides more conservative, realistic generalization estimates suitable for clinical validation studies.

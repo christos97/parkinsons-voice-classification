@@ -109,9 +109,13 @@ This appendix presents the top-20 most important features for each experimental 
 4 & delta\_mfcc\_2\_mean & 0.493 & 0.196 \\
 5 & intensity\_min & 0.459 & 0.170 \\
 6 & mfcc\_3\_mean & 0.388 & 0.271 \\
+7 & delta\_mfcc\_11\_mean & 0.381 & 0.102 \\
+8 & delta\_mfcc\_7\_mean & 0.380 & 0.150 \\
+9 & hnr\_mean & 0.379 & 0.175 \\
+10 & delta\_mfcc\_1\_mean & 0.352 & 0.123 \\
 \bottomrule
 \end{tabular}
-\caption{Logistic Regression feature importance --- SpontaneousDialogue (top 6)}
+\caption{Logistic Regression feature importance --- SpontaneousDialogue (top 10)}
 \label{tab:lr-spontaneous-importance}
 \end{table}
 
@@ -121,10 +125,81 @@ This appendix presents the top-20 most important features for each experimental 
     \caption{Logistic Regression coefficient magnitudes (Spontaneous Dialogue)}
     \label{fig:imp-spontaneous-lr}
 \end{figure}
+\section{Dataset B --- PD Speech Features}
 
+Dataset B contains 752 pre-extracted features including TQWT (Tunable Q-factor Wavelet Transform) coefficients not present in Dataset A. Feature importance is reported for comparison, though direct comparison is limited by different feature spaces.
+
+\subsection{Random Forest --- Top 10 Features}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{@{}clcc@{}}
+\toprule
+\textbf{Rank} & \textbf{Feature} & \textbf{Importance} & \textbf{Std} \\
+\midrule
+1 & std\_delta\_log\_energy & 0.013 & 0.004 \\
+2 & std\_delta\_delta\_log\_energy & 0.013 & 0.003 \\
+3 & tqwt\_entropy\_shannon\_dec\_12 & 0.012 & 0.001 \\
+4 & tqwt\_TKEO\_std\_dec\_11 & 0.010 & 0.004 \\
+5 & tqwt\_TKEO\_mean\_dec\_12 & 0.010 & 0.001 \\
+6 & mean\_MFCC\_2nd\_coef & 0.008 & 0.003 \\
+7 & tqwt\_entropy\_log\_dec\_11 & 0.008 & 0.003 \\
+8 & tqwt\_stdValue\_dec\_12 & 0.008 & 0.003 \\
+9 & tqwt\_stdValue\_dec\_13 & 0.008 & 0.003 \\
+10 & tqwt\_energy\_dec\_12 & 0.007 & 0.003 \\
+\bottomrule
+\end{tabular}
+\caption{Random Forest feature importance --- Dataset B (top 10)}
+\label{tab:rf-datasetb-importance}
+\end{table}
+
+\textbf{Note:} Importance values are lower than Dataset A due to the larger feature space (752 vs 47 features), distributing importance more broadly.
+
+\subsection{Logistic Regression --- Top 10 Features}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{@{}clcc@{}}
+\toprule
+\textbf{Rank} & \textbf{Feature} & \textbf{|Coefficient|} & \textbf{Std} \\
+\midrule
+1 & tqwt\_kurtosisValue\_dec\_33 & 0.733 & 0.161 \\
+2 & tqwt\_entropy\_log\_dec\_33 & 0.694 & 0.084 \\
+3 & mean\_MFCC\_7th\_coef & 0.614 & 0.148 \\
+4 & std\_delta\_delta\_log\_energy & 0.588 & 0.133 \\
+5 & std\_MFCC\_2nd\_coef & 0.567 & 0.202 \\
+6 & tqwt\_meanValue\_dec\_16 & 0.551 & 0.114 \\
+7 & tqwt\_medianValue\_dec\_25 & 0.540 & 0.209 \\
+8 & mean\_MFCC\_3rd\_coef & 0.538 & 0.155 \\
+9 & tqwt\_meanValue\_dec\_22 & 0.528 & 0.172 \\
+10 & std\_9th\_delta & 0.526 & 0.103 \\
+\bottomrule
+\end{tabular}
+\caption{Logistic Regression feature importance --- Dataset B (top 10)}
+\label{tab:lr-datasetb-importance}
+\end{table}
+
+\textbf{Observation:} TQWT features dominate Dataset B importance, reflecting the sustained vowel /a/ phonation task where time-frequency decomposition captures subtle vocal tremor patterns.
+
+\begin{figure}[H]
+    \centering
+    \begin{subfigure}[b]{0.48\textwidth}
+        \includegraphics[width=\textwidth]{fig_imp_datasetb_rf.png}
+        \caption{Random Forest}
+        \label{fig:imp-datasetb-rf}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.48\textwidth}
+        \includegraphics[width=\textwidth]{fig_imp_datasetb_lr.png}
+        \caption{Logistic Regression}
+        \label{fig:imp-datasetb-lr}
+    \end{subfigure}
+    \caption{Feature importance for Dataset B (PD Speech Features).}
+    \label{fig:imp-datasetb}
+\end{figure}
 \section{Cross-Task Feature Stability}
 
-Features that appear in top-10 for both tasks indicate robust discriminative power across different speech contexts:
+Features that appear in top-10 for both tasks (Random Forest) indicate robust discriminative power across different speech contexts:
 
 \begin{table}[H]
 \centering
@@ -135,12 +210,16 @@ Features that appear in top-10 for both tasks indicate robust discriminative pow
 delta\_mfcc\_2\_mean & 2 & 5 \\
 autocorr\_harmonicity & 4 & 6 \\
 f0\_mean & 6 & 10 \\
-shimmer\_apq3/apq11 & 7 & 2 \\
+shimmer (apq3/apq11) & 7 & 2 \\
+mfcc\_5\_mean & -- & 1 \\
+f0\_std & -- & 9 \\
 \bottomrule
 \end{tabular}
-\caption{Cross-task stable features}
+\caption{Cross-task feature stability (Random Forest top-10)}
 \label{tab:cross-task-features}
 \end{table}
+
+\textbf{Interpretation:} Features consistently important across tasks (delta\_mfcc\_2\_mean, autocorr\_harmonicity, shimmer) likely capture \textbf{task-general} acoustic signatures of PD rather than task-specific artifacts. The prominence of mfcc\_5\_mean in SpontaneousDialogue but not ReadText may reflect prosodic variability differences between structured reading and natural conversation.
 
 \section{Feature Category Analysis}
 

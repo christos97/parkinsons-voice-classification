@@ -49,57 +49,145 @@ This thesis investigated voice-based classification of Parkinson's Disease (PD) 
 \toprule
 \textbf{Finding} & \textbf{Evidence} \\
 \midrule
-Best ROC-AUC: $0.873 \pm 0.137$ & Random Forest, Extended Features \\
-Feature extension improves performance & +8.7pp ROC-AUC (baseline $\rightarrow$ extended) \\
-Random Forest outperforms other models & Highest ROC-AUC across all conditions \\
+Best ROC-AUC (Dataset A): $0.857 \pm 0.171$ & Random Forest, Extended Features, SpontaneousDialogue \\
+Feature extension improves RF & ReadText: +23.3pp ROC-AUC; Spontaneous: +2.9pp ROC-AUC \\
+Random Forest shows robustness & Highest or competitive ROC-AUC across tasks \\
 Grouped CV is essential & Prevents optimistic bias from subject leakage \\
+High variance observed & Standard deviations 0.13--0.43 across metrics \\
 \bottomrule
 \end{tabular}
-\caption{Primary research findings}
+\caption{Primary research findings (Dataset A, baseline class weighting)}
 \label{tab:primary-findings}
 \end{table}
 
 \subsection{Best Configuration}
 
+\textbf{ReadText Task:}
 \begin{verbatim}
 Model:           Random Forest
 Features:        Extended (78)
 Class Weighting: None
-ROC-AUC:         0.873 ± 0.137
-Accuracy:        82.6% ± 12.2%
+ROC-AUC:         0.822 ± 0.166
+Accuracy:        81.8% ± 14.0%
 \end{verbatim}
+
+\textbf{SpontaneousDialogue Task:}
+\begin{verbatim}
+Model:           Random Forest
+Features:        Extended (78)
+Class Weighting: None
+ROC-AUC:         0.857 ± 0.171
+Accuracy:        77.9% ± 16.1%
+\end{verbatim}
+
+\textbf{Note:} These results are from Dataset A (MDVR-KCL) with grouped cross-validation, representing conservative out-of-subject generalization estimates.
 
 \subsection{Feature Importance Insights}
 
-The most discriminative features for PD detection include:
+The most discriminative features for PD detection (Random Forest, ReadText task) include:
 
 \begin{enumerate}
     \item \textbf{f0\_max} --- Maximum fundamental frequency (pitch ceiling)
-    \item \textbf{delta\_mfcc\_2\_mean} --- Spectral dynamics
-    \item \textbf{autocorr\_harmonicity} --- Voice quality measure
-    \item \textbf{shimmer\_apq3} --- Amplitude perturbation
+    \item \textbf{delta\_mfcc\_2\_mean} --- Second-order MFCC temporal dynamics
+    \item \textbf{f3\_std} --- Third formant variability
+    \item \textbf{autocorr\_harmonicity} --- Voice quality measure (periodicity)
     \item \textbf{intensity\_mean} --- Overall vocal intensity
+    \item \textbf{shimmer\_apq3} --- Amplitude perturbation (short-term)
 \end{enumerate}
 
-These align with known clinical manifestations of PD: reduced pitch range, monotone speech, and hypophonia.
+These align with known clinical manifestations of PD: reduced pitch range, monotone speech (low F0 variability), hypophonia (reduced intensity), and voice quality degradation (harmonicity, shimmer).
 
 \section{Research Questions Answered}
 
 \subsection{RQ1: How do classical ML models perform on PD voice classification?}
 
-Classical ML achieves \textbf{ROC-AUC up to 0.873} with Random Forest on the MDVR-KCL dataset using grouped cross-validation. This demonstrates the feasibility of voice-based PD screening, though performance varies substantially across folds due to small sample size.
+Classical ML achieves \textbf{ROC-AUC up to 0.857 $\pm$ 0.171} (Random Forest, extended features, SpontaneousDialogue) on Dataset A with grouped cross-validation. However, performance varies substantially:
+
+\begin{itemize}
+    \item ReadText: 0.590--0.834 ROC-AUC (baseline features, across models)
+    \item SpontaneousDialogue: 0.407--0.857 ROC-AUC (baseline $\rightarrow$ extended, RF)
+    \item High variance due to small sample size (n=37 subjects)
+    \item Some SVM folds produced ROC-AUC $< 0.5$, indicating instability
+\end{itemize}
+
+This demonstrates the \textbf{feasibility} of voice-based PD classification, but highlights the \textbf{challenge} of robust performance on small datasets.
 
 \subsection{RQ2: Does feature set extension improve classification performance?}
 
-\textbf{Yes.} Extending from 47 baseline features to 78 features improved ROC-AUC by \textbf{+8.7 percentage points} for Random Forest. The additional features capturing spectral variability (MFCC std), temporal dynamics (delta-delta MFCC), and spectral shape contributed to this improvement.
+\textbf{Task-dependent.} Extending from 47 baseline to 78 extended features:
+
+\textbf{ReadText (Random Forest):}
+\begin{itemize}
+    \item Baseline: 0.590 $\pm$ 0.302 ROC-AUC
+    \item Extended: 0.822 $\pm$ 0.166 ROC-AUC
+    \item Improvement: +23.3 percentage points (+39\% relative)
+    \item Variance reduced from 0.302 to 0.166
+\end{itemize}
+
+\textbf{SpontaneousDialogue (Random Forest):}
+\begin{itemize}
+    \item Baseline: 0.828 $\pm$ 0.148 ROC-AUC
+    \item Extended: 0.857 $\pm$ 0.171 ROC-AUC
+    \item Improvement: +2.9 percentage points (modest)
+\end{itemize}
+
+The additional features capturing spectral variability (MFCC std), temporal dynamics (delta-delta MFCC), and spectral shape contributed most significantly to ReadText performance. Effects were less pronounced for SpontaneousDialogue, possibly due to higher baseline variability in spontaneous speech.
 
 \subsection{RQ3: Does class weighting improve performance on imbalanced datasets?}
 
-\textbf{Modestly.} On Dataset A (57:43 imbalance), class weighting improved Random Forest ROC-AUC by +3.5pp with baseline features. However, effects were inconsistent across models, and no benefit was observed when combined with extended features.
+\textbf{Minimal effects observed.} On Dataset A (HC:PD ratio 1.31:1 for ReadText, 1.40:1 for SpontaneousDialogue), class weighting showed inconsistent effects:
+
+\textbf{ReadText (Random Forest, extended features):}
+\begin{itemize}
+    \item Unweighted: 0.822 $\pm$ 0.166 ROC-AUC
+    \item Weighted: 0.805 $\pm$ 0.182 ROC-AUC
+    \item Change: -1.7pp (slight decrease)
+\end{itemize}
+
+\textbf{SpontaneousDialogue (Random Forest, baseline features):}
+\begin{itemize}
+    \item Unweighted: 0.828 $\pm$ 0.148 ROC-AUC
+    \item Weighted: 0.827 $\pm$ 0.133 ROC-AUC
+    \item Change: -0.1pp (negligible)
+\end{itemize}
+
+The moderate imbalance (1.3:1) may not be severe enough to benefit from weighting. Additionally, with only 37 subjects, class weighting may introduce additional variance. Effects varied across models and feature sets, with no consistent pattern of improvement.
 
 \subsection{RQ4: How do results compare between grouped and standard CV?}
 
-Dataset B (standard CV, no subject IDs) showed higher absolute performance than Dataset A (grouped CV), consistent with potential optimistic bias from subject leakage. \textbf{Grouped CV provides more conservative but more realistic estimates} of out-of-subject generalization.
+\textbf{Dataset A (Grouped CV, n=37 subjects):}
+\begin{itemize}
+    \item Random Forest: 0.590--0.857 ROC-AUC
+    \item High variance (std 0.15--0.30)
+    \item Subject-level generalization
+\end{itemize}
+
+\textbf{Dataset B (Standard CV, n=756 samples, subject IDs unknown):}
+\begin{itemize}
+    \item Random Forest: 0.940--0.949 ROC-AUC (baseline/weighted)
+    \item Low variance (std 0.012--0.013)
+    \item Unknown within-subject correlation
+\end{itemize}
+
+Dataset B shows substantially higher performance (+8--12pp ROC-AUC) and lower variance, consistent with potential optimistic bias from subject leakage. \textbf{Grouped CV provides more conservative but more realistic estimates} of out-of-subject generalization. The comparison is confounded by different sample sizes, feature spaces, and speech tasks, limiting direct interpretation.
+
+\subsection{RQ5: Do speech tasks yield different classification performance?}
+
+\textbf{Baseline features show task differences:}
+\begin{itemize}
+    \item ReadText: 0.590 $\pm$ 0.302 ROC-AUC (Random Forest, baseline)
+    \item SpontaneousDialogue: 0.828 $\pm$ 0.148 ROC-AUC (Random Forest, baseline)
+    \item Difference: +23.8pp in favor of spontaneous speech
+\end{itemize}
+
+\textbf{Extended features reduce gap:}
+\begin{itemize}
+    \item ReadText: 0.822 $\pm$ 0.166 (extended)
+    \item SpontaneousDialogue: 0.857 $\pm$ 0.171 (extended)
+    \item Difference: +3.5pp (converged)
+\end{itemize}
+
+SpontaneousDialogue may capture naturalistic PD speech characteristics (monotone prosody, reduced variability) more effectively than structured reading. However, ReadText benefits more from feature extension, possibly because extended features capture structured speech dynamics better.
 
 \section{Implications}
 
@@ -173,17 +261,19 @@ Key limitations that bound the interpretation of results:
 
 \section{Closing Remarks}
 
-This thesis demonstrates that \textbf{voice-based Parkinson's Disease classification is feasible} using classical machine learning with carefully engineered acoustic features. The \textbf{+8.7pp improvement} from feature extension highlights the importance of capturing speech dynamics beyond simple statistical summaries.
+This thesis demonstrates that \textbf{voice-based Parkinson's Disease classification is feasible} using classical machine learning with carefully engineered acoustic features, achieving ROC-AUC up to 0.857 on Dataset A with grouped cross-validation. The \textbf{task-dependent improvements from feature extension} (up to +23pp for ReadText) highlight the importance of capturing speech dynamics beyond simple statistical summaries.
 
 However, the field faces significant challenges:
 
 \begin{itemize}
-    \item Small datasets require rigorous methodology
+    \item Small datasets (n=37) produce high variance (std 0.13--0.43)
     \item Subject identity must be tracked for valid evaluation
-    \item Clinical deployment requires extensive validation
+    \item Task selection impacts performance (structured vs spontaneous speech)
+    \item Class weighting showed minimal benefit for moderate imbalance (1.3:1)
+    \item Clinical deployment requires extensive validation on independent cohorts
 \end{itemize}
 
-By prioritizing \textbf{methodological validity over performance optimization}, this work provides a foundation for future research that can build toward clinically useful applications. The transparent documentation of limitations ensures that results are interpreted appropriately and that subsequent studies can address identified gaps.
+By prioritizing \textbf{methodological validity over performance optimization}, this work provides a foundation for future research that can build toward clinically useful applications. The transparent documentation of limitations, high variance, and task-specific effects ensures that results are interpreted appropriately and that subsequent studies can address identified gaps.
 
 \vspace{1cm}
 

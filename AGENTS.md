@@ -96,6 +96,8 @@ demo_app:
 
 ## Parkinson's Disease Voice Classification Thesis
 
+> **Agent Visibility Note:** Critical rules from nested `AGENTS.md` files are inlined below with cross-references. Full context available in [src/parkinsons_voice_classification/AGENTS.md](src/parkinsons_voice_classification/AGENTS.md), [demo_app/AGENTS.md](demo_app/AGENTS.md), and [thesis/AGENTS.md](thesis/AGENTS.md).
+
 ---
 
 ## 0. Scope & Navigation
@@ -119,36 +121,42 @@ This root file contains **project-wide scientific and methodological constraints
 ### Quick Reference Links
 
 **Configuration & Documentation:**
+
 - [src/parkinsons_voice_classification/config.py](src/parkinsons_voice_classification/config.py) — All reproducible parameters (seeds, paths, feature counts)
 - [Makefile](Makefile) — Workflow automation (extraction, experiments, demo, thesis build)
 - [pyproject.toml](pyproject.toml) — Dependencies, CLI entry points, project metadata
 - [README.md](README.md) — Project overview and getting started
 
 **Datasets & Assets:**
+
 - [assets/DATASET_MDVR_KCL/](assets/DATASET_MDVR_KCL/) — Dataset A: Raw audio (ReadText, SpontaneousDialogue)
 - [assets/PD_SPEECH_FEATURES.csv](assets/PD_SPEECH_FEATURES.csv) — Dataset B: Pre-extracted features
 - [docs/DATASET_MDVR_KCL.md](docs/DATASET_MDVR_KCL.md) — Dataset A documentation
 - [docs/DATASET_PD_SPEECH_FEATURES.md](docs/DATASET_PD_SPEECH_FEATURES.md) — Dataset B documentation
 
 **Core Implementation:**
+
 - [src/parkinsons_voice_classification/inference.py](src/parkinsons_voice_classification/inference.py) — Public inference API
 - [src/parkinsons_voice_classification/features/](src/parkinsons_voice_classification/features/) — Feature extraction modules
 - [src/parkinsons_voice_classification/models/](src/parkinsons_voice_classification/models/) — Model training and evaluation
 - [src/parkinsons_voice_classification/data/](src/parkinsons_voice_classification/data/) — Dataset loaders
 
 **Outputs & Results:**
+
 - [outputs/features/](outputs/features/) — Extracted feature CSVs (baseline/extended)
 - [outputs/models/](outputs/models/) — Trained model artifacts (.joblib + metadata)
 - [outputs/results/](outputs/results/) — Experiment results (metrics, importance)
 - [outputs/plots/](outputs/plots/) — Generated figures for thesis
 
 **Demo Application:**
+
 - [demo_app/app.py](demo_app/app.py) — Flask routes and upload handling
 - [demo_app/inference_adapter.py](demo_app/inference_adapter.py) — Adapter wrapping core inference
 - [demo_app/templates/](demo_app/templates/) — HTML templates (index, result, about)
 - [docs/WEB_APP_ARCHITECTURE.md](docs/WEB_APP_ARCHITECTURE.md) — Full demo architecture documentation
 
 **Thesis LaTeX:**
+
 - [thesis/main.tex](thesis/main.tex) — Thesis master file
 - [thesis/chapters/](thesis/chapters/) — Individual chapter files (.tex)
 - [thesis/appendices/](thesis/appendices/) — Appendix files
@@ -156,7 +164,112 @@ This root file contains **project-wide scientific and methodological constraints
 - [thesis/figures/](thesis/figures/) — Figures for thesis (copied from outputs/plots/)
 
 **CLI Commands:**
+
 - [docs/CLI_REFERENCE.md](docs/CLI_REFERENCE.md) — Comprehensive CLI documentation
+
+---
+
+## 0.5. Flask Web App Critical Rules (REQUIRED)
+
+When working in [demo_app/](demo_app/) — See full rules in [demo_app/AGENTS.md](demo_app/AGENTS.md).
+
+### Import Boundaries (HARD RULE)
+
+```python
+# demo_app/app.py — CORRECT
+from inference_adapter import run_inference_with_features, get_model_info
+from audio_utils import normalize_audio_file
+
+# demo_app/app.py — FORBIDDEN ❌
+from parkinsons_voice_classification.inference import run_inference  # ❌
+from parkinsons_voice_classification.features import extract_all_features  # ❌
+from parkinsons_voice_classification import config  # ❌
+```
+
+**Why:** Adapter pattern ensures **model switching requires zero Flask/template changes**.
+
+### Audio Processing Contract
+
+```python
+@app.route("/analyze", methods=["POST"])
+def analyze():
+    try:
+        file.save(original_tmp_path)
+        normalized_wav = normalize_audio_file(original_tmp_path)  # Always normalize
+        result = run_inference_with_features(normalized_wav)      # Then infer
+        return render_template("result.html", result=result)
+    finally:
+        cleanup_audio_file(original_tmp_path)
+        cleanup_audio_file(normalized_wav)
+```
+
+**Rules:**
+
+- ✅ Input: ANY format (WAV, MP3, WebM, Opus, FLAC)
+- ✅ Output: ALWAYS mono 22050 Hz PCM-16 WAV
+- ✅ Cleanup in `finally` block (non-negotiable)
+- ❌ Never skip normalization
+
+### Frontend Constraints
+
+- **Styling:** Tailwind CSS (via CDN) — utility classes only
+- **JavaScript:** jQuery 3.7.1 (via CDN) — no vanilla JS mixing
+- **Templates:** Jinja2 conditionals for model status and prediction styling
+- **Disclaimer:** Required on ALL pages: "Research Demonstration Only. Not for clinical use."
+
+---
+
+## 0.6. LaTeX Thesis Critical Rules (REQUIRED)
+
+When working in [thesis/](thesis/) — See full rules in [thesis/AGENTS.md](thesis/AGENTS.md).
+
+### Build System
+
+```bash
+make thesis           # Build PDF (auto figure sync + latexmk)
+make thesis-watch     # Continuous rebuild on changes
+make thesis-clean     # Remove all artifacts
+```
+
+### Citations (HARD RULE)
+
+```latex
+% CORRECT — Use BibTeX entries
+\cite{little2009suitability}    % Author et al. [1]
+\citep{author2023}               % [1] (parenthetical)
+\citet{author2023}               % Author et al. [1] (textual)
+```
+
+**Requirements:**
+
+- ⚠️ Bibliography requires **at least one `\cite{}` command** in chapters
+- ✅ Allowed types: `@article`, `@book`, `@inproceedings`, `@misc`
+- ❌ Forbidden: `@software` — use `@misc` with `howpublished = {Software}`
+- ❌ Never cite internal artifacts (`outputs/`, `assets/`, `_legacy_/`)
+
+### Figure Workflow
+
+```latex
+% 1. Generate plot → outputs/plots/my_figure.png
+% 2. Update FIGURE_MAPPING in scripts/sync_figures.py
+% 3. Run: make thesis (auto-syncs to thesis/figures/)
+% 4. Use in LaTeX:
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{fig_my_figure.png}
+    \caption{My figure caption}
+    \label{fig:my-figure}
+\end{figure}
+```
+
+**Rules:**
+
+- ✅ Use `[H]` placement (float package loaded)
+- ✅ No path prefix needed (graphics path configured)
+- ✅ Label format: `\label{fig:descriptive-name}`
+- ❌ Never manually copy figures (use `make sync-figures`)
+- ❌ Never reference figures that don't exist in `thesis/figures/`
 
 ---
 
@@ -320,6 +433,20 @@ Single-point estimates forbidden in tables, figures, text.
 > Any change affecting behavior, workflow, or constraints MUST update relevant documentation and agent files, including frontmatter.
 
 This is **non-optional**.
+
+---
+
+---
+
+## Additional Context: Detailed Nested Rules
+
+This root file contains **critical rules** necessary for all agents. For **implementation-level details**, refer to:
+
+| When Working In | Read This File | Topics Covered |
+|-----------------|----------------|----------------|
+| Python package development, ML pipeline, CLI | [src/parkinsons_voice_classification/AGENTS.md](src/parkinsons_voice_classification/AGENTS.md) | Config rules, feature extraction, model training, inference API, cross-validation strategy, adapter pattern |
+| Flask web application, HTML templates, JavaScript | [demo_app/AGENTS.md](demo_app/AGENTS.md) | Import boundaries, audio processing, frontend stack (Tailwind/jQuery), template patterns, audio recorder implementation |
+| LaTeX thesis writing, chapter editing, bibliography | [thesis/AGENTS.md](thesis/AGENTS.md) | Build system, citations (BibTeX), figure synchronization, label conventions, troubleshooting |
 
 ---
 

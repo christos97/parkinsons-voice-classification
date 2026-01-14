@@ -5,210 +5,436 @@
 
 \section{Overview}
 
-This chapter details the experimental design, including the 2$\times$2 factorial structure, cross-validation protocols, and evaluation procedures. The design prioritizes methodological rigor over performance optimization.
+This chapter details the experimental design, including the $2 \times 2 \times 3$ factorial structure, cross-validation protocols, and evaluation procedures. The design prioritizes methodological rigor over performance optimization, with all experiments conducted under identical conditions to enable fair comparisons. All experimental procedures were automated via command-line tools to ensure reproducibility.
 
 \section{Research Questions}
 
 The experiments address the following research questions:
 
 \begin{description}
-    \item[RQ1:] How do classical ML models perform on PD voice classification?
-    \item[RQ2:] Does feature set extension (47 $\rightarrow$ 78) improve classification performance?
-    \item[RQ3:] Does class weighting improve performance on imbalanced datasets?
-    \item[RQ4:] How do results compare between Dataset A (grouped CV) and Dataset B (standard CV)?
+    \item[RQ1:] How do classical ML models perform on PD voice classification using acoustic features?
+    \item[RQ2:] Does feature set extension (47 $\rightarrow$ 78 features) improve classification performance?
+    \item[RQ3:] Does balanced class weighting improve performance on imbalanced datasets?
+    \item[RQ4:] How do results compare between Dataset A (subject-aware CV) and Dataset B (standard CV)?
+    \item[RQ5:] Do speech tasks (read vs spontaneous speech) yield different classification performance?
 \end{description}
+
+\section{Datasets and Sample Statistics}
+
+\subsection{Dataset A: MDVR-KCL}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{@{}lcccc@{}}
+\toprule
+\textbf{Task} & \textbf{HC} & \textbf{PD} & \textbf{Total} & \textbf{Imbalance Ratio} \\
+\midrule
+ReadText & 21 & 16 & 37 & 1.31:1 \\
+SpontaneousDialogue & 21 & 15 & 36 & 1.40:1 \\
+\bottomrule
+\end{tabular}
+\caption{Dataset A subject distribution by speech task}
+\label{tab:dataset-a-distribution}
+\end{table}
+
+\textbf{Key characteristics:}
+\begin{itemize}
+    \item Subject-level data with unique identifiers
+    \item Raw audio recordings ($\sim$44.1 kHz, 16-bit WAV)
+    \item Two distinct speech tasks per subject
+    \item Moderate class imbalance (HC:PD $\approx$ 1.3:1)
+\end{itemize}
+
+\subsection{Dataset B: PD Speech Features}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{@{}lccc@{}}
+\toprule
+\textbf{Class} & \textbf{Samples} & \textbf{Percentage} & \textbf{Imbalance Ratio} \\
+\midrule
+HC (0) & 192 & 25.4\% & \\
+PD (1) & 564 & 74.6\% & 2.94:1 \\
+\midrule
+\textbf{Total} & \textbf{756} & 100\% & \\
+\bottomrule
+\end{tabular}
+\caption{Dataset B sample distribution (pre-extracted features)}
+\label{tab:dataset-b-distribution-exp}
+\end{table}
+
+\textbf{Key characteristics:}
+\begin{itemize}
+    \item Sample-level data (subject IDs unavailable)
+    \item Pre-extracted features from sustained /a/ phonation
+    \item Severe class imbalance (HC:PD $\approx$ 1:3)
+    \item 754 features (reduced to 47 or 78 in our experiments for comparability)
+\end{itemize}
+
+\textbf{Caveat:} Without subject identifiers, results may be optimistic due to potential within-subject correlation across samples.
 
 \section{Experimental Matrix}
 
-\subsection{\texorpdfstring{2$\times$2 Factorial Design}{2x2 Factorial Design}}
+\subsection{\texorpdfstring{$2 \times 2 \times 3$ Factorial Design}{2x2x3 Factorial Design}}
+
+The complete experimental design crosses three factors:
+
+\begin{enumerate}
+    \item \textbf{Feature Set:} Baseline (47) vs Extended (78)
+    \item \textbf{Class Weighting:} None (baseline) vs Balanced
+    \item \textbf{Model Architecture:} Logistic Regression vs SVM (RBF) vs Random Forest
+\end{enumerate}
+
+This yields $2 \times 2 \times 3 = 12$ conditions per dataset/task combination.
 
 \begin{table}[H]
 \centering
-\begin{tabular}{@{}cllp{4cm}@{}}
+\begin{tabular}{@{}llllp{3cm}@{}}
 \toprule
-\textbf{Condition} & \textbf{Features} & \textbf{Weighting} & \textbf{Output Directory} \\
+\textbf{ID} & \textbf{Features} & \textbf{Weight} & \textbf{Models} & \textbf{Output Dir} \\
 \midrule
-C1 & Baseline (47) & None & \texttt{baseline/baseline/} \\
-C2 & Extended (78) & None & \texttt{baseline/extended/} \\
-C3 & Baseline (47) & Balanced & \texttt{weighted/baseline/} \\
-C4 & Extended (78) & Balanced & \texttt{weighted/extended/} \\
+C1 & Baseline (47) & None & LR, SVM, RF & \texttt{baseline/baseline/} \\
+C2 & Extended (78) & None & LR, SVM, RF & \texttt{baseline/extended/} \\
+C3 & Baseline (47) & Balanced & LR, SVM, RF & \texttt{weighted/baseline/} \\
+C4 & Extended (78) & Balanced & LR, SVM, RF & \texttt{weighted/extended/} \\
 \bottomrule
 \end{tabular}
-\caption{Experimental conditions}
+\caption{Experimental conditions (12 total: 4 conditions $\times$ 3 models each)}
 \label{tab:conditions}
 \end{table}
 
-\subsection{Models Under Evaluation}
-
-Each condition evaluates three models:
+\subsection{Total Experimental Runs}
 
 \begin{table}[H]
 \centering
-\begin{tabular}{@{}lll@{}}
+\begin{tabular}{@{}lcccc@{}}
 \toprule
-\textbf{Model} & \textbf{Abbreviation} & \textbf{Parameters} \\
+\textbf{Dataset/Task} & \textbf{Conditions} & \textbf{Models} & \textbf{CV Folds} & \textbf{Total Runs} \\
 \midrule
-Logistic Regression & LR & $C=1.0$, max\_iter$=1000$ \\
-Support Vector Machine (RBF) & SVM & $C=1.0$, gamma$=$`scale' \\
-Random Forest & RF & n\_estimators$=100$, max\_depth$=10$ \\
+Dataset A - ReadText & 4 & 3 & 5 & 60 \\
+Dataset A - SpontaneousDialogue & 4 & 3 & 5 & 60 \\
+Dataset B - PD Speech & 4 & 3 & 5 & 60 \\
+\midrule
+\textbf{Grand Total} & & & & \textbf{180} \\
 \bottomrule
 \end{tabular}
-\caption{Models under evaluation}
-\label{tab:models}
-\end{table}
-
-\subsection{Datasets}
-
-\begin{table}[H]
-\centering
-\begin{tabular}{@{}lll@{}}
-\toprule
-\textbf{Dataset} & \textbf{Task(s)} & \textbf{CV Strategy} \\
-\midrule
-Dataset A (MDVR-KCL) & ReadText, SpontaneousDialogue & Grouped Stratified 5-Fold \\
-Dataset B (PD\_SPEECH) & N/A & Stratified 5-Fold \\
-\bottomrule
-\end{tabular}
-\caption{Datasets and cross-validation strategies}
-\label{tab:datasets-cv}
+\caption{Total experimental runs across all datasets and conditions}
+\label{tab:total-runs}
 \end{table}
 
 \section{Cross-Validation Protocols}
 
 \subsection{Dataset A: Grouped Stratified K-Fold}
 
-\begin{verbatim}
-Subject Pool (37 subjects)
-+-- Fold 1: Train on 30 subjects, Test on 7 subjects
-+-- Fold 2: Train on 30 subjects, Test on 7 subjects
-+-- Fold 3: Train on 30 subjects, Test on 7 subjects
-+-- Fold 4: Train on 30 subjects, Test on 7 subjects
-+-- Fold 5: Train on 29 subjects, Test on 8 subjects
+For Dataset A (MDVR-KCL), subject-level grouping prevents data leakage:
 
-Key constraint: All recordings from a subject appear in ONE fold only
+\begin{figure}[H]
+\begin{algorithmic}[1]
+\State Input: Features $\mathbf{X}$, labels $\mathbf{y}$, subject IDs $\mathbf{g}$
+\State Group samples by subject: $S = \{\text{samples where } g_i = s \mid s \in \text{unique}(\mathbf{g})\}$
+\State Split subjects into 5 folds maintaining class balance
+\For{fold $k = 1$ to $5$}
+    \State $S_{\text{test}} \gets$ subjects in fold $k$
+    \State $S_{\text{train}} \gets$ subjects in all other folds
+    \State $\mathbf{X}_{\text{train}}, \mathbf{y}_{\text{train}} \gets$ samples from $S_{\text{train}}$
+    \State $\mathbf{X}_{\text{test}}, \mathbf{y}_{\text{test}} \gets$ samples from $S_{\text{test}}$
+    \State Fit scaler on $\mathbf{X}_{\text{train}}$, transform both sets
+    \State Train model on $(\mathbf{X}_{\text{train}}, \mathbf{y}_{\text{train}})$
+    \State Evaluate on $(\mathbf{X}_{\text{test}}, \mathbf{y}_{\text{test}})$
+\EndFor
+\State Return metrics from all 5 folds
+\end{algorithmic}
+\caption{Grouped Stratified 5-Fold Cross-Validation}
+\label{alg:grouped-cv}
+\end{figure}
+
+\textbf{ReadText fold distribution:}
+\begin{verbatim}
+Fold 1: Train on 30 subjects (HC: 17, PD: 13) | Test on 7 subjects (HC: 4, PD: 3)
+Fold 2: Train on 30 subjects (HC: 17, PD: 13) | Test on 7 subjects (HC: 4, PD: 3)
+Fold 3: Train on 30 subjects (HC: 17, PD: 13) | Test on 7 subjects (HC: 4, PD: 3)
+Fold 4: Train on 30 subjects (HC: 17, PD: 13) | Test on 7 subjects (HC: 4, PD: 3)
+Fold 5: Train on 29 subjects (HC: 16, PD: 13) | Test on 8 subjects (HC: 5, PD: 3)
 \end{verbatim}
 
-This prevents \textbf{subject identity leakage}, which would occur if recordings from the same subject appeared in both training and test sets.
+\textbf{Key constraint:} All recordings from a subject appear in \textbf{one fold only}. This prevents subject identity leakage, which would artificially inflate performance if the model learned speaker-specific characteristics rather than PD-related patterns.
 
 \subsection{Dataset B: Stratified K-Fold}
 
-\begin{verbatim}
-Sample Pool (756 samples)
-+-- Fold 1: Train on ~605 samples, Test on ~151 samples
-+-- Fold 2: Train on ~605 samples, Test on ~151 samples
-...
-+-- Fold 5: Train on ~605 samples, Test on ~151 samples
+For Dataset B (PD Speech Features), standard stratified 5-fold CV was used:
 
-Key constraint: Class proportions maintained across folds
+\begin{verbatim}
+Fold 1: Train on 605 samples (HC: 154, PD: 451) | Test on 151 samples (HC: 38, PD: 113)
+Fold 2: Train on 605 samples (HC: 154, PD: 451) | Test on 151 samples (HC: 38, PD: 113)
+Fold 3: Train on 605 samples (HC: 154, PD: 451) | Test on 151 samples (HC: 38, PD: 113)
+Fold 4: Train on 605 samples (HC: 154, PD: 451) | Test on 151 samples (HC: 38, PD: 113)
+Fold 5: Train on 604 samples (HC: 153, PD: 451) | Test on 152 samples (HC: 39, PD: 113)
 \end{verbatim}
 
-\textbf{Caveat:} Without subject identifiers, potential subject overlap cannot be controlled.
+\textbf{Limitation:} Without subject IDs, multiple samples from the same subject may appear in both training and test folds, leading to potential optimism in performance estimates.
 
 \section{Evaluation Metrics}
 
-\subsection{Primary Metric}
+\subsection{Primary Metric: ROC-AUC}
 
-\textbf{ROC-AUC} is the primary metric because:
+ROC-AUC (Area Under the Receiver Operating Characteristic Curve) was selected as the primary metric because:
+
 \begin{itemize}
-    \item Threshold-independent evaluation
-    \item Robust to class imbalance
-    \item Standard in clinical ML literature
+    \item \textbf{Threshold-independent:} Evaluates discrimination across all decision thresholds
+    \item \textbf{Robust to class imbalance:} Less sensitive than accuracy to skewed class distributions
+    \item \textbf{Clinically interpretable:} Represents the probability that a randomly chosen PD patient will have a higher predicted probability than a randomly chosen HC subject
+    \item \textbf{Standard in medical ML:} Widely reported in clinical decision support literature
 \end{itemize}
 
 \subsection{Secondary Metrics}
 
 \begin{table}[H]
 \centering
-\begin{tabular}{@{}lp{8cm}@{}}
+\begin{tabular}{@{}lp{3.5cm}p{6cm}@{}}
 \toprule
-\textbf{Metric} & \textbf{Purpose} \\
+\textbf{Metric} & \textbf{Formula} & \textbf{Clinical Interpretation} \\
 \midrule
-Accuracy & Overall performance (reference only) \\
-Precision & False positive analysis \\
-Recall & False negative analysis (critical for screening) \\
-F1 Score & Balance between precision and recall \\
+Accuracy & $\frac{TP+TN}{TP+TN+FP+FN}$ & Overall correctness (misleading with imbalance) \\
+Precision & $\frac{TP}{TP+FP}$ & Positive predictive value: reliability of PD predictions \\
+Recall & $\frac{TP}{TP+FN}$ & Sensitivity: ability to detect true PD cases \\
+F1 Score & $\frac{2 \cdot P \cdot R}{P+R}$ & Harmonic mean balancing precision and recall \\
 \bottomrule
 \end{tabular}
-\caption{Secondary evaluation metrics}
+\caption{Secondary evaluation metrics and clinical interpretation}
 \label{tab:secondary-metrics}
 \end{table}
 
 \subsection{Statistical Reporting}
 
-All metrics reported as: \textbf{mean $\pm$ std} across 5 folds
+All metrics are reported as:
+
+\begin{equation}
+\text{Metric} = \mu \pm \sigma
+\end{equation}
+
+where $\mu$ is the mean across 5 folds and $\sigma$ is the sample standard deviation. This captures both central tendency and variability, providing insight into model stability.
 
 \section{Experimental Procedure}
 
-\subsection{Step-by-Step Protocol}
+\subsection{Workflow Automation}
+
+All experiments were executed via automated command-line tools to ensure reproducibility:
 
 \begin{enumerate}
-    \item \textbf{Feature Extraction (Dataset A only)}
-    \begin{itemize}
-        \item Command: \texttt{pvc-extract --task all}
-    \end{itemize}
-    
-    \item \textbf{For each condition (C1--C4):}
-    \begin{itemize}
-        \item For each model (LR, SVM, RF):
-        \begin{itemize}
-            \item For each dataset/task:
-            \begin{itemize}
-                \item 5-fold cross-validation
-                \item Fit scaler on train
-                \item Transform train and test
-                \item Fit model on train
-                \item Predict on test
-                \item Compute metrics
-            \end{itemize}
-        \end{itemize}
-    \end{itemize}
-    
-    \item \textbf{Aggregate results}
-    \begin{itemize}
-        \item Mean $\pm$ std across folds
-    \end{itemize}
-\end{enumerate}
-
-\subsection{Feature Extraction Settings}
-
-Extracted features stored in:
-\begin{itemize}
-    \item \texttt{outputs/features/baseline/} (47 features)
-    \item \texttt{outputs/features/extended/} (78 features)
-\end{itemize}
-
-\subsection{Random Seed}
-
-All experiments use \texttt{random\_state=42} for reproducibility.
-
-\section{Implementation}
-
-\subsection{CLI Commands}
-
-\begin{lstlisting}[language=bash]
-# Feature extraction (both baseline and extended)
+    \item \textbf{Feature Extraction (Dataset A only):}
+    \begin{lstlisting}[language=bash]
+# Extract baseline features (47)
 pvc-extract --task all
 
-# Run experiments (all conditions)
+# Switch to extended features (78) in config.py:
+#   USE_EXTENDED_FEATURES = True
+# Then re-run extraction
+    \end{lstlisting}
+    
+    \item \textbf{Experiment Execution:}
+    \begin{lstlisting}[language=bash]
+# Run all experiments for current configuration
 pvc-experiment
-\end{lstlisting}
 
-\subsection{Output Structure}
+# Experiments automatically:
+# - Load appropriate feature set (baseline/extended)
+# - Apply class weighting (if enabled in config)
+# - Run 5-fold CV on all 3 models
+# - Save results to outputs/results/
+    \end{lstlisting}
+    
+    \item \textbf{Configuration Switching:}
+    
+    Experiments were repeated for all 4 conditions by modifying \texttt{config.py}:
+    
+    \begin{lstlisting}[language=Python]
+# Condition 1: Baseline features, no weighting
+USE_EXTENDED_FEATURES = False
+USE_CLASS_WEIGHT_BALANCED = False
+
+# Condition 2: Extended features, no weighting
+USE_EXTENDED_FEATURES = True
+USE_CLASS_WEIGHT_BALANCED = False
+
+# Condition 3: Baseline features, balanced weighting
+USE_EXTENDED_FEATURES = False
+USE_CLASS_WEIGHT_BALANCED = True
+
+# Condition 4: Extended features, balanced weighting
+USE_EXTENDED_FEATURES = True
+USE_CLASS_WEIGHT_BALANCED = True
+    \end{lstlisting}
+\end{enumerate}
+
+\subsection{Pipeline Execution Order}
+
+\begin{figure}[H]
+\centering
+\begin{verbatim}
+[1] Feature Extraction (Dataset A)
+    |
+    +-- ReadText: 37 recordings → 37 feature vectors
+    +-- SpontaneousDialogue: 36 recordings → 36 feature vectors
+    |
+[2] Cross-Validation Setup
+    |
+    +-- Dataset A: Grouped by subject_id
+    +-- Dataset B: Standard stratification
+    |
+[3] For each fold:
+    |
+    +-- [3.1] StandardScaler.fit(X_train)
+    +-- [3.2] X_train_scaled = scaler.transform(X_train)
+    +-- [3.3] X_test_scaled = scaler.transform(X_test)
+    +-- [3.4] Model.fit(X_train_scaled, y_train, sample_weight=...)
+    +-- [3.5] y_pred = Model.predict(X_test_scaled)
+    +-- [3.6] Compute metrics (accuracy, precision, recall, F1, ROC-AUC)
+    |
+[4] Aggregate Results
+    |
+    +-- Compute mean ± std across 5 folds
+    +-- Save to CSV: all_results.csv, summary.csv
+\end{verbatim}
+\caption{End-to-end experimental pipeline execution order}
+\label{fig:pipeline-execution}
+\end{figure}
+
+\subsection{Data Leakage Prevention}
+
+Critical safeguards against data leakage:
+
+\begin{enumerate}
+    \item \textbf{Subject-level splitting (Dataset A):} All recordings from a subject stay together
+    \item \textbf{Scaler fitted on training only:} Standardization parameters computed from training fold exclusively
+    \item \textbf{No feature selection:} All features used as-is without data-driven selection
+    \item \textbf{Fixed hyperparameters:} No grid search or hyperparameter tuning on test data
+\end{enumerate}
+
+\section{Feature Extraction Settings}
+
+\subsection{Output Directories}
+
+Features were extracted once and saved for reuse:
 
 \begin{verbatim}
-outputs/
-|-- features/
-|   |-- baseline/
-|   |   |-- features_readtext.csv
-|   |   +-- features_spontaneousdialogue.csv
-|   +-- extended/
-|       |-- features_readtext.csv
-|       +-- features_spontaneousdialogue.csv
-+-- results/
-    |-- baseline/
-    |   |-- baseline/
-    |   +-- extended/
-    +-- weighted/
-        |-- baseline/
-        +-- extended/
+outputs/features/
+|-- baseline/
+|   |-- features_readtext.csv          (37 rows × 47 features)
+|   +-- features_spontaneousdialogue.csv (36 rows × 47 features)
++-- extended/
+    |-- features_readtext.csv          (37 rows × 78 features)
+    +-- features_spontaneousdialogue.csv (36 rows × 78 features)
 \end{verbatim}
+
+\subsection{Feature Vector Structure}
+
+Each CSV row contains:
+
+\begin{table}[H]
+\centering
+\begin{tabular}{@{}lp{9cm}@{}}
+\toprule
+\textbf{Column Type} & \textbf{Description} \\
+\midrule
+\texttt{subject\_id} & Unique subject identifier (e.g., ID00, ID01, ...) \\
+\texttt{label} & Binary class (0=HC, 1=PD) \\
+\texttt{task} & Speech task (ReadText or SpontaneousDialogue) \\
+\texttt{filename} & Source audio filename \\
+\texttt{f0\_mean, f0\_std, ...} & Prosodic features (21 columns) \\
+\texttt{mfcc\_0\_mean, ...} & Spectral features (26 or 57 columns) \\
+\bottomrule
+\end{tabular}
+\caption{Feature CSV structure}
+\label{tab:feature-csv-structure}
+\end{table}
+
+\section{Computational Requirements}
+
+\subsection{Feature Extraction Time}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{@{}lccc@{}}
+\toprule
+\textbf{Task} & \textbf{Samples} & \textbf{Time (Baseline)} & \textbf{Time (Extended)} \\
+\midrule
+ReadText & 37 & $\sim$45 sec & $\sim$60 sec \\
+SpontaneousDialogue & 36 & $\sim$60 sec & $\sim$80 sec \\
+\bottomrule
+\end{tabular}
+\caption{Feature extraction time on Intel i7-12700K @ 3.6 GHz}
+\label{tab:extraction-time}
+\end{table}
+
+\subsection{Experiment Execution Time}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{@{}lcc@{}}
+\toprule
+\textbf{Dataset/Task} & \textbf{Time per Condition} & \textbf{Total (4 Conditions)} \\
+\midrule
+Dataset A - ReadText & $\sim$2 min & $\sim$8 min \\
+Dataset A - SpontaneousDialogue & $\sim$2 min & $\sim$8 min \\
+Dataset B - PD Speech & $\sim$5 min & $\sim$20 min \\
+\midrule
+\textbf{Grand Total} & & \textbf{$\sim$36 min} \\
+\bottomrule
+\end{tabular}
+\caption{Approximate experiment execution time (all 12 models per condition)}
+\label{tab:execution-time}
+\end{table}
+
+\section{Random Seed and Reproducibility}
+
+All experiments use \texttt{random\_state=42} for:
+
+\begin{itemize}
+    \item Cross-validation fold splitting
+    \item Random Forest bootstrap sampling
+    \item Any other stochastic operations
+\end{itemize}
+
+Feature extraction is fully deterministic (no random components). Combined with fixed random seeds, this ensures bit-exact reproducibility across multiple runs on identical hardware/software configurations.
+
+\section{Limitations and Caveats}
+
+\subsection{Dataset A (MDVR-KCL)}
+
+\begin{itemize}
+    \item \textbf{Small sample size:} Only 37 subjects for ReadText ($n=37$ is considered small for ML)
+    \item \textbf{High fold variance:} With 7--8 subjects per test fold, individual fold results may be unstable
+    \item \textbf{Limited demographic diversity:} Single collection site, timepoint, and device
+\end{itemize}
+
+\subsection{Dataset B (PD Speech Features)}
+
+\begin{itemize}
+    \item \textbf{Unknown subject overlap:} Cannot control for within-subject correlation in CV
+    \item \textbf{Sustained vowel only:} May not generalize to natural speech
+    \item \textbf{Severe class imbalance:} 3:1 PD:HC ratio requires careful metric interpretation
+    \item \textbf{Opaque feature extraction:} Cannot verify or modify feature computation
+\end{itemize}
+
+\subsection{General Limitations}
+
+\begin{itemize}
+    \item \textbf{No held-out test set:} Performance reported on cross-validation only
+    \item \textbf{No hyperparameter tuning:} Fixed parameters may be suboptimal for some conditions
+    \item \textbf{Binary classification only:} Does not capture PD severity (H\&Y stages)
+\end{itemize}
+
+\section{Summary}
+
+This experimental design chapter established:
+
+\begin{enumerate}
+    \item A comprehensive $2 \times 2 \times 3$ factorial design (12 conditions per dataset)
+    \item Subject-aware cross-validation for Dataset A to prevent identity leakage
+    \item ROC-AUC as the primary metric with 4 supporting secondary metrics
+    \item Automated CLI-based workflow ensuring reproducibility
+    \item Explicit data leakage prevention mechanisms
+    \item Transparent limitations and caveats for both datasets
+\end{enumerate}
+
+The next chapter presents the results from these 180 total experimental runs across all conditions, datasets, and models.

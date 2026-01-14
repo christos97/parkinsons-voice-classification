@@ -5,11 +5,13 @@
 
 \section{Overview}
 
-This chapter describes the feature extraction pipeline, machine learning models, and evaluation framework used in this thesis. The methodology emphasizes reproducibility and methodological rigor over raw performance optimization.
+This chapter describes the feature extraction pipeline, machine learning models, and evaluation framework used in this thesis. The methodology emphasizes reproducibility and methodological rigor over raw performance optimization. All parameters were fixed a priori and locked in a central configuration file to ensure experimental validity. All parameters were fixed a priori and locked in a central configuration file to ensure experimental validity.
 
 \section{Feature Extraction Pipeline}
 
 \subsection{Pipeline Architecture}
+
+The feature extraction pipeline transforms raw audio into structured feature vectors suitable for machine learning:
 
 \begin{figure}[H]
 \centering
@@ -25,24 +27,100 @@ This chapter describes the feature extraction pipeline, machine learning models,
                     | * Spectral Features  |
                     +----------------------+
 \end{verbatim}
-\caption{Feature extraction pipeline architecture}
+\caption{Feature extraction pipeline architecture. Each audio file produces one feature vector.}
 \label{fig:pipeline-architecture}
 \end{figure}
 
 \subsection{Audio Preprocessing}
 
-Prior to feature extraction:
+All audio files undergo standardized preprocessing to ensure consistent feature extraction:
 
 \begin{enumerate}
-    \item \textbf{Load audio} at native sample rate (typically 44.1 kHz)
-    \item \textbf{Convert to mono} if stereo
+    \item \textbf{Load audio} at native sample rate using \texttt{librosa.load()}
+    \item \textbf{Resample} to 22,050 Hz (standardized across all recordings)
+    \item \textbf{Convert to mono} if stereo (channel averaging)
     \item \textbf{Normalize amplitude} to $[-1, 1]$ range
-    \item \textbf{Trim silence} using energy-based detection
+    \item \textbf{Trim silence} using energy-based detection (threshold: top 5\% energy)
 \end{enumerate}
+
+The 22,050 Hz sample rate was chosen as it provides adequate frequency resolution for speech (Nyquist frequency: 11,025 Hz) while reducing computational cost compared to 44,100 Hz.
 
 \subsection{Prosodic Features (21 features)}
 
-Prosodic features capture suprasegmental voice characteristics:
+Prosodic features capture suprasegmental voice characteristics known to be affected in PD. All prosodic features were extracted using Parselmouth~\citep{parselmouth2018}, a Python interface to Praat.
+
+\subsubsection{Fundamental Frequency ($F_0$)}
+
+Pitch extraction used the following parameters:
+
+\begin{itemize}
+    \item \textbf{Algorithm:} Autocorrelation-based (Praat's default)
+    \item \textbf{Pitch range:} 75--500 Hz (covers male, female, and pathological voices)
+    \item \textbf{Time step:} 0.01 s (standard for voice analysis)
+\end{itemize}
+
+Four statistics were computed from the pitch contour:
+
+\begin{equation}
+F_0 = \{\mu_{F_0}, \sigma_{F_0}, \min_{F_0}, \max_{F_0}\}
+\label{eq:f0-features}
+\end{equation}
+
+\subsubsection{Jitter}
+
+Jitter quantifies cycle-to-cycle variation in pitch period. Three measures were extracted:
+
+\begin{equation}
+\text{Jitter}_{\text{local}} = \frac{1}{N-1} \sum_{i=1}^{N-1} \frac{|T_i - T_{i+1}|}{\bar{T}}
+\label{eq:jitter-local}
+\end{equation}
+
+where $T_i$ is the $i$-th pitch period and $\bar{T}$ is the mean period.
+
+Additional measures include:
+\begin{itemize}
+    \item \textbf{RAP (Relative Average Perturbation):} 3-point smoothing
+    \item \textbf{PPQ5:} 5-point period perturbation quotient
+\end{itemize}
+
+\subsubsection{Shimmer}
+
+Shimmer quantifies cycle-to-cycle variation in amplitude. Five measures were extracted:
+
+\begin{equation}
+\text{Shimmer}_{\text{local}} = \frac{1}{N-1} \sum_{i=1}^{N-1} \frac{|A_i - A_{i+1}|}{\bar{A}}
+\label{eq:shimmer-local}
+\end{equation}
+
+where $A_i$ is the $i$-th peak amplitude and $\bar{A}$ is the mean amplitude.
+
+Additional measures include APQ3, APQ5, APQ11 (amplitude perturbation quotients with varying windows), and DDA (difference of differences of amplitudes).
+
+\subsubsection{Harmonics-to-Noise Ratio (HNR)}
+
+HNR quantifies the ratio of harmonic to noise components:
+
+\begin{itemize}
+    \item \textbf{Mean HNR:} Average HNR across the utterance (dB)
+    \item \textbf{Autocorrelation harmonicity:} Peak autocorrelation value
+\end{itemize}
+
+\subsubsection{Intensity}
+
+Three intensity statistics (dB SPL):
+
+\begin{equation}
+I = \{\mu_I, \sigma_I, \max_I - \min_I\}
+\end{equation}
+
+\subsubsection{Formants}
+
+First three formants ($F_1$, $F_2$, $F_3$) were extracted using Linear Predictive Coding (LPC):
+
+\begin{itemize}
+    \item \textbf{LPC order:} 10 (sufficient for 3 formants at 22 kHz)
+    \item \textbf{Features:} Mean and standard deviation of each formant (6 features total)
+\end{itemize}
 
 \begin{table}[H]
 \centering
@@ -56,6 +134,8 @@ Shimmer & 5 & local, APQ3, APQ5, APQ11, DDA & Parselmouth \\
 Harmonicity & 2 & HNR mean, autocorr & Parselmouth \\
 Intensity & 3 & mean, std, range & Parselmouth \\
 Formants & 6 & $F_1$--$F_3$ mean, $F_1$--$F_3$ std & Parselmouth \\
+\midrule
+\textbf{Total} & \textbf{21} & & \\
 \bottomrule
 \end{tabular}
 \caption{Prosodic feature breakdown}
@@ -64,9 +144,45 @@ Formants & 6 & $F_1$--$F_3$ mean, $F_1$--$F_3$ std & Parselmouth \\
 
 \subsection{Spectral Features}
 
-Spectral features capture frequency-domain characteristics using librosa.
+Spectral features capture frequency-domain characteristics using the \texttt{librosa} library~\citep{librosa2020}.
+
+\subsubsection{Mel-Frequency Cepstral Coefficients (MFCCs)}
+
+MFCCs are computed via the following steps:
+
+\begin{enumerate}
+    \item \textbf{Pre-emphasis:} $y[n] = x[n] - 0.97 \cdot x[n-1]$
+    \item \textbf{Framing:} Window length = 2048 samples ($\approx$93 ms at 22 kHz)
+    \item \textbf{Windowing:} Hann window applied
+    \item \textbf{FFT:} 2048-point FFT
+    \item \textbf{Mel filterbank:} 128 triangular filters spanning 0--11,025 Hz
+    \item \textbf{Log compression:} $\log(\text{mel power spectrum})$
+    \item \textbf{DCT:} Discrete Cosine Transform to decorrelate coefficients
+\end{enumerate}
+
+Parameters used:
+\begin{itemize}
+    \item \textbf{Number of coefficients:} 13 (MFCC 0--12)
+    \item \textbf{Hop length:} 512 samples ($\approx$23 ms at 22 kHz, 75\% overlap)
+    \item \textbf{Number of mel bands:} 128
+\end{itemize}
+
+MFCC 0 (the zeroth coefficient) captures energy information, while MFCCs 1--12 capture spectral envelope shape.
+
+\subsubsection{Delta Coefficients}
+
+First-order temporal derivatives (delta coefficients) capture spectral dynamics:
+
+\begin{equation}
+\Delta_t[n] = \frac{\sum_{i=1}^{N} i \cdot (c_{t+i} - c_{t-i})}{2 \sum_{i=1}^{N} i^2}
+\label{eq:delta}
+\end{equation}
+
+where $c_t$ is the MFCC coefficient at frame $t$ and $N=2$ is the window size.
 
 \subsubsection{Baseline Spectral Features (26 features)}
+
+The baseline spectral feature set consists of:
 
 \begin{table}[H]
 \centering
@@ -74,8 +190,10 @@ Spectral features capture frequency-domain characteristics using librosa.
 \toprule
 \textbf{Feature} & \textbf{Count} & \textbf{Description} \\
 \midrule
-MFCC mean & 13 & Mean of MFCCs 0--12 \\
-Delta MFCC mean & 13 & Mean of first-order derivatives \\
+MFCC mean & 13 & Temporal mean of MFCCs 0--12 \\
+Delta MFCC mean & 13 & Temporal mean of first-order derivatives \\
+\midrule
+\textbf{Total} & \textbf{26} & \\
 \bottomrule
 \end{tabular}
 \caption{Baseline spectral features}
@@ -84,22 +202,36 @@ Delta MFCC mean & 13 & Mean of first-order derivatives \\
 
 \subsubsection{Extended Spectral Features (57 features)}
 
+The extended feature set adds three groups of features designed to capture additional spectral and temporal variability:
+
 \begin{table}[H]
 \centering
 \begin{tabular}{@{}lcp{7cm}@{}}
 \toprule
 \textbf{Feature} & \textbf{Count} & \textbf{Description} \\
 \midrule
-MFCC mean & 13 & Mean of MFCCs 0--12 \\
-\textbf{MFCC std} & \textbf{13} & \textbf{Standard deviation of MFCCs} \\
-Delta MFCC mean & 13 & First-order derivatives \\
-\textbf{Delta-Delta MFCC mean} & \textbf{13} & \textbf{Second-order derivatives} \\
+MFCC mean & 13 & Temporal mean of MFCCs 0--12 \\
+\textbf{MFCC std} & \textbf{13} & \textbf{Temporal std deviation (within-utterance variability)} \\
+Delta MFCC mean & 13 & Temporal mean of first-order derivatives \\
+\textbf{Delta-Delta MFCC mean} & \textbf{13} & \textbf{Temporal mean of second-order derivatives (acceleration)} \\
 \textbf{Spectral shape} & \textbf{5} & \textbf{Centroid, bandwidth, rolloff, flatness, ZCR} \\
+\midrule
+\textbf{Total} & \textbf{57} & \\
 \bottomrule
 \end{tabular}
 \caption{Extended spectral features (new features in bold)}
 \label{tab:extended-spectral}
 \end{table}
+
+The five spectral shape descriptors are:
+
+\begin{enumerate}
+    \item \textbf{Spectral Centroid:} Center of mass of the spectrum (Hz)
+    \item \textbf{Spectral Bandwidth:} Weighted standard deviation around centroid (Hz)
+    \item \textbf{Spectral Rolloff:} Frequency below which 85\% of energy is contained (Hz)
+    \item \textbf{Spectral Flatness:} Ratio of geometric to arithmetic mean (tonality measure)
+    \item \textbf{Zero-Crossing Rate:} Rate of sign changes in time-domain signal
+\end{enumerate}
 
 \subsection{Total Feature Counts}
 
@@ -121,80 +253,171 @@ Extended & 21 & 57 & \textbf{78} \\
 
 \subsection{Rationale for Extended Features}
 
-The extended feature set was designed as a \textbf{controlled ablation study}:
+The extended feature set was designed as a \textbf{controlled ablation study} to test the hypothesis that additional temporal and spectral information improves classification. Three feature groups were added:
 
 \begin{enumerate}
-    \item \textbf{MFCC std (13):} Captures within-utterance variability---important for detecting instability in PD speech
-    \item \textbf{Delta-Delta MFCC (13):} Captures acceleration of spectral changes---sensitive to temporal dynamics
-    \item \textbf{Spectral shape (5):} Provides complementary global spectral descriptors
+    \item \textbf{MFCC std (13):} Captures within-utterance variability---important for detecting instability in PD speech where motor fluctuations may manifest as increased spectral variance
+    \item \textbf{Delta-Delta MFCC (13):} Captures acceleration of spectral changes---sensitive to temporal dynamics and rate-of-change in articulatory movements
+    \item \textbf{Spectral shape (5):} Provides complementary global spectral descriptors not captured by MFCCs (e.g., overall tonality, spectral spread)
 \end{enumerate}
+
+\subsection{Feature Extraction Reproducibility}
+
+All feature extraction parameters were defined in a central configuration module and fixed before experimentation:
+
+\begin{itemize}
+    \item Random seed: 42 (for any stochastic components)
+    \item Sample rate: 22,050 Hz
+    \item $F_0$ range: 75--500 Hz
+    \item MFCC parameters: 13 coefficients, 2048 FFT size, 512 hop length, 128 mel bands
+\end{itemize}
+
+Feature extraction was performed once per dataset and feature configuration, with results saved to CSV files for all downstream experiments.
 
 \section{Machine Learning Models}
 
 \subsection{Model Selection Rationale}
 
-Three classical ML models were selected for:
+Three classical ML models were selected to provide diverse inductive biases while maintaining interpretability:
+
 \begin{itemize}
-    \item \textbf{Interpretability} --- critical for clinical applications
-    \item \textbf{Robustness} --- well-understood behavior on small datasets
-    \item \textbf{Diversity} --- linear, kernel-based, and ensemble approaches
+    \item \textbf{Logistic Regression (LR):} Linear model with inherent interpretability via coefficient weights. Tests whether classes are linearly separable in feature space.
+    \item \textbf{Support Vector Machine with RBF kernel (SVM):} Nonlinear kernel-based model capable of learning complex decision boundaries. Tests whether nonlinear transformations improve separation.
+    \item \textbf{Random Forest (RF):} Ensemble of decision trees with built-in feature importance. Tests whether hierarchical feature interactions are informative.
+\end{itemize}
+
+These models were chosen for:
+\begin{itemize}
+    \item \textbf{Interpretability} --- Critical for clinical applications where decisions must be explainable
+    \item \textbf{Robustness} --- Well-understood behavior on small datasets (n < 100)
+    \item \textbf{Diversity} --- Represent linear, kernel-based, and ensemble approaches
+\end{itemize}
+
+Deep learning models (CNNs, RNNs) were explicitly excluded due to:
+\begin{itemize}
+    \item Insufficient training data (risk of severe overfitting)
+    \item Lack of interpretability
+    \item Computational requirements disproportionate to dataset size
 \end{itemize}
 
 \subsection{Model Specifications}
 
+All hyperparameters were fixed a priori without dataset-specific tuning:
+
 \begin{table}[H]
 \centering
-\begin{tabular}{@{}lll@{}}
+\begin{tabular}{@{}llp{6cm}@{}}
 \toprule
 \textbf{Model} & \textbf{Type} & \textbf{Key Parameters} \\
 \midrule
-Logistic Regression & Linear & $C=1.0$, max\_iter$=1000$ \\
-SVM (RBF) & Kernel & $C=1.0$, gamma$=$`scale' \\
-Random Forest & Ensemble & n\_estimators$=100$, max\_depth$=10$ \\
+Logistic Regression & Linear & $C=1.0$ (L2 regularization), max\_iter$=1000$, solver=`lbfgs' \\
+SVM (RBF) & Kernel & $C=1.0$ (regularization), gamma$=$`scale' (auto-scaled by features), kernel=`rbf' \\
+Random Forest & Ensemble & n\_estimators$=100$, max\_depth$=10$, min\_samples\_split$=2$, random\_state$=42$ \\
 \bottomrule
 \end{tabular}
-\caption{Model specifications}
+\caption{Model specifications. All parameters fixed before experiments.}
 \label{tab:model-specs}
 \end{table}
 
+\subsubsection{Logistic Regression}
+
+The logistic regression model predicts class probabilities via:
+
+\begin{equation}
+P(y=1|\mathbf{x}) = \frac{1}{1 + e^{-(\mathbf{w}^T \mathbf{x} + b)}}
+\label{eq:logistic}
+\end{equation}
+
+with L2 regularization:
+
+\begin{equation}
+\min_{\mathbf{w}, b} \left[ C \sum_{i=1}^{n} \log(1 + e^{-y_i(\mathbf{w}^T \mathbf{x}_i + b)}) + \frac{1}{2} \|\mathbf{w}\|_2^2 \right]
+\label{eq:l2-regularization}
+\end{equation}
+
+where $C=1.0$ controls the regularization strength.
+
+\subsubsection{Support Vector Machine}
+
+The RBF kernel SVM learns a nonlinear decision boundary via:
+
+\begin{equation}
+K(\mathbf{x}_i, \mathbf{x}_j) = \exp\left(-\gamma \|\mathbf{x}_i - \mathbf{x}_j\|^2\right)
+\label{eq:rbf-kernel}
+\end{equation}
+
+where $\gamma = \frac{1}{n_{\text{features}} \cdot \text{Var}(\mathbf{X})}$ (auto-scaled).
+
+\subsubsection{Random Forest}
+
+The Random Forest aggregates predictions from 100 decision trees:
+
+\begin{equation}
+\hat{y} = \frac{1}{N_{\text{trees}}} \sum_{t=1}^{N_{\text{trees}}} \hat{y}_t(\mathbf{x})
+\label{eq:random-forest}
+\end{equation}
+
+Each tree is trained on a bootstrap sample with random feature subsets at each split. The maximum depth of 10 was chosen to prevent overfitting on small datasets.
+
 \subsection{Class Weighting}
 
-Class imbalance is addressed via \texttt{class\_weight} parameter:
+Class imbalance is addressed via the \texttt{class\_weight} parameter:
 
 \begin{lstlisting}[language=Python]
-# Unweighted (baseline)
+# Unweighted (baseline condition)
 class_weight = None
 
-# Weighted
-class_weight = "balanced"  # Inversely proportional to class frequencies
+# Weighted (balanced condition)
+class_weight = "balanced"  # w_k = n_samples / (n_classes * n_k)
 \end{lstlisting}
 
-All three models support the \texttt{class\_weight} parameter natively.
+When \texttt{class\_weight="balanced"}, sample weights are computed as:
+
+\begin{equation}
+w_k = \frac{n_{\text{samples}}}{n_{\text{classes}} \cdot n_k}
+\label{eq:class-weight}
+\end{equation}
+
+where $n_k$ is the number of samples in class $k$. This ensures minority class errors are weighted more heavily during training.
+
+All three models support the \texttt{class\_weight} parameter natively via scikit-learn.
 
 \section{ML Pipeline Architecture}
 
 \subsection{Pipeline Structure}
 
+All models use a standardized scikit-learn Pipeline:
+
 \begin{lstlisting}[language=Python]
-Pipeline([
+from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import StandardScaler
+
+pipeline = Pipeline([
     ('scaler', StandardScaler()),
-    ('classifier', Model(class_weight=...))
+    ('classifier', Model(class_weight=..., random_state=42))
 ])
 \end{lstlisting}
 
-\subsection{Standardization}
+This ensures feature scaling is applied consistently and prevents data leakage.
+
+\subsection{Feature Standardization}
 
 All features are standardized to zero mean and unit variance:
 
 \begin{equation}
-z = \frac{x - \mu}{\sigma}
+z_{ij} = \frac{x_{ij} - \mu_j}{\sigma_j}
+\label{eq:standardization}
 \end{equation}
 
-Standardization is fitted \textbf{only on training data} and applied to test data to prevent leakage.
+where $\mu_j$ and $\sigma_j$ are computed from the training fold only. This prevents information leakage from test data.
+
+\textbf{Critical:} The scaler is fitted on training data and then applied to test data within each cross-validation fold. This ensures the test set remains completely unseen during standardization.
 
 \section{Evaluation Framework}
 
 \subsection{Cross-Validation Strategy}
+
+Different strategies were required for each dataset due to their structural differences:
 
 \begin{table}[H]
 \centering
@@ -202,40 +425,82 @@ Standardization is fitted \textbf{only on training data} and applied to test dat
 \toprule
 \textbf{Dataset} & \textbf{Strategy} & \textbf{Folds} & \textbf{Grouping} \\
 \midrule
-Dataset A & GroupKFold + Stratified & 5 & By subject\_id \\
-Dataset B & StratifiedKFold & 5 & None (unavailable) \\
+Dataset A (MDVR-KCL) & Grouped Stratified & 5 & By subject\_id \\
+Dataset B (PD Speech) & Stratified & 5 & None (unavailable) \\
 \bottomrule
 \end{tabular}
 \caption{Cross-validation strategies}
 \label{tab:cv-strategies}
 \end{table}
 
+\subsubsection{Dataset A: Grouped Cross-Validation}
+
+For Dataset A (MDVR-KCL), multiple recordings per subject necessitate subject-level splitting to prevent data leakage. The strategy ensures:
+
+\begin{itemize}
+    \item All recordings from the same subject appear in the same fold
+    \item Approximate class balance across folds (stratification by label)
+    \item Training never sees recordings from subjects in the test set
+\end{itemize}
+
+This simulates realistic deployment where the model encounters entirely new speakers.
+
+\subsubsection{Dataset B: Standard Stratified Cross-Validation}
+
+For Dataset B (PD Speech Features), subject IDs are unavailable. Standard stratified 5-fold cross-validation was used with the caveat that results may be optimistic if the same subjects appear across samples.
+
 \subsection{Evaluation Metrics}
+
+Five standard classification metrics were computed for each fold:
 
 \begin{table}[H]
 \centering
-\begin{tabular}{@{}lp{4.5cm}p{5cm}@{}}
+\begin{tabular}{@{}lp{4cm}p{6cm}@{}}
 \toprule
 \textbf{Metric} & \textbf{Formula} & \textbf{Interpretation} \\
 \midrule
-Accuracy & $\frac{TP+TN}{TP+TN+FP+FN}$ & Overall correctness \\
-Precision & $\frac{TP}{TP+FP}$ & Positive predictive value \\
-Recall & $\frac{TP}{TP+FN}$ & Sensitivity \\
-F1 Score & $\frac{2 \cdot P \cdot R}{P+R}$ & Harmonic mean of P and R \\
-ROC-AUC & Area under ROC curve & Discrimination ability \\
+Accuracy & $\frac{TP+TN}{TP+TN+FP+FN}$ & Overall correctness (baseline for comparison) \\
+Precision & $\frac{TP}{TP+FP}$ & Positive predictive value (PD prediction reliability) \\
+Recall & $\frac{TP}{TP+FN}$ & Sensitivity (true positive rate for PD cases) \\
+F1 Score & $\frac{2 \cdot P \cdot R}{P+R}$ & Harmonic mean balancing precision and recall \\
+ROC-AUC & $\int_0^1 \text{TPR}(t) \, d\text{FPR}(t)$ & Threshold-independent discrimination ability \\
 \bottomrule
 \end{tabular}
 \caption{Evaluation metrics}
 \label{tab:metrics}
 \end{table}
 
-\textbf{Primary metric:} ROC-AUC (threshold-independent, handles imbalance)
+\textbf{Primary metric:} ROC-AUC was selected as the primary metric because:
+\begin{itemize}
+    \item Threshold-independent (evaluates discrimination across all thresholds)
+    \item Robust to class imbalance
+    \item Clinically interpretable (probability that a random PD patient scores higher than a random HC)
+\end{itemize}
+
+\subsection{Statistical Reporting}
+
+All metrics are reported as mean $\pm$ standard deviation across the 5 folds:
+
+\begin{equation}
+\text{Metric} = \mu \pm \sigma = \frac{1}{K}\sum_{k=1}^{K} m_k \pm \sqrt{\frac{1}{K-1}\sum_{k=1}^{K}(m_k - \mu)^2}
+\label{eq:metric-reporting}
+\end{equation}
+
+where $K=5$ folds and $m_k$ is the metric value for fold $k$. This provides insight into model stability and fold-to-fold variability.
 
 \section{Experimental Conditions}
 
-\subsection{\texorpdfstring{2$\times$2 Factorial Design}{2x2 Factorial Design}}
+\subsection{\texorpdfstring{2$\times$2$\times$3 Factorial Design}{2x2x3 Factorial Design}}
 
-The experiments follow a 2$\times$2 factorial design:
+The complete experimental design is a factorial combination of:
+
+\begin{itemize}
+    \item \textbf{Feature Set:} Baseline (47) vs Extended (78)
+    \item \textbf{Class Weighting:} Unweighted vs Balanced
+    \item \textbf{Model:} Logistic Regression vs SVM vs Random Forest
+\end{itemize}
+
+This yields 12 conditions per dataset/task combination:
 
 \begin{table}[H]
 \centering
@@ -243,10 +508,38 @@ The experiments follow a 2$\times$2 factorial design:
 \toprule
  & \textbf{Baseline (47)} & \textbf{Extended (78)} \\
 \midrule
-\textbf{Unweighted} & Condition 1 & Condition 2 \\
-\textbf{Weighted} & Condition 3 & Condition 4 \\
+\textbf{Unweighted} & 3 models & 3 models \\
+\textbf{Weighted} & 3 models & 3 models \\
 \bottomrule
 \end{tabular}
-\caption{2$\times$2 factorial design}
+\caption{2$\times$2$\times$3 factorial design: 12 conditions total}
 \label{tab:factorial-design}
 \end{table}
+
+For Dataset A (MDVR-KCL), experiments were conducted separately for each speech task (ReadText and SpontaneousDialogue), yielding $12 \times 2 = 24$ experimental conditions. Dataset B (PD Speech Features) yielded 12 conditions.
+
+\subsection{Reproducibility}
+
+All experimental conditions use fixed random seeds:
+
+\begin{itemize}
+    \item Cross-validation splits: \texttt{random\_state=42}
+    \item Random Forest: \texttt{random\_state=42}
+    \item Feature extraction: Deterministic (no randomness)
+\end{itemize}
+
+This ensures bit-exact reproducibility across multiple runs on the same hardware and software versions.
+
+\section{Summary}
+
+This methodology chapter established:
+
+\begin{enumerate}
+    \item A standardized feature extraction pipeline producing 47 (baseline) or 78 (extended) features from raw audio
+    \item Three classical ML models with fixed hyperparameters
+    \item Subject-aware cross-validation for Dataset A to prevent data leakage
+    \item A comprehensive evaluation framework using 5 metrics
+    \item A factorial experimental design enabling controlled comparisons
+\end{enumerate}
+
+The next chapter describes the specific experimental procedures applied to each dataset and speech task condition.

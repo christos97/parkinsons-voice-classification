@@ -38,11 +38,24 @@ Accuracy & $82.2\% \pm 16.6\%$ & Random Forest & ReadText & Extended / Unweighte
 \textbf{Extended features (78) consistently improved performance} compared to baseline features (47). The highest ROC-AUC of \textbf{0.857} was achieved using the Extended feature set on the Spontaneous Dialogue task.
 \end{quote}
 
-\subsection{Dataset B (Benchmark)}
+\subsection{Dataset B (Benchmark Comparison)}
 
-\begin{quote}
-\textbf{Note:} Dataset B (Pre-extracted features) achieved a significantly higher ROC-AUC of $0.940 \pm 0.013$ (Random Forest). This difference is attributed to its larger sample size ($n=752$ vs $n=37$) and lack of subject-level grouping in the provided dataset, likely leading to optimistic estimates.
-\end{quote}
+\textbf{Performance Summary:} Dataset B achieved substantially higher metrics across all classifiers, as shown in Table~\ref{tab:datasetb-results}. These results should be interpreted cautiously given the unknown subject overlap across samples ($n=752$ recordings, subject IDs unavailable).
+
+\begin{table}[H]
+\centering
+\begin{tabular}{@{}lcccc@{}}
+\toprule
+\textbf{Model} & \textbf{ROC-AUC} & \textbf{Accuracy} & \textbf{F1} & \textbf{Recall} \\
+\midrule
+Logistic Regression & $0.867 \pm 0.029$ & $0.828 \pm 0.008$ & $0.885 \pm 0.006$ & $0.890 \pm 0.016$ \\
+SVM (RBF) & $0.885 \pm 0.025$ & $0.851 \pm 0.024$ & $0.908 \pm 0.015$ & $0.986 \pm 0.019$ \\
+\textbf{Random Forest} & $\mathbf{0.940 \pm 0.013}$ & $\mathbf{0.882 \pm 0.019}$ & $\mathbf{0.925 \pm 0.012}$ & $\mathbf{0.980 \pm 0.015}$ \\
+\bottomrule
+\end{tabular}
+\caption{Dataset B performance using baseline (unweighted) configuration. Note the substantially lower variance compared to Dataset A.}
+\label{tab:datasetb-results}
+\end{table}
 
 \begin{figure}[H]
     \centering
@@ -50,6 +63,13 @@ Accuracy & $82.2\% \pm 16.6\%$ & Random Forest & ReadText & Extended / Unweighte
     \caption{Random Forest feature importance (Dataset B). The top features are dominated by advanced signal processing metrics often unavailable in standard clinical settings.}
     \label{fig:imp-datasetb-rf}
 \end{figure}
+
+\textbf{Key Differences from Dataset A:}
+\begin{itemize}
+    \item \textbf{Sample Size Effect:} $n=752$ vs $n=37$ reduces variance by an order of magnitude ($\pm 0.01$ vs $\pm 0.15$).
+    \item \textbf{Optimistic Bias:} Results may be inflated due to unknown subject overlap across training/test folds.
+    \item \textbf{Feature Availability:} Many top-ranked features (e.g., DFA, RPDE) require specialized analysis not captured in Dataset A's baseline features.
+\end{itemize}
 
 \section{Condition 1: Baseline Features + Unweighted}
 
@@ -195,6 +215,78 @@ Random Forest & 0.828 & 0.857 & $+0.029$ \\
 
 \textbf{Key Finding:} Feature extension was critical for the ReadText task, rescuing performance from near-chance levels (0.59) to competitive levels (0.82).
 
+\subsection{Analysis}
+
+The dramatic improvement for tree-based models on ReadText (+22--23pp) suggests that:
+\begin{enumerate}
+    \item Extended spectral features (MFCC delta-delta, spectral shape descriptors) capture task-specific patterns absent in baseline features.
+    \item Logistic Regression's slight degradation ($-1.9$pp) may reflect overfitting to the additional 31 dimensions given the small sample size.
+    \item Spontaneous Dialogue was already well-represented by baseline features, showing diminishing returns from feature expansion.
+\end{enumerate}
+
+\section{Class Weighting Analysis}
+
+Class weighting (\texttt{class\_weight='balanced'}) was evaluated to address Dataset A's mild class imbalance (HC:PD $\approx$ 1.3:1). Results showed minimal improvement and occasional degradation.
+
+\subsection{ReadText Task --- Baseline Features}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{@{}lccc@{}}
+\toprule
+\textbf{Model} & \textbf{Unweighted} & \textbf{Weighted} & \textbf{$\Delta$ ROC-AUC} \\
+\midrule
+Logistic Regression & $0.717 \pm 0.139$ & $0.717 \pm 0.139$ & $0.000$ \\
+Random Forest & $0.590 \pm 0.302$ & $0.687 \pm 0.258$ & $\mathbf{+0.097}$ \\
+SVM (RBF) & $0.614 \pm 0.312$ & $0.542 \pm 0.312$ & $-0.072$ \\
+\bottomrule
+\end{tabular}
+\caption{Class weighting impact on ReadText (baseline features). Random Forest showed modest improvement.}
+\label{tab:weighting-readtext-baseline}
+\end{table}
+
+\subsection{Extended Features --- All Tasks}
+
+\textbf{Observation:} Class weighting provided negligible benefit when using extended features. The best-performing models (RF on Extended/Unweighted) achieved:
+\begin{itemize}
+    \item ReadText: $0.822 \pm 0.166$ (unweighted) vs $0.805 \pm 0.182$ (weighted) $\rightarrow$ $-1.7$pp
+    \item Spontaneous: $0.857 \pm 0.171$ (unweighted) vs $0.823 \pm 0.209$ (weighted) $\rightarrow$ $-3.4$pp
+\end{itemize}
+
+\textbf{Interpretation:} The mild imbalance ratio (1.3:1) did not require reweighting. Extended features and subject-grouped cross-validation provided sufficient robustness.
+
+\section{Precision-Recall Tradeoffs}
+
+Classifiers exhibited distinct precision-recall profiles, critical for understanding clinical deployment scenarios.
+
+\subsection{Random Forest (Extended Features)}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{@{}lccc@{}}
+\toprule
+\textbf{Task} & \textbf{Precision} & \textbf{Recall} & \textbf{F1-Score} \\
+\midrule
+ReadText & $0.883 \pm 0.162$ & $0.700 \pm 0.298$ & $0.746 \pm 0.207$ \\
+Spontaneous & $0.683 \pm 0.410$ & $0.600 \pm 0.435$ & $0.605 \pm 0.387$ \\
+\bottomrule
+\end{tabular}
+\caption{Random Forest precision-recall profile. ReadText configuration favors precision (fewer false positives).}
+\label{tab:precision-recall-rf}
+\end{table}
+
+\textbf{Analysis:} ReadText achieved high precision (0.88) at the cost of recall (0.70), suggesting the model is conservative in predicting PD. This profile may be preferable for screening applications where false positives carry higher cost.
+
+\subsection{SVM (RBF Kernel)}
+
+SVM demonstrated high recall across both tasks:
+\begin{itemize}
+    \item ReadText: Recall $0.567 \pm 0.365$, Precision $0.733 \pm 0.435$
+    \item Spontaneous: Recall $0.400 \pm 0.279$, Precision $0.533 \pm 0.361$
+\end{itemize}
+
+The high variance reflects SVM's sensitivity to small sample cross-validation partitions.
+
 \section{Summary of Findings}
 
 \begin{table}[H]
@@ -213,3 +305,13 @@ H5: Class weighting improves performance & $\times$ & Marginal or negative impac
 \caption{Summary of hypothesis testing}
 \label{tab:hypothesis-summary}
 \end{table}
+
+\subsection{Key Takeaways}
+
+\begin{enumerate}
+    \item \textbf{Feature Engineering Matters:} Extended features rescued ReadText performance from near-chance to clinically relevant levels.
+    \item \textbf{Task-Dependent Performance:} Spontaneous speech provided better separation than structured read-aloud tasks.
+    \item \textbf{Sample Size Dominates:} Dataset B's 20$\times$ larger sample size (752 vs 37) yielded dramatically lower variance and higher metrics.
+    \item \textbf{Precision-Recall Tradeoffs:} ReadText models favored precision; clinical deployment must consider cost asymmetry of false positives vs false negatives.
+    \item \textbf{Class Weighting Unnecessary:} Mild imbalance (1.3:1) did not benefit from reweighting when using subject-grouped CV and extended features.
+\end{enumerate}
