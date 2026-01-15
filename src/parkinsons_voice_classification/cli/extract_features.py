@@ -32,7 +32,7 @@ from parkinsons_voice_classification.config import (
 )
 
 # Default number of parallel workers
-_MAX_CPU_COUNT = 15 # My Ryzen 3700x has 8 cores / 16 threads
+_MAX_CPU_COUNT = 15  # My Ryzen 3700x has 8 cores / 16 threads
 _CPU_COUNT = os.cpu_count() or 4
 _DEFAULT_JOBS = min(_MAX_CPU_COUNT, max(1, _CPU_COUNT - 1))
 

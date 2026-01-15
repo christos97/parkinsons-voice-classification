@@ -1,0 +1,161 @@
+% Appendix C: Research Demonstration Application
+
+\chapter{Research Demonstration Application}
+\label{ch:demo-app}
+
+\section{Purpose and Scope}
+
+This appendix describes a web-based research demonstration application developed to illustrate the end-to-end inference workflow from audio upload to classification output. The application was designed solely for educational and illustrative purposes as part of this MSc thesis.
+
+\textbf{Critical Disclaimer:}
+
+\begin{itemize}
+    \item This application is \textbf{not intended for clinical use, medical diagnosis, or patient screening}
+    \item Outputs represent model confidence scores, not clinical diagnoses
+    \item The application was \textbf{not used for any quantitative evaluation} reported in this thesis
+    \item All evaluation metrics (Chapters 5--6) were computed via cross-validation on held-out test folds, independent of this interface
+    \item Results should be interpreted as \textbf{research outputs only}, requiring validation by qualified medical professionals
+\end{itemize}
+
+The application demonstrates the feasibility of integrating the trained models into a user-facing interface while maintaining clear boundaries between research exploration and clinical deployment.
+
+\section{System Architecture}
+
+The demonstration application follows a modular architecture separating concerns between the web interface, inference orchestration, and core machine learning pipeline:
+
+\begin{verbatim}
++------------------+       +--------------------+       +------------------+
+|   Flask Web      | --->  | Inference Adapter  | --->  | Core ML Pipeline |
+|   Application    |       |                    |       |                  |
+| (upload/display) |       | - Audio normalize  |       | - Feature extract|
+|                  |       | - Feature format   |       | - Model predict  |
+|                  |       | - Display enrich   |       | - Load artifacts |
++------------------+       +--------------------+       +------------------+
+\end{verbatim}
+
+\textbf{Key Components:}
+
+\begin{enumerate}
+    \item \textbf{Flask Web Server (\texttt{app.py}):} Handles HTTP routes, file uploads, and template rendering. Strictly imports only the adapter module, ensuring zero coupling to internal ML implementation details.
+    
+    \item \textbf{Inference Adapter (\texttt{inference\_adapter.py}):} Provides a stable interface wrapping the core inference API. Performs audio normalization (any format $\rightarrow$ mono 22,050 Hz WAV), enriches prediction outputs with display metadata, and ensures model switching requires no Flask code changes.
+    
+    \item \textbf{Core ML Pipeline:} Reuses the identical feature extraction and inference modules used for experiments (\texttt{parkinsons\_voice\_classification.inference}), ensuring consistency between evaluation and demonstration.
+    
+    \item \textbf{Audio Processing (\texttt{audio\_utils.py}):} Normalizes uploaded audio files (WAV, MP3, WebM, Opus, FLAC) to a standardized mono 22,050 Hz PCM-16 WAV format before feature extraction.
+\end{enumerate}
+
+\textbf{Design Invariants:}
+
+\begin{itemize}
+    \item Model switching (RandomForest $\leftrightarrow$ Logistic Regression $\leftrightarrow$ SVM) is controlled via configuration file only; no template/route changes required
+    \item Feature set selection (baseline 47 vs.\ extended 78) is configuration-driven
+    \item Task selection (ReadText vs.\ SpontaneousDialogue) loads the corresponding trained model artifact
+\end{itemize}
+
+This architecture ensures the demonstration remains aligned with the experimental pipeline while providing a controlled interface for external users.
+
+\section{User Interaction Flow}
+
+The application supports two input modalities:
+
+\subsection{Audio Upload Workflow}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.85\textwidth]{fig_demo_upload_audio.png}
+    \caption{Upload interface for audio file analysis. Users select a ReadText task recording in any common format (WAV, MP3, WebM). The interface displays the current model configuration (RandomForest, baseline features, 37 training samples).}
+    \label{fig:demo-upload}
+\end{figure}
+
+Figure~\ref{fig:demo-upload} shows the file upload interface, where users can select pre-recorded audio files for analysis. The interface clearly states the research-only purpose and displays the active model configuration.
+
+\subsection{Direct Audio Recording}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.85\textwidth]{fig_demo_record_audio.png}
+    \caption{In-browser audio recording interface. Users read the displayed ReadText prompt aloud and record directly via their device microphone. The recorded audio is processed through the same normalization and feature extraction pipeline as uploaded files.}
+    \label{fig:demo-record}
+\end{figure}
+
+Figure~\ref{fig:demo-record} demonstrates the in-browser recording capability, implemented using the Web Audio API with JavaScript. Users follow the on-screen ReadText prompt to produce a standardized speech sample. Recordings are captured at the browser's native sample rate and normalized server-side before inference.
+
+\subsection{Processing Steps}
+
+Regardless of input modality, the following steps execute:
+
+\begin{enumerate}
+    \item \textbf{Audio normalization:} Convert to mono 22,050 Hz PCM-16 WAV
+    \item \textbf{Feature extraction:} Extract 47 acoustic features (baseline) or 78 features (extended) using the same pipeline as experiments
+    \item \textbf{Model inference:} Load trained model artifact (e.g., \texttt{RandomForest\_ReadText\_baseline.joblib}) and predict class probabilities
+    \item \textbf{Result display:} Render prediction, probabilities, extracted feature values, and global feature importance
+\end{enumerate}
+
+\section{Output Interpretation and Limitations}
+
+\subsection{Displayed Information}
+
+Figure~\ref{fig:demo-result} shows a representative output screen following analysis:
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.95\textwidth]{fig_demo_analysis_result.png}
+    \caption{Example output from the research demonstration interface. The prediction (``PD'' with 81\% confidence) is displayed prominently with an explicit disclaimer that this is not a medical diagnosis. The interface shows extracted acoustic features, analysis metadata (file name, model, task, feature count), and top global feature importances for interpretability.}
+    \label{fig:demo-result}
+\end{figure}
+
+The output includes:
+
+\begin{enumerate}
+    \item \textbf{Class Prediction:} Binary label (PD or HC) with the higher probability
+    \item \textbf{Class Probabilities:} Model confidence scores for each class (sum to 100\%)
+    \item \textbf{Extracted Features:} Key acoustic measurements (e.g., $F_0$, jitter, MFCC coefficients) with values and descriptions
+    \item \textbf{Analysis Metadata:} File name, model type, task, feature count
+    \item \textbf{Top Feature Importances:} Global feature rankings from the trained RandomForest model (via Gini importance)
+\end{enumerate}
+
+\subsection{Critical Limitations (What the Output Does NOT Mean)}
+
+Users and evaluators must understand the following constraints:
+
+\begin{itemize}
+    \item \textbf{Probabilities $\neq$ Diagnosis:} The 81\% confidence in Figure~\ref{fig:demo-result} reflects the model's uncertainty estimate based on training data distribution. It does \textbf{not} indicate an 81\% chance the individual has Parkinson's Disease.
+    
+    \item \textbf{Training Distribution Dependency:} Model outputs are valid only for speech samples similar to the MDVR-KCL training set (smartphone recordings, ReadText task, no severe recording artifacts). Generalization to different recording conditions, languages, or populations is unknown.
+    
+    \item \textbf{No Clinical Validation:} The model was trained on a small dataset ($n=37$ subjects) and has not undergone clinical validation, regulatory approval, or external cohort testing.
+    
+    \item \textbf{Evaluation Exclusion:} Outputs from this interface were \textbf{not used} to compute the performance metrics reported in Chapter~6. All quantitative results derive from grouped cross-validation on independent test folds.
+    
+    \item \textbf{Feature Importance Caveats:} Displayed importances reflect \textit{global} model behavior (across all training samples), not \textit{per-sample} contributions. High importance does not imply the feature was decisive for the specific uploaded recording.
+\end{itemize}
+
+\section{Reproducibility and Consistency}
+
+The demonstration interface ensures alignment with the experimental pipeline through:
+
+\begin{enumerate}
+    \item \textbf{Shared Codebase:} Uses identical feature extraction modules (\texttt{features/prosodic.py}, \texttt{features/spectral.py}) as the CLI-based experiments
+    
+    \item \textbf{Deterministic Inference:} Loads the same serialized model artifacts (\texttt{.joblib} files) produced during training
+    
+    \item \textbf{Configuration-Driven:} All parameters (feature set, model choice, task) are controlled via \texttt{config.py}, ensuring consistency across CLI and web interfaces
+    
+    \item \textbf{Fixed Random Seeds:} Although inference is deterministic (no stochastic components), the loaded models were trained with fixed random seeds (seed = 42) for reproducibility
+\end{enumerate}
+
+This design ensures the demonstration outputs reflect the actual behavior of the evaluated models, rather than a separate reimplementation.
+
+\section{Summary}
+
+The research demonstration application provides a tangible illustration of the voice-based PD classification pipeline, bridging the gap between algorithmic research and potential real-world interaction. However, it must be interpreted strictly within its intended scope:
+
+\begin{itemize}
+    \item \textbf{Educational tool} for thesis defense and research communication
+    \item \textbf{Not a diagnostic system} and unsuitable for clinical decision-making
+    \item \textbf{Validation artifact} confirming inference pipeline functionality
+    \item \textbf{Not used for evaluation} --- all metrics derived from cross-validation
+\end{itemize}
+
+Future work toward clinical deployment would require: (1) validation on independent cohorts ($n > 500$), (2) regulatory approval (e.g., FDA clearance, CE marking), (3) prospective clinical trials, (4) integration with clinical workflows, and (5) continuous monitoring for performance drift. This demonstration represents an early feasibility prototype, not a production-ready system.

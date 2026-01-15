@@ -22,8 +22,8 @@ import soundfile as sf
 
 # Audio processing constants (match feature extraction pipeline)
 TARGET_SAMPLE_RATE = 22050
-MAX_DURATION_SECONDS = 60
-MAX_FILE_SIZE_MB = 10
+MAX_DURATION_SECONDS = 60 * 10 
+MAX_FILE_SIZE_MB = 50  
 
 
 class AudioValidationError(Exception):

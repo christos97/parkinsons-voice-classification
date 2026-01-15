@@ -261,7 +261,7 @@ thesis-watch:
 
 thesis-clean:
 	@echo "Cleaning LaTeX build artifacts..."
-	@rm -f thesis/main.{aux,bbl,blg,log,out,toc,lof,lot,fls,fdb_latexmk,pdf}
+	@rm -f thesis/main.aux thesis/main.bbl thesis/main.blg thesis/main.log thesis/main.out thesis/main.toc thesis/main.lof thesis/main.lot thesis/main.fls thesis/main.fdb_latexmk thesis/main.pdf
 	@rm -f thesis/chapters/*.aux
 	@rm -f thesis/frontmatter/*.aux
 	@rm -f thesis/appendices/*.aux
