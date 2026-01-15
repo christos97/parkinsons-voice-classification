@@ -4,7 +4,7 @@ degree: "MSc Thesis"
 domain: "Speech Signal Processing / Classical Machine Learning"
 task: "Binary classification (Parkinson's Disease vs Healthy Controls)"
 language: "English"
-last_updated: "2026-01-14"
+last_updated: "2026-01-15"
 
 thesis:
   source_of_truth: "thesis/"
@@ -115,7 +115,7 @@ This root file contains **project-wide scientific and methodological constraints
 | Context | File | When to Use |
 |---------|------|-------------|
 | **Python Package Development** | [src/parkinsons_voice_classification/AGENTS.md](src/parkinsons_voice_classification/AGENTS.md) | Working with core ML pipeline, feature extraction, model training, inference API, CLI commands |
-| **Flask Web Application** | [demo_app/AGENTS.md](demo_app/AGENTS.md) | Working with HTML templates, Jinja2, Tailwind CSS, jQuery, audio upload/recording, result display |
+| **Flask Web Application** | [demo_app/AGENTS.md](demo_app/AGENTS.md) | Working with HTML templates, Jinja2, Tailwind CSS, vanilla JS, audio upload/recording, result display |
 | **LaTeX Thesis Writing** | [thesis/AGENTS.md](thesis/AGENTS.md) | Writing/editing thesis chapters, managing bibliography, compiling PDF, formatting figures/tables |
 
 ### Quick Reference Links
@@ -213,7 +213,7 @@ def analyze():
 ### Frontend Constraints
 
 - **Styling:** Tailwind CSS (via CDN) — utility classes only
-- **JavaScript:** jQuery 3.7.1 (via CDN) — no vanilla JS mixing
+- **JavaScript:** Vanilla JS (no external library)
 - **Templates:** Jinja2 conditionals for model status and prediction styling
 - **Disclaimer:** Required on ALL pages: "Research Demonstration Only. Not for clinical use."
 

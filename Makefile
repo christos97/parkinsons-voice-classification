@@ -253,6 +253,7 @@ thesis: sync-figures
 	@cd thesis && latexmk -pdf -interaction=nonstopmode -quiet -f main.tex 2>/dev/null || latexmk -pdf -interaction=nonstopmode -quiet main.tex
 	@echo "✓ Thesis PDF built successfully: thesis/main.pdf"
 	@cd thesis && pdfinfo main.pdf 2>/dev/null | grep "Pages:" | awk '{print "  Pages:", $$2}' || true
+	@cd thesis && pdftotext main.pdf - 2>/dev/null | wc -w | awk '{print "  Word count:", $$1}' || echo "  Word count: n/a"
 	@cd thesis && test -s main.bbl && grep -c '\\bibitem\[' main.bbl 2>/dev/null | awk '{print "  Bibliography entries:", $$1}' || echo "  Bibliography entries: 0"
 
 thesis-watch:

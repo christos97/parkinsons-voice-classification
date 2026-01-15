@@ -2,10 +2,10 @@
 app: "Flask Demo Application"
 purpose: "Research demonstration for thesis defense"
 parent_rules: "../../AGENTS.md"
-last_updated: "2026-01-14"
+last_updated: "2026-01-15"
 
 architecture:
-  framework: "Flask + Jinja2 + Tailwind CSS + jQuery"
+  framework: "Flask + Jinja2 + Tailwind CSS + Vanilla JS"
   pattern: "Adapter isolation (Flask never imports core package directly)"
   entry_point: "app.py"
   modules:
@@ -21,7 +21,7 @@ routes:
 
 frontend:
   styling: "Tailwind CSS (via CDN)"
-  javascript: "jQuery 3.7.1 (via CDN)"
+  javascript: "Vanilla JS (no external library)"
   templates:
     - { file: "index.html", purpose: "Upload/record interface with tabs" }
     - { file: "result.html", purpose: "Prediction display with probabilities and features" }
@@ -120,15 +120,14 @@ def analyze():
 - ❌ No custom CSS files
 - ❌ No inline `<style>` blocks
 
-### jQuery 3.7.1 (via CDN)
+### Vanilla JavaScript
 
 ```html
-<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<!-- No external JS library required -->
 ```
 
 - ✅ DOM manipulation, event handling
 - ✅ Scripts in template files (no separate JS files)
-- ❌ No vanilla JS mixing (stay consistent)
 - ❌ No React/Vue/Angular
 
 ---
@@ -193,7 +192,7 @@ async function startRecording() {
   mediaRecorder.onstop = () => {
     recordedBlob = new Blob(audioChunks, { type: 'audio/webm' });
     // Show playback UI
-    $('#recorded-audio').attr('src', URL.createObjectURL(recordedBlob));
+    document.getElementById('recorded-audio').src = URL.createObjectURL(recordedBlob);
   };
   
   mediaRecorder.start();
@@ -297,8 +296,8 @@ function submitRecording() {
 </div>
 
 <script>
-$('#analysis-form').on('submit', function() {
-  $('#loading-overlay').removeClass('hidden');
+document.getElementById('analysis-form').addEventListener('submit', () => {
+  document.getElementById('loading-overlay').classList.remove('hidden');
 });
 </script>
 ```

@@ -65,7 +65,7 @@ def analyze():
     file = None
     filename = "recording"
     
-    if "audio_file" in request.files and request.files["audio_file"].filename:
+    if "audio_file" in request.files:
         # Traditional file upload
         file = request.files["audio_file"]
         filename = file.filename or "upload"
@@ -73,7 +73,7 @@ def analyze():
     elif "recorded_audio" in request.files:
         # Browser recording (WebM or other native format)
         file = request.files["recorded_audio"]
-        filename = "recording"
+        filename = file.filename or "recording"
     else:
         flash("No audio file provided", "error")
         return redirect(url_for("index"))
