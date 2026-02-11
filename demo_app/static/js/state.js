@@ -1,38 +1,113 @@
 /**
  * state.js - Signals-based reactivity for vanilla JavaScript
  *
- * Implements automatic dependency tracking like SolidJS/Preact Signals.
+ * Implements automatic dependency tracking like SolidJS Signals.
  * Effects automatically re-run when signals they read change.
  *
- * Usage:
- *   const [count, setCount] = createSignal(0);
- *   createEffect(() => {
- *     console.log('Count is:', count());  // auto-tracks dependency
- *   });
- *   setCount(1);  // effect re-runs automatically
+ * @see https://docs.solidjs.com/reference/basic-reactivity/create-signal
+ * @see https://docs.solidjs.com/reference/basic-reactivity/create-effect
+ * @see https://docs.solidjs.com/reference/basic-reactivity/create-memo
  */
 
-// Stack of currently running effects (for auto-tracking)
+// ============================================================
+// Type Definitions (JSDoc)
+// ============================================================
+
+/**
+ * @template T
+ * @typedef {() => T} Accessor - Reactive getter function
+ */
+
+/**
+ * @template T
+ * @callback Setter
+ * @param {T | ((prev: T) => T)} value - New value or updater function
+ * @returns {T} The new value
+ */
+
+/**
+ * @template T
+ * @typedef {[get: Accessor<T>, set: Setter<T>]} Signal
+ */
+
+/**
+ * @template T
+ * @typedef {Object} SignalOptions
+ * @property {string} [name] - Debug name for the signal
+ * @property {false | ((prev: T, next: T) => boolean)} [equals] - Custom equality function (default: Object.is). Set to `false` to always notify.
+ */
+
+/**
+ * @template T
+ * @callback EffectFunction
+ * @param {T} v - Previous value (or initial value on first run)
+ * @returns {T} Next value to pass to subsequent runs
+ */
+
+/**
+ * @typedef {Object} EffectOptions
+ * @property {string} [name] - Debug name for the effect
+ */
+
+/**
+ * @template T
+ * @typedef {Object} MemoOptions
+ * @property {string} [name] - Debug name for the memo
+ * @property {false | ((prev: T, next: T) => boolean)} [equals] - Custom equality function (default: Object.is). Set to `false` to always update.
+ */
+
+// ============================================================
+// Internal State
+// ============================================================
+
+/** @type {(() => void) | null} */
 let currentEffect = null;
+
+// ============================================================
+// createSignal
+// ============================================================
 
 /**
  * Creates a reactive signal with automatic dependency tracking.
- * When a signal is read inside an effect, the effect auto-subscribes.
  *
- * @param {T} initialValue - Initial signal value
- * @returns {[() => T, (newValue: T | ((prev: T) => T)) => void]}
+ * @template T
+ * @overload
+ * @returns {Signal<T | undefined>}
+ */
+/**
+ * @template T
+ * @overload
+ * @param {T} value - Initial signal value
+ * @param {SignalOptions<T>} [options] - Signal options
+ * @returns {Signal<T>}
+ */
+/**
+ * @template T
+ * @param {T} [value] - Initial signal value
+ * @param {SignalOptions<T>} [options] - Signal options
+ * @returns {Signal<T>}
  *
  * @example
  * const [count, setCount] = createSignal(0);
- * createEffect(() => console.log(count()));  // logs on every change
+ * createEffect(() => console.log(count()));
  * setCount(1);           // Direct value
  * setCount(c => c + 1);  // Updater function
+ *
+ * @example
+ * // Custom equality
+ * const [obj, setObj] = createSignal({ x: 1 }, {
+ *   equals: (prev, next) => prev.x === next.x
+ * });
+ *
+ * @example
+ * // Always notify (no equality check)
+ * const [val, setVal] = createSignal(0, { equals: false });
  */
-export function createSignal(initialValue) {
-  let value = initialValue;
+export function createSignal(value, options) {
+  const equals = options?.equals;
   const subscribers = new Set();
 
-  // Getter - tracks dependency if inside an effect
+  /** @type {Accessor<T>} */
   const read = () => {
     if (currentEffect) {
       subscribers.add(currentEffect);
@@ -40,48 +115,81 @@ export function createSignal(initialValue) {
     return value;
   };
 
-  // Setter with support for updater functions
+  /** @type {Setter<T>} */
   const write = (newValue) => {
     const nextValue =
       typeof newValue === "function" ? newValue(value) : newValue;
 
-    if (!Object.is(value, nextValue)) {
+    // Determine if we should update
+    const shouldUpdate =
+      equals === false
+        ? true
+        : equals
+          ? !equals(value, nextValue)
+          : !Object.is(value, nextValue);
+
+    if (shouldUpdate) {
       value = nextValue;
-      // Notify all subscribed effects
-      subscribers.forEach((effect) => effect());
+      // Notify all subscribed effects (copy to avoid mutation during iteration)
+      [...subscribers].forEach((effect) => effect());
     }
+
+    return nextValue;
   };
 
   return [read, write];
 }
 
+// ============================================================
+// createEffect
+// ============================================================
+
 /**
  * Creates an effect that auto-tracks signal dependencies.
  * Re-runs whenever any signal read inside it changes.
  *
- * @param {() => void | (() => void)} fn - Effect function, optionally returns cleanup
- * @returns {() => void} - Dispose function to stop the effect
+ * @template [T=void]
+ * @overload
+ * @param {EffectFunction<T | undefined>} fn - Effect function
+ * @returns {void}
+ */
+/**
+ * @template T
+ * @overload
+ * @param {EffectFunction<T>} fn - Effect function receiving previous value
+ * @param {T} value - Initial value for first execution
+ * @param {EffectOptions} [options] - Effect options
+ * @returns {void}
+ */
+/**
+ * @template T
+ * @param {EffectFunction<T>} fn - Effect function
+ * @param {T} [value] - Initial value
+ * @param {EffectOptions} [options] - Effect options
+ * @returns {void}
  *
  * @example
+ * // Simple effect (no value tracking)
  * const [count, setCount] = createSignal(0);
  * createEffect(() => {
- *   console.log('Count:', count());  // auto-subscribes to count
+ *   console.log('Count:', count());
  * });
- * setCount(5);  // effect runs, logs "Count: 5"
+ *
+ * @example
+ * // Effect with value tracking
+ * createEffect((prev) => {
+ *   const next = count();
+ *   console.log('Changed from', prev, 'to', next);
+ *   return next;
+ * }, 0);
  */
-export function createEffect(fn) {
-  let cleanup = null;
-
+export function createEffect(fn, value, options) {
   const execute = () => {
-    // Run cleanup from previous execution
-    if (cleanup) cleanup();
-
-    // Set this effect as current (for dependency tracking)
     const prevEffect = currentEffect;
     currentEffect = execute;
 
     try {
-      cleanup = fn() || null;
+      value = fn(value);
     } finally {
       currentEffect = prevEffect;
     }
@@ -89,19 +197,21 @@ export function createEffect(fn) {
 
   // Run immediately
   execute();
-
-  // Return dispose function
-  return () => {
-    if (cleanup) cleanup();
-  };
 }
 
+// ============================================================
+// createMemo
+// ============================================================
+
 /**
- * Creates a computed signal that derives from other signals.
- * Automatically tracks dependencies and recomputes when they change.
+ * Creates a computed/derived signal that automatically tracks dependencies.
+ * The memo only recomputes when its dependencies change.
  *
- * @param {() => T} computeFn - Function that computes the derived value
- * @returns {() => T} - Getter function for computed value
+ * @template T
+ * @param {(prev: T) => T} fn - Computation function receiving previous value
+ * @param {T} [value] - Initial seed value (passed to fn on first run)
+ * @param {MemoOptions<T>} [options] - Memo options
+ * @returns {Accessor<T>} - Read-only accessor for the computed value
  *
  * @example
  * const [count, setCount] = createSignal(5);
@@ -109,13 +219,25 @@ export function createEffect(fn) {
  * doubled();  // 10
  * setCount(10);
  * doubled();  // 20
+ *
+ * @example
+ * // With initial value
+ * const sum = createMemo((prev) => prev + count(), 0);
+ *
+ * @example
+ * // Custom equality
+ * const data = createMemo(() => fetchData(), undefined, {
+ *   equals: (a, b) => a?.id === b?.id
+ * });
  */
-export function createMemo(computeFn) {
-  const [value, setValue] = createSignal(computeFn());
+export function createMemo(fn, value, options) {
+  const equals = options?.equals;
+
+  const [memo, setMemo] = createSignal(value, { equals });
 
   createEffect(() => {
-    setValue(computeFn());
+    setMemo((prev) => fn(prev));
   });
 
-  return value;
+  return memo;
 }
