@@ -3,6 +3,7 @@ __pycache__/
 *.py[cod]
 *$py.class
 _legacy_/
+thesis_template/
 
 # C extensions
 *.so
