@@ -98,7 +98,9 @@ demo_app:
 
 > **Agent Visibility Note:** Critical rules from nested `AGENTS.md` files are inlined below with cross-references. Full context available in [src/parkinsons_voice_classification/AGENTS.md](src/parkinsons_voice_classification/AGENTS.md), [demo_app/AGENTS.md](demo_app/AGENTS.md), and [thesis/AGENTS.md](thesis/AGENTS.md).
 
----
+**Always** use `poetry` for executing python scripts, never `python` directly. This ensures correct environment and dependency management.
+
+If requested to write/update the thesis, tex files etc., refer to [.github/skills/latex-thesis/SKILL.md](.github/skills/latex-thesis/SKILL.md) for detailed guidelines.
 
 ## 0. Scope & Navigation
 
@@ -116,7 +118,7 @@ This root file contains **project-wide scientific and methodological constraints
 |---------|------|-------------|
 | **Python Package Development** | [src/parkinsons_voice_classification/AGENTS.md](src/parkinsons_voice_classification/AGENTS.md) | Working with core ML pipeline, feature extraction, model training, inference API, CLI commands |
 | **Flask Web Application** | [demo_app/AGENTS.md](demo_app/AGENTS.md) | Working with HTML templates, Jinja2, Tailwind CSS, vanilla JS, audio upload/recording, result display |
-| **LaTeX Thesis Writing** | [thesis/AGENTS.md](thesis/AGENTS.md) | Writing/editing thesis chapters, managing bibliography, compiling PDF, formatting figures/tables |
+| **LaTeX Thesis Writing** | [.github/skills/latex-thesis/SKILL.md](.github/skills/latex-thesis/SKILL.md) | Writing/editing thesis chapters, managing bibliography, compiling PDF, formatting figures/tables |
 
 ### Quick Reference Links
 
@@ -221,7 +223,7 @@ def analyze():
 
 ## 0.6. LaTeX Thesis Critical Rules (REQUIRED)
 
-When working in [thesis/](thesis/) — See full rules in [thesis/AGENTS.md](thesis/AGENTS.md).
+When working in [thesis/](thesis/) — See full rules in [.github/skills/latex-thesis/SKILL.md](.github/skills/latex-thesis/SKILL.md).
 
 ### Build System
 
@@ -413,7 +415,7 @@ Single-point estimates forbidden in tables, figures, text.
 ❌ Never cite internal artifacts ([outputs/](outputs/), [assets/](assets/), [_legacy_/](_legacy_/))  
 ❌ Never cite GitHub URLs directly
 
-**LaTeX writing guidelines:** See [thesis/AGENTS.md](thesis/AGENTS.md)
+**LaTeX writing guidelines:** See [.github/skills/latex-thesis/SKILL.md](.github/skills/latex-thesis/SKILL.md)
 
 ---
 
@@ -436,8 +438,6 @@ This is **non-optional**.
 
 ---
 
----
-
 ## Additional Context: Detailed Nested Rules
 
 This root file contains **critical rules** necessary for all agents. For **implementation-level details**, refer to:
@@ -446,7 +446,7 @@ This root file contains **critical rules** necessary for all agents. For **imple
 |-----------------|----------------|----------------|
 | Python package development, ML pipeline, CLI | [src/parkinsons_voice_classification/AGENTS.md](src/parkinsons_voice_classification/AGENTS.md) | Config rules, feature extraction, model training, inference API, cross-validation strategy, adapter pattern |
 | Flask web application, HTML templates, JavaScript | [demo_app/AGENTS.md](demo_app/AGENTS.md) | Import boundaries, audio processing, frontend stack (Tailwind/jQuery), template patterns, audio recorder implementation |
-| LaTeX thesis writing, chapter editing, bibliography | [thesis/AGENTS.md](thesis/AGENTS.md) | Build system, citations (BibTeX), figure synchronization, label conventions, troubleshooting |
+| LaTeX thesis writing, chapter editing, bibliography | [.github/skills/latex-thesis/SKILL.md](.github/skills/latex-thesis/SKILL.md) | Build system, citations (BibTeX), figure synchronization, label conventions, troubleshooting |
 
 ---
 

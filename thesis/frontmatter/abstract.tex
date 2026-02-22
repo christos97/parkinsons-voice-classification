@@ -2,6 +2,7 @@
 
 \chapter*{Abstract}
 \addcontentsline{toc}{chapter}{Abstract}
+\thispagestyle{plain}
 
 Parkinson's Disease (PD) is a neurodegenerative disorder characterized by motor symptoms and pervasive speech impairments. This thesis investigates the feasibility of voice-based PD detection using classical machine learning, emphasizing rigorous methodology over maximal performance. Two complementary datasets are examined: Dataset~A, a clinical corpus of raw voice recordings (37 subjects) requiring acoustic feature extraction; and Dataset~B, a larger public dataset (756 samples) of pre-extracted features. A consistent pipeline is applied, extracting 47 baseline features (prosodic and perturbation measures) from Dataset~A, with an extended set of 78 features incorporating additional spectral descriptors. Three interpretable classifiers---Logistic Regression, Support Vector Machine (RBF kernel), and Random Forest---are evaluated under a 2$\times$2 factorial design: baseline vs.\ extended features, with vs.\ without class weighting to address class imbalance. Crucially, subject-grouped 5-fold cross-validation is employed for Dataset~A to prevent data leakage, while a standard stratified 5-fold CV (with caveats on subject overlap) is used for Dataset~B.
 
@@ -11,4 +12,6 @@ In conclusion, classical ML models can detect PD from voice with competitive acc
 
 \vspace{1cm}
 
-\textbf{Keywords:} Parkinson's Disease; Dysarthria; Voice Biomarkers; Acoustic Features; Machine Learning; Cross-Validation; Imbalanced Data; Reproducibility
+\textbf{Keywords:} Parkinson's Disease; Dysarthria; Voice Biomarkers; Acoustic Features; Machine Learning; Feature Extraction; Cross-Validation; Imbalanced Data; Reproducibility; Speech Classification; Computational Health Intelligence
+
+\blankpage

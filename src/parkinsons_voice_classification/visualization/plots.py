@@ -1,10 +1,11 @@
 """
-Plotting Functions for Feature Importance
+Plotting Functions for Feature Importance and Model Evaluation
 
 Creates publication-quality figures for:
 - Feature importance bar charts
 - Cross-model comparison heatmaps
 - Feature category breakdowns
+- Confusion matrices
 """
 
 from typing import Any
@@ -14,7 +15,9 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 from matplotlib.figure import Figure
+from matplotlib.colors import LinearSegmentedColormap
 from pathlib import Path
+from sklearn.metrics import confusion_matrix
 
 # Use a clean style for thesis figures
 plt.style.use("seaborn-v0_8-whitegrid")
@@ -507,6 +510,96 @@ def plot_dataset_comparison(
     if title is None:
         title = f"Feature Importance: Dataset A vs Dataset B ({model})"
     ax.set_title(title, fontsize=12, fontweight="bold")
+
+    plt.tight_layout()
+
+    if save_path:
+        fig.savefig(save_path, dpi=300, bbox_inches="tight")
+        print(f"  Saved: {save_path}")
+
+    return fig
+
+
+def plot_confusion_matrix(
+    predictions: dict[str, tuple[np.ndarray, np.ndarray]],
+    labels: tuple[str, str] = ("HC", "PD"),
+    title: str | None = None,
+    figsize: tuple | None = None,
+    save_path: Path | str | None = None,
+) -> Figure:
+    """
+    Plot confusion matrices for all models side-by-side.
+
+    Displays aggregated out-of-fold predictions from cross-validation
+    as confusion matrices, one per model in a single figure row.
+
+    Parameters
+    ----------
+    predictions : dict[str, tuple[np.ndarray, np.ndarray]]
+        Mapping of model_name -> (y_true, y_pred) from cross-validation.
+    labels : tuple[str, str]
+        Display labels for the two classes (default: HC, PD).
+    title : str, optional
+        Overall figure title.
+    figsize : tuple, optional
+        Figure size (auto-calculated if None).
+    save_path : Path or str, optional
+        Path to save figure.
+
+    Returns
+    -------
+    Figure
+        Matplotlib figure object.
+    """
+    n_models = len(predictions)
+    if n_models == 0:
+        raise ValueError("predictions dict is empty")
+
+    if figsize is None:
+        figsize = (5 * n_models, 4.5)
+
+    fig, axes = plt.subplots(1, n_models, figsize=figsize)
+    if n_models == 1:
+        axes = [axes]
+
+    # Custom blue colormap for thesis-quality figures
+    cmap = LinearSegmentedColormap.from_list("thesis_blues", ["#F7FBFF", "#2171B5"])
+
+    for ax, (model_name, (y_true, y_pred)) in zip(axes, predictions.items()):
+        cm = confusion_matrix(y_true, y_pred)
+        n_total = cm.sum()
+
+        # Plot heatmap
+        im = ax.imshow(cm, cmap=cmap, aspect="equal")
+
+        # Annotate cells with count and percentage
+        for i in range(2):
+            for j in range(2):
+                count = cm[i, j]
+                pct = 100.0 * count / n_total
+                color = "white" if count > cm.max() / 2 else "black"
+                ax.text(
+                    j,
+                    i,
+                    f"{count}\n({pct:.1f}%)",
+                    ha="center",
+                    va="center",
+                    color=color,
+                    fontsize=11,
+                    fontweight="bold",
+                )
+
+        ax.set_xticks([0, 1])
+        ax.set_yticks([0, 1])
+        ax.set_xticklabels(labels)
+        ax.set_yticklabels(labels)
+        ax.set_xlabel("Predicted", fontsize=10)
+        ax.set_ylabel("True", fontsize=10)
+        ax.set_title(model_name, fontsize=11, fontweight="bold")
+
+    if title is None:
+        title = "Confusion Matrices (Aggregated Cross-Validation)"
+    fig.suptitle(title, fontsize=13, fontweight="bold", y=1.02)
 
     plt.tight_layout()
 

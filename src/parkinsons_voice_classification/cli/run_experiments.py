@@ -15,6 +15,7 @@ import pandas as pd
 from parkinsons_voice_classification.data.mdvr_kcl import load_features as load_mdvr_features
 from parkinsons_voice_classification.data.pd_speech import load_features as load_pd_speech_features
 from parkinsons_voice_classification.models.training import run_cv, summarize_results
+from parkinsons_voice_classification.visualization.plots import plot_confusion_matrix
 from parkinsons_voice_classification.config import (
     OUTPUTS_DIR,
     USE_CLASS_WEIGHT_BALANCED,
@@ -32,6 +33,8 @@ def main():
     results_dir.mkdir(parents=True, exist_ok=True)
 
     all_results = []
+    plots_dir = OUTPUTS_DIR / "plots"
+    plots_dir.mkdir(parents=True, exist_ok=True)
 
     weight_status = "CLASS-WEIGHTED" if USE_CLASS_WEIGHT_BALANCED else "BASELINE (unweighted)"
     feature_status = "EXTENDED (78 features)" if USE_EXTENDED_FEATURES else "BASELINE (47 features)"
@@ -53,10 +56,19 @@ def main():
         print(f"  Loaded: {X.shape[0]} samples, {X.shape[1]} features")
         print(f"  Subjects: {len(set(groups))}, HC: {(y==0).sum()}, PD: {(y==1).sum()}")
 
-        results_a1 = run_cv(X, y, groups=groups, use_groups=True)
+        results_a1, preds_a1 = run_cv(
+            X, y, groups=groups, use_groups=True, collect_predictions=True
+        )
         results_a1["dataset"] = "MDVR-KCL"
         results_a1["task"] = "ReadText"
         all_results.append(results_a1)
+
+        # Generate confusion matrix plot
+        plot_confusion_matrix(
+            preds_a1,
+            title="Confusion Matrices — ReadText (Grouped 5-Fold CV)",
+            save_path=plots_dir / "confusion_matrix_ReadText.pdf",
+        )
 
         summary = summarize_results(results_a1)
         print("\n  Results:")
@@ -79,10 +91,19 @@ def main():
         print(f"  Loaded: {X.shape[0]} samples, {X.shape[1]} features")
         print(f"  Subjects: {len(set(groups))}, HC: {(y==0).sum()}, PD: {(y==1).sum()}")
 
-        results_a2 = run_cv(X, y, groups=groups, use_groups=True)
+        results_a2, preds_a2 = run_cv(
+            X, y, groups=groups, use_groups=True, collect_predictions=True
+        )
         results_a2["dataset"] = "MDVR-KCL"
         results_a2["task"] = "SpontaneousDialogue"
         all_results.append(results_a2)
+
+        # Generate confusion matrix plot
+        plot_confusion_matrix(
+            preds_a2,
+            title="Confusion Matrices — SpontaneousDialogue (Grouped 5-Fold CV)",
+            save_path=plots_dir / "confusion_matrix_SpontaneousDialogue.pdf",
+        )
 
         summary = summarize_results(results_a2)
         print("\n  Results:")
@@ -104,10 +125,17 @@ def main():
     print(f"  Loaded: {X.shape[0]} samples, {X.shape[1]} features")
     print(f"  HC: {(y==0).sum()}, PD: {(y==1).sum()}")
 
-    results_b = run_cv(X, y, use_groups=False)
+    results_b, preds_b = run_cv(X, y, use_groups=False, collect_predictions=True)
     results_b["dataset"] = "PD_SPEECH_FEATURES"
     results_b["task"] = "N/A"
     all_results.append(results_b)
+
+    # Generate confusion matrix plot
+    plot_confusion_matrix(
+        preds_b,
+        title="Confusion Matrices — Dataset B (Stratified 5-Fold CV)",
+        save_path=plots_dir / "confusion_matrix_DatasetB.pdf",
+    )
 
     summary = summarize_results(results_b)
     print("\n  Results:")
@@ -116,6 +144,10 @@ def main():
         model_summary = summary[summary["model"] == model]
         for _, row in model_summary.iterrows():
             print(f"    {row['metric']:12s}: {row['mean_std']}")
+
+    import matplotlib.pyplot as plt
+
+    plt.close("all")
 
     # =========================================================================
     # Save all results

@@ -287,6 +287,43 @@ SVM demonstrated high recall across both tasks:
 
 The high variance reflects SVM's sensitivity to small sample cross-validation partitions.
 
+\section{Confusion Matrix Analysis}
+
+The confusion matrices below aggregate out-of-fold predictions from the extended feature set (78 features, unweighted) configuration across all five cross-validation folds. Each matrix displays the total number of correctly and incorrectly classified subjects across all folds, providing a visual complement to the aggregate metrics reported in earlier sections. True labels appear on the rows; predicted labels on the columns.
+
+\subsection{Dataset A --- ReadText}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{fig_confusion_readtext.pdf}
+    \caption{Aggregated confusion matrices for the ReadText task (Extended features, Grouped 5-Fold CV, $n=37$ subjects). Each cell reports the total out-of-fold count and its percentage of all predictions. These results should be interpreted cautiously given the small sample size.}
+    \label{fig:confusion-readtext}
+\end{figure}
+
+All three classifiers achieve above-chance PD detection on ReadText. Random Forest and SVM (RBF) reach the strongest true-positive rates, consistent with their ROC-AUC advantage. Logistic Regression exhibits a more conservative prediction profile, contributing to higher precision at the cost of recall. The small subject pool ($n=37$) limits absolute cell counts and increases fold-to-fold variability.
+
+\subsection{Dataset A --- Spontaneous Dialogue}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{fig_confusion_spontaneous.pdf}
+    \caption{Aggregated confusion matrices for the Spontaneous Dialogue task (Extended features, Grouped 5-Fold CV, $n=36$ subjects). This task yielded the highest overall ROC-AUC in the study ($0.857 \pm 0.171$, Random Forest).}
+    \label{fig:confusion-spontaneous}
+\end{figure}
+
+Random Forest demonstrates improved PD detection on Spontaneous Dialogue compared to ReadText, with a higher true-positive count and fewer false negatives. The SVM (RBF) confusion pattern reflects its high variance: strong in some folds, near-chance in others. These results should be interpreted cautiously given the $n=36$ sample size.
+
+\subsection{Dataset B}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{fig_confusion_dataset_b.pdf}
+    \caption{Aggregated confusion matrices for Dataset B (Stratified 5-Fold CV, $n=756$ recordings). The substantially larger sample size yields well-separated confusion patterns with low variance. Results may be optimistic due to unknown subject overlap across folds.}
+    \label{fig:confusion-datasetb}
+\end{figure}
+
+All three classifiers achieve markedly better separation on Dataset B, confirming the positive effect of sample size on model stability. Random Forest, the best-performing classifier on this dataset (ROC-AUC $0.940 \pm 0.013$), exhibits very few false negatives relative to true positives. These results should be interpreted cautiously given the unknown subject overlap across training and test folds.
+
 \section{Summary of Findings}
 
 \begin{table}[H]

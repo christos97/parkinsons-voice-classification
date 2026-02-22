@@ -1,0 +1,185 @@
+% Parkinson's Disease Voice Classification - MSc Thesis
+% Preamble: All packages, configuration, and custom commands
+
+%% ============================================================================
+%% DOCUMENT METADATA
+%% ============================================================================
+
+% Author information
+\newcommand{\myAuthor}{Marios Christos Syrmakezis}
+\newcommand{\myTitle}{Voice-Based Classification of Parkinson's Disease Using Classical Machine Learning}
+\newcommand{\myTitleLineBreak}{Voice-Based Classification of Parkinson's Disease\\Using Classical Machine Learning}
+\newcommand{\myTitleGR}{Ταξινόμηση Νόσου Parkinson Βάσει Φωνής με Χρήση Κλασικής Μηχανικής Μάθησης}
+
+% Supervisor information
+\newcommand{\mySupervisor}{Georgios Matsopoulos}
+\newcommand{\mySupervisorTitle}{Professor, School of ECE, NTUA}
+
+% Committee members
+\newcommand{\myExaminerA}{Ourania Petropoulou}
+\newcommand{\myExaminerATitle}{[Examiner 1 Title]}
+\newcommand{\myExaminerB}{[Examiner 2 Name]}
+\newcommand{\myExaminerBTitle}{[Examiner 2 Title]}
+
+% Date and location
+\newcommand{\myDate}{February 2026}
+\newcommand{\myLocation}{Athens}
+\newcommand{\myApprovalDate}{[DD Month YYYY]}
+
+% Institution
+\newcommand{\myUniversity}{National Technical University of Athens}
+\newcommand{\mySchool}{School of Electrical and Computer Engineering}
+\newcommand{\myDivision}{Division of Computer Science}
+
+%% ============================================================================
+%% PACKAGES
+%% ============================================================================
+
+% Encoding and fonts
+\usepackage[utf8]{inputenc}
+\usepackage[LGR,T1]{fontenc}
+\usepackage{lmodern}
+
+% Language
+\usepackage[greek,english]{babel}
+
+% Page layout (matches NTUA template)
+\usepackage[
+    top=3cm,
+    bottom=3cm,
+    left=2.5cm,
+    right=2.5cm,
+    bindingoffset=0.5cm,
+    headheight=15pt
+]{geometry}
+
+% Headers and footers
+\usepackage{fancyhdr}
+
+% Graphics and figures
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{subcaption}
+
+% Tables
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{multirow}
+\usepackage{array}
+
+% Math
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm}
+
+% Algorithms
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+
+% Code listings
+\usepackage{listings}
+\usepackage{xcolor}
+
+% Hyperlinks
+\usepackage[
+    colorlinks=true,
+    linkcolor=blue,
+    citecolor=blue,
+    urlcolor=blue,
+    bookmarksdepth=3,
+    pdfencoding=auto
+]{hyperref}
+\usepackage{bookmark}
+
+% Bibliography
+\usepackage[numbers,sort&compress]{natbib}
+
+% Miscellaneous
+\usepackage{enumitem}
+\usepackage{parskip}
+\usepackage{setspace}
+
+% Chapter heading style
+\usepackage{titlesec}
+
+%% ============================================================================
+%% CUSTOM COMMANDS
+%% ============================================================================
+
+% Blank page utility (used after front-matter chapters, per NTUA template)
+\def\blankpage{%
+      \clearpage%
+      \thispagestyle{empty}%
+      \null%
+      \clearpage}
+
+\raggedbottom
+
+%% ============================================================================
+%% CONFIGURATION
+%% ============================================================================
+
+% Line spacing
+\onehalfspacing
+
+% Code listing colors
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+% Code listing style
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,
+    breaklines=true,
+    captionpos=b,
+    keepspaces=true,
+    numbers=left,
+    numbersep=5pt,
+    showspaces=false,
+    showstringspaces=false,
+    showtabs=false,
+    tabsize=2,
+    frame=single
+}
+\lstset{style=mystyle}
+
+% Python language style for code listings
+\lstdefinelanguage{Python}{
+    keywords={def, class, return, if, elif, else, for, while, import, from, as, with, try, except, raise, True, False, None, and, or, not, in, is, lambda, yield, pass, break, continue, global, nonlocal, assert, del},
+    keywordstyle=\color{blue}\bfseries,
+    ndkeywords={self, __init__, __name__, print, range, len, int, str, float, list, dict, set, tuple},
+    ndkeywordstyle=\color{magenta},
+    sensitive=true,
+    comment=[l]{\#},
+    morecomment=[s]{'''}{'''},
+    morecomment=[s]{"""}{"""},
+    commentstyle=\color{codegreen}\itshape,
+    stringstyle=\color{codepurple},
+    morestring=[b]',
+    morestring=[b]"
+}
+
+% Header style
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[LE,RO]{\thepage}
+\fancyhead[RE]{\nouppercase{\leftmark}}
+\fancyhead[LO]{\nouppercase{\rightmark}}
+\renewcommand{\headrulewidth}{0.4pt}
+
+% Chapter heading style
+\titleformat{\chapter}[display]
+    {\normalfont\huge\bfseries}
+    {\chaptertitlename\ \thechapter}
+    {20pt}
+    {\Huge}
+
+% Graphics path
+\graphicspath{{figures/}{../outputs/plots/}{../assets/images/}}

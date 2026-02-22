@@ -3,149 +3,8 @@
 
 \documentclass[12pt,a4paper,twoside]{report}
 
-%% ============================================================================
-%% PACKAGES
-%% ============================================================================
-
-% Encoding and fonts
-\usepackage[utf8]{inputenc}
-\usepackage[T1]{fontenc}
-\usepackage{lmodern}
-
-% Language
-\usepackage[english]{babel}
-
-% Page layout
-\usepackage[
-    top=2.5cm,
-    bottom=2.5cm,
-    left=3cm,
-    right=2.5cm,
-    headheight=15pt
-]{geometry}
-
-% Headers and footers
-\usepackage{fancyhdr}
-
-% Graphics and figures
-\usepackage{graphicx}
-\usepackage{float}
-\usepackage{subcaption}
-
-% Tables
-\usepackage{booktabs}
-\usepackage{longtable}
-\usepackage{multirow}
-\usepackage{array}
-
-% Math
-\usepackage{amsmath}
-\usepackage{amssymb}
-\usepackage{amsthm}
-
-% Algorithms
-\usepackage{algorithm}
-\usepackage{algpseudocode}
-
-% Code listings
-\usepackage{listings}
-\usepackage{xcolor}
-
-% Hyperlinks
-\usepackage[
-    colorlinks=true,
-    linkcolor=blue,
-    citecolor=blue,
-    urlcolor=blue,
-    bookmarksdepth=3,
-    pdfencoding=auto
-]{hyperref}
-\usepackage{bookmark}
-
-% Bibliography
-\usepackage[numbers,sort&compress]{natbib}
-
-% Miscellaneous
-\usepackage{enumitem}
-\usepackage{parskip}
-\usepackage{setspace}
-
-%% ============================================================================
-%% CONFIGURATION
-%% ============================================================================
-
-% Line spacing
-\onehalfspacing
-
-% Code listing style
-\definecolor{codegreen}{rgb}{0,0.6,0}
-\definecolor{codegray}{rgb}{0.5,0.5,0.5}
-\definecolor{codepurple}{rgb}{0.58,0,0.82}
-\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
-
-\lstdefinestyle{mystyle}{
-    backgroundcolor=\color{backcolour},
-    commentstyle=\color{codegreen},
-    keywordstyle=\color{magenta},
-    numberstyle=\tiny\color{codegray},
-    stringstyle=\color{codepurple},
-    basicstyle=\ttfamily\footnotesize,
-    breakatwhitespace=false,
-    breaklines=true,
-    captionpos=b,
-    keepspaces=true,
-    numbers=left,
-    numbersep=5pt,
-    showspaces=false,
-    showstringspaces=false,
-    showtabs=false,
-    tabsize=2,
-    frame=single
-}
-\lstset{style=mystyle}
-
-% Python style for code
-\lstdefinelanguage{Python}{
-    keywords={def, class, return, if, elif, else, for, while, import, from, as, with, try, except, raise, True, False, None, and, or, not, in, is, lambda, yield, pass, break, continue, global, nonlocal, assert, del},
-    keywordstyle=\color{blue}\bfseries,
-    ndkeywords={self, __init__, __name__, print, range, len, int, str, float, list, dict, set, tuple},
-    ndkeywordstyle=\color{magenta},
-    sensitive=true,
-    comment=[l]{\#},
-    morecomment=[s]{'''}{'''},
-    morecomment=[s]{"""}{"""},
-    commentstyle=\color{codegreen}\itshape,
-    stringstyle=\color{codepurple},
-    morestring=[b]',
-    morestring=[b]"
-}
-
-% Header style
-\pagestyle{fancy}
-\fancyhf{}
-\fancyhead[LE,RO]{\thepage}
-\fancyhead[RE]{\nouppercase{\leftmark}}
-\fancyhead[LO]{\nouppercase{\rightmark}}
-\renewcommand{\headrulewidth}{0.4pt}
-
-% Chapter heading style
-\usepackage{titlesec}
-\titleformat{\chapter}[display]
-    {\normalfont\huge\bfseries}
-    {\chaptertitlename\ \thechapter}
-    {20pt}
-    {\Huge}
-
-% Graphics path
-\graphicspath{{figures/}{../outputs/plots/}{../assets/images/}}
-
-%% ============================================================================
-%% DOCUMENT METADATA
-%% ============================================================================
-
-\title{Voice-Based Classification of Parkinson's Disease\\Using Classical Machine Learning}
-\author{[Author Name]}
-\date{January 2026}
+% All packages, configuration, and custom commands
+\input{Preamble}
 
 %% ============================================================================
 %% DOCUMENT START
@@ -157,12 +16,15 @@
 %% FRONT MATTER
 %% ----------------------------------------------------------------------------
 
-\pagenumbering{roman}
+\pagenumbering{arabic}
 
 % Title page
 \IfFileExists{frontmatter/titlepage.tex}{\include{frontmatter/titlepage}}{\maketitle}
 
-% Abstract
+% Abstract (Greek — required first per NTUA rules)
+\IfFileExists{frontmatter/abstract_gr.tex}{\include{frontmatter/abstract_gr}}{}
+
+% Abstract (English)
 \IfFileExists{frontmatter/abstract.tex}{\include{frontmatter/abstract}}{}
 
 % Acknowledgments
@@ -170,6 +32,8 @@
 
 % Table of contents
 \tableofcontents
+\thispagestyle{empty}
+\blankpage
 
 % List of figures
 \listoffigures
@@ -184,7 +48,6 @@
 %% ----------------------------------------------------------------------------
 
 \cleardoublepage
-\pagenumbering{arabic}
 
 % Chapters
 \IfFileExists{chapters/01_introduction.tex}{\include{chapters/01_introduction}}{}
@@ -208,8 +71,7 @@
 \IfFileExists{appendices/appendix_c_demo_app.tex}{\include{appendices/appendix_c_demo_app}}{}
 
 % Bibliography
-\nocite{*}
-\bibliographystyle{plainnat}
+\bibliographystyle{IEEEtranN}
 \bibliography{references/references}
 
 \end{document}

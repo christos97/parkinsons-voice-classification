@@ -8,6 +8,8 @@ Cross-validation runner for both datasets:
 Metrics: Accuracy, Precision, Recall, F1, ROC-AUC
 """
 
+from typing import overload, Literal
+
 import numpy as np
 import pandas as pd
 from sklearn.model_selection import StratifiedKFold, StratifiedGroupKFold
@@ -62,13 +64,37 @@ def compute_metrics(
     return metrics
 
 
+@overload
+def run_cv(
+    X: np.ndarray,
+    y: np.ndarray,
+    groups: np.ndarray | None = ...,
+    use_groups: bool = ...,
+    n_folds: int = ...,
+    *,
+    collect_predictions: Literal[True],
+) -> tuple[pd.DataFrame, dict[str, tuple[np.ndarray, np.ndarray]]]: ...
+
+
+@overload
+def run_cv(
+    X: np.ndarray,
+    y: np.ndarray,
+    groups: np.ndarray | None = ...,
+    use_groups: bool = ...,
+    n_folds: int = ...,
+    collect_predictions: Literal[False] = ...,
+) -> pd.DataFrame: ...
+
+
 def run_cv(
     X: np.ndarray,
     y: np.ndarray,
     groups: np.ndarray | None = None,
     use_groups: bool = False,
     n_folds: int = N_FOLDS,
-) -> pd.DataFrame:
+    collect_predictions: bool = False,
+) -> pd.DataFrame | tuple[pd.DataFrame, dict[str, tuple[np.ndarray, np.ndarray]]]:
     """
     Run cross-validation for all models.
 
@@ -84,11 +110,16 @@ def run_cv(
         If True, use StratifiedGroupKFold; else use StratifiedKFold
     n_folds : int
         Number of CV folds
+    collect_predictions : bool
+        If True, also return aggregated out-of-fold predictions per model.
+        Useful for confusion matrix generation.
 
     Returns
     -------
-    pd.DataFrame
-        Results with columns: model, fold, metric, value
+    pd.DataFrame or tuple[pd.DataFrame, dict]
+        If collect_predictions is False: Results with columns: model, fold, metric, value.
+        If collect_predictions is True: Tuple of (results_df, predictions_dict) where
+        predictions_dict maps model_name -> (y_true, y_pred) aggregated across all folds.
     """
     # Select CV strategy
     if use_groups:
@@ -102,6 +133,9 @@ def run_cv(
 
     models = get_models()
     results = []
+    predictions: dict[str, tuple[list, list]] = (
+        {name: ([], []) for name in models} if collect_predictions else {}
+    )
 
     for model_name, pipeline in models.items():
         for fold_idx, (train_idx, test_idx) in enumerate(cv.split(*split_args)):
@@ -135,7 +169,20 @@ def run_cv(
                     }
                 )
 
-    return pd.DataFrame(results)
+            # Collect out-of-fold predictions for confusion matrix
+            if collect_predictions:
+                predictions[model_name][0].extend(y_test.tolist())
+                predictions[model_name][1].extend(y_pred.tolist())
+
+    results_df = pd.DataFrame(results)
+
+    if collect_predictions:
+        predictions_arrays = {
+            name: (np.array(yt), np.array(yp)) for name, (yt, yp) in predictions.items()
+        }
+        return results_df, predictions_arrays
+
+    return results_df
 
 
 def summarize_results(results_df: pd.DataFrame) -> pd.DataFrame:

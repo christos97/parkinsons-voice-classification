@@ -9,6 +9,7 @@ from parkinsons_voice_classification.visualization.plots import (
     plot_importance_comparison,
     plot_top_features_heatmap,
     plot_feature_importance_by_category,
+    plot_confusion_matrix,
 )
 
 __all__ = [
@@ -16,4 +17,5 @@ __all__ = [
     "plot_importance_comparison",
     "plot_top_features_heatmap",
     "plot_feature_importance_by_category",
+    "plot_confusion_matrix",
 ]

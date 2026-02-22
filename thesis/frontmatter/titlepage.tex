@@ -1,39 +1,135 @@
-% Title Page
+% Cover Page (page 1)
 
 \begin{titlepage}
     \centering
     
-    \vspace*{1cm}
+    \vspace*{0.5cm}
     
-    % University logo (uncomment and add your logo)
-    % \includegraphics[width=0.3\textwidth]{university_logo.png}
+    % University logo — NTUA Pyrforos emblem
+    \begin{minipage}{0.22\textwidth}
+        \flushleft
+        \includegraphics[width=3.3cm]{figures/ntua-logo.png}
+    \end{minipage}
+    \begin{minipage}{0.7\textwidth}
+        \flushleft
+        {\Large \myUniversity\\
+        \mySchool\\
+        \vspace{0.1cm}
+        \myDivision}
+    \end{minipage}
+    
+    \vspace*{3cm}
+    
+    {\Huge \textbf{\myTitleLineBreak}}
+    
+    \vspace{3cm}
+    
+    {\Large Master's Thesis}
+    
+    \vspace{3cm}
+    
+    {\Large \textbf{\myAuthor}}
     
     \vspace{1.5cm}
     
-    {\LARGE \textbf{[University Name]}}\\[0.5cm]
-    {\Large [Department/School Name]}
-    
-    \vspace{2cm}
-    
-    {\Huge \textbf{Voice-Based Classification of\\Parkinson's Disease\\Using Classical Machine Learning}}
-    
-    \vspace{2cm}
-    
-    {\Large A thesis submitted in partial fulfillment\\of the requirements for the degree of}\\[0.5cm]
-    {\Large \textbf{Master of Science}}\\[0.3cm]
-    {\Large in [Program Name]}
-    
-    \vspace{2cm}
-    
-    {\Large by}\\[0.5cm]
-    {\Large \textbf{[Author Full Name]}}
-    
-    \vspace{2cm}
-    
-    {\Large Supervisor: [Supervisor Name]}
+    {\Large \textbf{Supervisor:} \mySupervisor}\\
+    {\large \mySupervisorTitle}
     
     \vfill
     
-    {\Large January 2026}
+    {\Large \myLocation, \myDate}
     
 \end{titlepage}
+
+% Title Page (front side — same as cover + committee + approval date)
+\thispagestyle{empty}
+\centering
+
+\vspace*{0.5cm}
+
+% University logo — same layout as cover page
+\begin{minipage}{0.22\textwidth}
+    \flushleft
+    \includegraphics[width=3.3cm]{figures/ntua-logo.png}
+\end{minipage}
+\begin{minipage}{0.7\textwidth}
+    \flushleft
+    {\Large \myUniversity\\
+    \mySchool\\
+    \vspace{0.1cm}
+    \myDivision}
+\end{minipage}
+
+\vspace*{2cm}
+
+{\Huge \textbf{\myTitleLineBreak}}
+
+\vspace{2cm}
+
+{\Large Master's Thesis}
+
+\vspace{2cm}
+
+{\Large \textbf{\myAuthor}}
+
+\vspace{1cm}
+
+{\large
+\begin{tabular}{l l}
+\textbf{Supervisor:} & \mySupervisor\\
+                     & \mySupervisorTitle\\
+\end{tabular}
+}
+
+\vspace{1cm}
+
+{\normalsize Approved by the examination committee on \myApprovalDate.}
+
+\begin{center}
+\small
+\begin{tabular}{p{0.3\textwidth} p{0.3\textwidth} p{0.3\textwidth}}
+    \centering \dotfill & \centering \dotfill & \centering \dotfill \tabularnewline
+    \centering \mySupervisor & \centering \myExaminerA & \centering \myExaminerB \tabularnewline
+    \centering \mySupervisorTitle & \centering \myExaminerATitle & \centering \myExaminerBTitle \tabularnewline
+\end{tabular}
+\end{center}
+
+\vfill
+
+{\Large \myLocation, \myDate}
+
+\newpage
+\flushleft
+
+% Back of title page — Copyright & Disclaimer (mandatory per NTUA rules)
+\thispagestyle{empty}
+
+\noindent
+\underline{\hspace{5cm}}\\
+\noindent
+\textbf{\myAuthor}\\
+\selectlanguage{greek}%
+Διπλωματούχος Ηλεκτρολόγος Μηχανικός και Μηχανικός Υπολογιστών Ε.Μ.Π.%
+\selectlanguage{english}%
+
+\vspace*{\fill}
+
+\noindent
+Copyright \textcopyright{} \myAuthor, 2026.\\
+All rights reserved.\\[1em]
+
+\noindent
+\selectlanguage{greek}%
+Απαγορεύεται η αντιγραφή, αποθήκευση και διανομή της παρούσας εργασίας, εξ ολοκλήρου ή
+τμήματος αυτής, για εμπορικό σκοπό. Επιτρέπεται η ανατύπωση, αποθήκευση και διανομή για
+σκοπό μη κερδοσκοπικό, εκπαιδευτικής ή ερευνητικής φύσης, υπό την προϋπόθεση να αναφέρεται
+η πηγή προέλευσης και να διατηρείται το παρόν μήνυμα. Ερωτήματα που αφορούν τη χρήση της
+εργασίας για κερδοσκοπικό σκοπό πρέπει να απευθύνονται προς τον συγγραφέα.\\[1em]
+
+\noindent
+Οι απόψεις και τα συμπεράσματα που περιέχονται σε αυτό το έγγραφο εκφράζουν τον συγγραφέα
+και δεν πρέπει να ερμηνευθεί ότι αντιπροσωπεύουν τις επίσημες θέσεις του Εθνικού Μετσόβιου Πολυτεχνείου.%
+\selectlanguage{english}%
+
+\vspace{1cm}
+\clearpage

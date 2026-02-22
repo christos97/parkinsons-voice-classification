@@ -14,9 +14,11 @@ FIGURE_MAPPING = {
     "roc_curve_ReadText.pdf": "fig_roc_readtext.pdf",
     "roc_curve_SpontaneousDialogue.pdf": "fig_roc_spontaneous.pdf",
     "confusion_matrix_ReadText.pdf": "fig_confusion_readtext.pdf",
+    "confusion_matrix_SpontaneousDialogue.pdf": "fig_confusion_spontaneous.pdf",
     
     # Dataset B Results
     "roc_curve_DatasetB.pdf": "fig_roc_dataset_b.pdf",
+    "confusion_matrix_DatasetB.pdf": "fig_confusion_dataset_b.pdf",
     
     # Feature Analysis - Heatmaps
     "heatmap_readtext.png": "fig_heatmap_readtext.png",
