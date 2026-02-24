@@ -280,19 +280,21 @@ Feature extraction was performed once per dataset and feature configuration, wit
 
 \subsection{Model Selection Rationale}
 
-Three classical ML models were selected to provide diverse inductive biases while maintaining interpretability:
+Five classical ML models were selected to provide diverse inductive biases while maintaining interpretability:
 
 \begin{itemize}
     \item \textbf{Logistic Regression (LR):} Linear model with inherent interpretability via coefficient weights. Tests whether classes are linearly separable in feature space.
     \item \textbf{Support Vector Machine with RBF kernel (SVM):} Nonlinear kernel-based model capable of learning complex decision boundaries. Tests whether nonlinear transformations improve separation.
     \item \textbf{Random Forest (RF):} Ensemble of decision trees with built-in feature importance. Tests whether hierarchical feature interactions are informative.
+    \item \textbf{Gradient Boosting (GB):} Sequential ensemble that iteratively corrects prediction errors via gradient descent in function space. Tests whether adaptive boosting of weak learners improves discrimination.
+    \item \textbf{XGBoost (XGB):} Regularised gradient boosting framework with L1/L2 penalties and efficient tree construction~\cite{chen2016xgboost}. Tests whether explicit regularisation provides additional robustness on small datasets.
 \end{itemize}
 
 These models were chosen for:
 \begin{itemize}
     \item \textbf{Interpretability} --- Critical for clinical applications where decisions must be explainable
     \item \textbf{Robustness} --- Well-understood behavior on small datasets (n < 100)
-    \item \textbf{Diversity} --- Represent linear, kernel-based, and ensemble approaches
+    \item \textbf{Diversity} --- Represent linear, kernel-based, bagging, and boosting approaches
 \end{itemize}
 
 Deep learning models (CNNs, RNNs) were explicitly excluded due to:
@@ -314,7 +316,9 @@ All hyperparameters were fixed a priori without dataset-specific tuning:
 \midrule
 Logistic Regression & Linear & $C=1.0$ (L2 regularization), max\_iter$=1000$, solver=`lbfgs' \\
 SVM (RBF) & Kernel & $C=1.0$ (regularization), gamma$=$`scale' (auto-scaled by features), kernel=`rbf' \\
-Random Forest & Ensemble & n\_estimators$=100$, max\_depth$=10$, min\_samples\_split$=2$, random\_state$=42$ \\
+Random Forest & Bagging & n\_estimators$=100$, max\_depth$=10$, min\_samples\_split$=2$, random\_state$=42$ \\
+Gradient Boosting & Boosting & n\_estimators$=100$, learning\_rate$=0.1$, max\_depth$=3$ (default), random\_state$=42$ \\
+XGBoost & Boosting & n\_estimators$=100$, learning\_rate$=0.1$, eval\_metric=`logloss', random\_state$=42$ \\
 \bottomrule
 \end{tabular}
 \caption{Model specifications. All parameters fixed before experiments.}
@@ -361,6 +365,28 @@ The Random Forest aggregates predictions from 100 decision trees:
 
 Each tree is trained on a bootstrap sample with random feature subsets at each split. The maximum depth of 10 was chosen to prevent overfitting on small datasets.
 
+\subsubsection{Gradient Boosting}
+
+Gradient Boosting constructs an additive model in a stage-wise fashion, where each new tree corrects the residual errors of the ensemble~\cite{friedman2001greedy}:
+
+\begin{equation}
+F_m(\mathbf{x}) = F_{m-1}(\mathbf{x}) + \eta \cdot h_m(\mathbf{x})
+\label{eq:gradient-boosting}
+\end{equation}
+
+where $F_m$ is the ensemble after $m$ stages, $h_m$ is the weak learner (decision tree) fitted to the negative gradient of the loss function, and $\eta = 0.1$ is the learning rate. The learning rate shrinks the contribution of each tree, providing a regularisation effect.
+
+\subsubsection{XGBoost}
+
+XGBoost~\cite{chen2016xgboost} extends gradient boosting with explicit L1 and L2 regularisation on leaf weights:
+
+\begin{equation}
+\mathcal{L}(\phi) = \sum_{i=1}^{n} l(\hat{y}_i, y_i) + \sum_{k=1}^{K} \Omega(f_k), \quad \text{where } \Omega(f) = \gamma T + \frac{1}{2}\lambda \|\mathbf{w}\|^2
+\label{eq:xgboost}
+\end{equation}
+
+Here $T$ is the number of leaves, $\mathbf{w}$ is the vector of leaf weights, and $\gamma$, $\lambda$ are regularisation parameters. This regularisation helps prevent overfitting, which is particularly relevant for small-sample datasets.
+
 \subsection{Class Weighting}
 
 Class imbalance is addressed via the \texttt{class\_weight} parameter:
@@ -382,7 +408,7 @@ w_k = \frac{n_{\text{samples}}}{n_{\text{classes}} \cdot n_k}
 
 where $n_k$ is the number of samples in class $k$. This ensures minority class errors are weighted more heavily during training.
 
-All three models support the \texttt{class\_weight} parameter natively via scikit-learn.
+Three of the five models (Logistic Regression, SVM, Random Forest) support the \texttt{class\_weight} parameter natively via scikit-learn. The two boosting classifiers (Gradient Boosting and XGBoost) do not support \texttt{class\_weight="balanced"} natively; however, since the mild class imbalance (1.3:1) did not require reweighting in practice (see Chapter~\ref{ch:results}), this difference has no impact on the experimental design.
 
 \section{ML Pipeline Architecture}
 
@@ -418,6 +444,10 @@ where $\mu_j$ and $\sigma_j$ are computed from the training fold only. This prev
 \section{Evaluation Framework}
 
 \subsection{Cross-Validation Strategy}
+
+In this thesis, \textbf{$K$-fold cross-validation serves as the primary validation strategy}: the model is trained on $K-1$ folds and evaluated on the remaining fold, which contains only samples that the model has never seen during training or feature standardisation~\citep{bishop2006pattern}. This procedure is repeated $K=5$ times, producing five independent estimates of generalisation performance. A separate held-out test set was not used because, with only $n=37$ subjects (Dataset A), reserving even 20\% for testing would yield approximately seven test subjects per fold under subject-level splitting~--- too few for stable metric computation. Cross-validation maximises data utility while still guaranteeing that each evaluation uses strictly unseen data.
+
+Since all hyperparameters were fixed \emph{a priori} (Table~\ref{tab:model-specs}), no inner hyperparameter-selection loop is required: the 5-fold CV here serves purely as an \textbf{evaluation mechanism}, not a tuning mechanism. This eliminates any risk of optimising hyperparameters towards the held-out data.
 
 Different strategies were required for each dataset due to their structural differences:
 
@@ -492,17 +522,17 @@ where $K=5$ folds and $m_k$ is the metric value for fold $k$. This provides insi
 
 \section{Experimental Conditions}
 
-\subsection{\texorpdfstring{2$\times$2$\times$3 Factorial Design}{2x2x3 Factorial Design}}
+\subsection{\texorpdfstring{2$\times$2$\times$5 Factorial Design}{2x2x5 Factorial Design}}
 
 The complete experimental design is a factorial combination of:
 
 \begin{itemize}
     \item \textbf{Feature Set:} Baseline (47) vs Extended (78)
     \item \textbf{Class Weighting:} Unweighted vs Balanced
-    \item \textbf{Model:} Logistic Regression vs SVM vs Random Forest
+    \item \textbf{Model:} Logistic Regression vs SVM vs Random Forest vs Gradient Boosting vs XGBoost
 \end{itemize}
 
-This yields 12 conditions per dataset/task combination:
+This yields 20 conditions per dataset/task combination:
 
 \begin{table}[H]
 \centering
@@ -510,15 +540,15 @@ This yields 12 conditions per dataset/task combination:
 \toprule
  & \textbf{Baseline (47)} & \textbf{Extended (78)} \\
 \midrule
-\textbf{Unweighted} & 3 models & 3 models \\
-\textbf{Weighted} & 3 models & 3 models \\
+\textbf{Unweighted} & 5 models & 5 models \\
+\textbf{Weighted} & 5 models & 5 models \\
 \bottomrule
 \end{tabular}
-\caption{2$\times$2$\times$3 factorial design: 12 conditions total}
+\caption{2$\times$2$\times$5 factorial design: 20 conditions total}
 \label{tab:factorial-design}
 \end{table}
 
-For Dataset A (MDVR-KCL), experiments were conducted separately for each speech task (ReadText and SpontaneousDialogue), yielding $12 \times 2 = 24$ experimental conditions. Dataset B (PD Speech Features) yielded 12 conditions.
+For Dataset A (MDVR-KCL), experiments were conducted separately for each speech task (ReadText and SpontaneousDialogue), yielding $20 \times 2 = 40$ experimental conditions. Dataset B (PD Speech Features) yielded 20 conditions.
 
 \subsection{Reproducibility}
 
@@ -526,7 +556,7 @@ All experimental conditions use fixed random seeds:
 
 \begin{itemize}
     \item Cross-validation splits: \texttt{random\_state=42}
-    \item Random Forest: \texttt{random\_state=42}
+    \item Random Forest, Gradient Boosting, XGBoost: \texttt{random\_state=42}
     \item Feature extraction: Deterministic (no randomness)
 \end{itemize}
 
@@ -538,7 +568,7 @@ This methodology chapter established:
 
 \begin{enumerate}
     \item A standardized feature extraction pipeline producing 47 (baseline) or 78 (extended) features from raw audio
-    \item Three classical ML models with fixed hyperparameters
+    \item Five classical ML models with fixed hyperparameters
     \item Subject-aware cross-validation for Dataset A to prevent data leakage
     \item A comprehensive evaluation framework using 5 metrics
     \item A factorial experimental design enabling controlled comparisons

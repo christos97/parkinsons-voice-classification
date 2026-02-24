@@ -164,6 +164,8 @@ All results use internal cross-validation (5-fold) without external test sets. L
     \item Cross-language and cross-dialect generalization not evaluated
 \end{itemize}
 
+\textbf{Rationale for cross-validation without held-out test set:} The 5-fold cross-validation protocol was chosen over a train/test split because, with $n=37$ subjects (Dataset A) and subject-level splitting enforced, a test fold would contain only $\sim$7 subjects~--- insufficient for stable metric computation. A one-subject swing in classification changes accuracy by $\sim$14\%. Cross-validation mitigates this by averaging five independent evaluations, producing variance-characterised performance estimates that are more informative than any single held-out result. This practice is consistent with established model evaluation guidelines for small-sample settings~\citep{bishop2006pattern}.
+
 \subsection{Class Imbalance Handling}
 
 Class imbalance was present in both datasets:

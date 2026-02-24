@@ -28,7 +28,7 @@ The primary objectives of this research are:
 
 \begin{enumerate}
     \item \textbf{Develop a reproducible pipeline} for extracting acoustic features from voice recordings
-    \item \textbf{Evaluate classical machine learning models} (Logistic Regression, SVM, Random Forest) for PD vs HC classification
+    \item \textbf{Evaluate classical machine learning models} (Logistic Regression, SVM, Random Forest, Gradient Boosting, XGBoost) for PD vs HC classification
     \item \textbf{Compare performance} across two distinct datasets with different characteristics
     \item \textbf{Investigate the impact} of feature set extension (47 $\rightarrow$ 78 features) through controlled ablation
     \item \textbf{Assess the effect} of class weighting on imbalanced datasets
@@ -75,7 +75,7 @@ This research is explicitly bounded by the following constraints:
 
 \begin{itemize}
     \item \textbf{Binary classification only} --- We focus on distinguishing PD vs.\ healthy controls. The work does not address prediction of disease severity, progression, or differential diagnosis against other disorders.
-    \item \textbf{Classical machine learning models} --- We restrict our study to interpretable, classical algorithms (Logistic Regression, SVM, Random Forest). No deep learning or neural network models are used, given the small dataset size and our emphasis on interpretability.
+    \item \textbf{Classical machine learning models} --- We restrict our study to interpretable, classical algorithms (Logistic Regression, SVM, Random Forest, Gradient Boosting, XGBoost). No deep learning or neural network models are used, given the small dataset size and our emphasis on interpretability.
     \item \textbf{Research context} --- The models and results are intended for research demonstration and are not directly deployed as clinical diagnostic tools. We do not claim clinical utility without further validation.
     \item \textbf{Reproducibility prioritized} --- We emphasize reproducible experimentation (with fixed random seeds, documented code, and shared data processing) over chasing state-of-the-art accuracy. All code and data usage adheres to best practices to ensure results can be independently verified.
 \end{itemize}

@@ -235,13 +235,15 @@ All models follow: `StandardScaler → Classifier`
 from parkinsons_voice_classification.models.classifiers import get_model_pipelines
 
 pipelines = get_model_pipelines()
-# Returns: {"LogisticRegression": Pipeline, "SVM_RBF": Pipeline, "RandomForest": Pipeline}
+# Returns: {"LogisticRegression": Pipeline, "SVM_RBF": Pipeline, "RandomForest": Pipeline, "GradientBoosting": Pipeline, "XGBoost": Pipeline}
 ```
 
 **Immutable hyperparameters:**
 - LogisticRegression: `max_iter=10000`, `random_state=42`
 - SVM: `kernel='rbf'`, `random_state=42`
 - RandomForest: `n_estimators=100`, `random_state=42`
+- GradientBoosting: `n_estimators=100`, `learning_rate=0.1`, `random_state=42`
+- XGBoost: `n_estimators=100`, `learning_rate=0.1`, `eval_metric='logloss'`, `random_state=42`
 
 ---
 

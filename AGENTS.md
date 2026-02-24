@@ -355,6 +355,8 @@ Allowed models only:
 - Logistic Regression
 - SVM (RBF kernel)
 - Random Forest
+- Gradient Boosting (sklearn)
+- XGBoost
 
 Same model set across all datasets.
 

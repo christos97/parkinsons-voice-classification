@@ -17,7 +17,7 @@ import matplotlib.patches as mpatches
 from matplotlib.figure import Figure
 from matplotlib.colors import LinearSegmentedColormap
 from pathlib import Path
-from sklearn.metrics import confusion_matrix
+from sklearn.metrics import confusion_matrix, roc_curve, auc
 
 # Use a clean style for thesis figures
 plt.style.use("seaborn-v0_8-whitegrid")
@@ -511,6 +511,102 @@ def plot_dataset_comparison(
         title = f"Feature Importance: Dataset A vs Dataset B ({model})"
     ax.set_title(title, fontsize=12, fontweight="bold")
 
+    plt.tight_layout()
+
+    if save_path:
+        fig.savefig(save_path, dpi=300, bbox_inches="tight")
+        print(f"  Saved: {save_path}")
+
+    return fig
+
+
+def plot_roc_curves(
+    roc_data: dict[str, list[tuple[np.ndarray, np.ndarray]]],
+    title: str | None = None,
+    figsize: tuple | None = None,
+    save_path: Path | str | None = None,
+) -> Figure:
+    """
+    Plot ROC curves for all models on a single axes.
+
+    Each model gets one mean ROC curve (bold) ± per-fold curves (faint).
+    Includes the diagonal chance line and AUC annotations.
+
+    Parameters
+    ----------
+    roc_data : dict[str, list[tuple[np.ndarray, np.ndarray]]]
+        Mapping of model_name -> list of (y_true, y_prob) per fold,
+        as returned by training.run_cv_for_roc.
+    title : str, optional
+        Plot title.
+    figsize : tuple, optional
+        Figure size (default: (7, 6)).
+    save_path : Path or str, optional
+        Path to save figure.
+
+    Returns
+    -------
+    Figure
+    """
+    if figsize is None:
+        figsize = (7, 6)
+
+    # Colour palette (one per model)
+    PALETTE = [
+        "#E63946",  # red     — LogisticRegression
+        "#3A86FF",  # blue    — SVM_RBF
+        "#2A9D8F",  # teal    — RandomForest
+        "#F4A261",  # orange  — GradientBoosting
+        "#8338EC",  # purple  — XGBoost
+    ]
+
+    fig, ax = plt.subplots(figsize=figsize)
+
+    # Common x-axis for interpolated mean curves
+    mean_fpr = np.linspace(0, 1, 200)
+
+    for idx, (model_name, folds) in enumerate(roc_data.items()):
+        color = PALETTE[idx % len(PALETTE)]
+        tprs = []
+
+        for y_true, y_prob in folds:
+            fpr, tpr, _ = roc_curve(y_true, y_prob)
+            # Draw per-fold curve (faint)
+            ax.plot(fpr, tpr, color=color, alpha=0.15, linewidth=0.8)
+            # Interpolate to common grid
+            tprs.append(np.interp(mean_fpr, fpr, tpr))
+
+        mean_tpr = np.mean(tprs, axis=0)
+        mean_tpr[0] = 0.0
+        mean_auc = auc(mean_fpr, mean_tpr)
+        std_tpr = np.std(tprs, axis=0)
+
+        # Shaded ± std band
+        ax.fill_between(
+            mean_fpr,
+            np.clip(mean_tpr - std_tpr, 0, 1),
+            np.clip(mean_tpr + std_tpr, 0, 1),
+            color=color,
+            alpha=0.10,
+        )
+        # Mean curve (bold)
+        label = f"{model_name} (AUC = {mean_auc:.3f})"
+        ax.plot(mean_fpr, mean_tpr, color=color, linewidth=2.0, label=label)
+
+    # Chance line
+    ax.plot(
+        [0, 1], [0, 1], linestyle="--", color="#6C757D", linewidth=1.0, label="Chance (AUC = 0.500)"
+    )
+
+    ax.set_xlabel("False Positive Rate", fontsize=11)
+    ax.set_ylabel("True Positive Rate", fontsize=11)
+    ax.set_xlim([0.0, 1.0])
+    ax.set_ylim([0.0, 1.05])
+
+    if title is None:
+        title = "ROC Curves (Mean ± Std across CV folds)"
+    ax.set_title(title, fontsize=12, fontweight="bold")
+    ax.legend(loc="lower right", fontsize=9)
     plt.tight_layout()
 
     if save_path:

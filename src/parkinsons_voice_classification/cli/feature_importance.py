@@ -123,7 +123,7 @@ def main():
         save_top_features_table(summary, results_dir / "importance_readtext.csv", args.top_n)
 
         # Generate plots for each model
-        for model in ["RandomForest", "LogisticRegression"]:
+        for model in ["RandomForest", "LogisticRegression", "GradientBoosting", "XGBoost"]:
             fig = plot_feature_importance(
                 summary,
                 model,
@@ -170,7 +170,7 @@ def main():
         save_top_features_table(summary, results_dir / "importance_spontaneous.csv", args.top_n)
 
         # Generate plots
-        for model in ["RandomForest", "LogisticRegression"]:
+        for model in ["RandomForest", "LogisticRegression", "GradientBoosting", "XGBoost"]:
             fig = plot_feature_importance(
                 summary,
                 model,
@@ -215,7 +215,7 @@ def main():
     save_top_features_table(summary, results_dir / "importance_pd_speech.csv", args.top_n)
 
     # Generate plots (only top features, 752 is too many)
-    for model in ["RandomForest", "LogisticRegression"]:
+    for model in ["RandomForest", "LogisticRegression", "GradientBoosting", "XGBoost"]:
         fig = plot_feature_importance(
             summary,
             model,
@@ -244,7 +244,7 @@ def main():
         if len(readtext_df) > 0:
             fig = plot_top_features_heatmap(
                 readtext_df,
-                models=["LogisticRegression", "RandomForest"],
+                models=["LogisticRegression", "RandomForest", "GradientBoosting", "XGBoost"],
                 top_n=15,
                 title="Feature Importance Heatmap - ReadText",
                 save_path=plots_dir / "heatmap_readtext.png",
@@ -261,7 +261,7 @@ def main():
         if len(spont_df) > 0:
             fig = plot_top_features_heatmap(
                 spont_df,
-                models=["LogisticRegression", "RandomForest"],
+                models=["LogisticRegression", "RandomForest", "GradientBoosting", "XGBoost"],
                 top_n=15,
                 title="Feature Importance Heatmap - Spontaneous",
                 save_path=plots_dir / "heatmap_spontaneous.png",

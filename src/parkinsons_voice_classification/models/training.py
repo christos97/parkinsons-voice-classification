@@ -185,6 +185,68 @@ def run_cv(
     return results_df
 
 
+def run_cv_for_roc(
+    X: np.ndarray,
+    y: np.ndarray,
+    groups: np.ndarray | None = None,
+    use_groups: bool = False,
+    n_folds: int = N_FOLDS,
+) -> dict[str, list[tuple[np.ndarray, np.ndarray]]]:
+    """
+    Run CV and collect per-fold (y_true, y_prob) pairs for ROC curve plotting.
+
+    Parameters
+    ----------
+    X : np.ndarray
+        Feature matrix
+    y : np.ndarray
+        Label array
+    groups : np.ndarray, optional
+        Group labels for grouped CV
+    use_groups : bool
+        If True, use StratifiedGroupKFold
+    n_folds : int
+        Number of CV folds
+
+    Returns
+    -------
+    dict[str, list[tuple[np.ndarray, np.ndarray]]]
+        Maps model_name -> list of (y_true, y_prob) one tuple per fold.
+        Models that do not support predict_proba are excluded.
+    """
+    if use_groups:
+        if groups is None:
+            raise ValueError("groups must be provided when use_groups=True")
+        cv = StratifiedGroupKFold(n_splits=n_folds, shuffle=True, random_state=RANDOM_SEED)
+        split_args = (X, y, groups)
+    else:
+        cv = StratifiedKFold(n_splits=n_folds, shuffle=True, random_state=RANDOM_SEED)
+        split_args = (X, y)
+
+    models = get_models()
+    roc_data: dict[str, list[tuple[np.ndarray, np.ndarray]]] = {name: [] for name in models}
+
+    for model_name, pipeline in models.items():
+        for train_idx, test_idx in cv.split(*split_args):
+            X_train, X_test = X[train_idx], X[test_idx]
+            y_train, y_test = y[train_idx], y[test_idx]
+
+            model = clone(pipeline)
+            model.fit(X_train, y_train)
+
+            if hasattr(model, "predict_proba"):
+                y_prob = model.predict_proba(X_test)[:, 1]
+            elif hasattr(model, "decision_function"):
+                y_prob = model.decision_function(X_test)
+            else:
+                continue  # skip models with no probability output
+
+            roc_data[model_name].append((y_test, y_prob))
+
+    # Remove models with no folds collected
+    return {name: folds for name, folds in roc_data.items() if folds}
+
+
 def summarize_results(results_df: pd.DataFrame) -> pd.DataFrame:
     """
     Summarize CV results with mean ± std.

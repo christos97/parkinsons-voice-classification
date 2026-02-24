@@ -245,3 +245,28 @@ SpontaneousDialogue & $-5.8$pp & $-3.4$pp & Decreased \\
 \section{Statistical Significance Notes}
 
 Due to high standard deviations (often $>$ 0.15), confidence intervals overlap across many comparisons. This limits the ability to make strong statistical claims about differences between conditions. Results should be interpreted as \textbf{trends} rather than definitive rankings.
+
+\section{ROC Curves}
+
+Receiver Operating Characteristic (ROC) curves are shown for all five classifiers across each experimental condition. Faint lines represent individual cross-validation folds; the bold curve represents the mean across folds with a $\pm1$ standard deviation shaded band. All curves were generated using the extended feature set.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{fig_roc_readtext.pdf}
+    \caption{ROC curves for all five classifiers on the ReadText task (Dataset A, extended features). Shaded bands indicate $\pm1$ standard deviation across the five cross-validation folds.}
+    \label{fig:roc-readtext}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{fig_roc_spontaneous.pdf}
+    \caption{ROC curves for all five classifiers on the SpontaneousDialogue task (Dataset A, extended features).}
+    \label{fig:roc-spontaneous}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{fig_roc_dataset_b.pdf}
+    \caption{ROC curves for all five classifiers on Dataset B (PD Speech Features). Note that subject-level deduplication is not possible for this dataset; results may be optimistic due to potential subject overlap across folds.}
+    \label{fig:roc-datasetb}
+\end{figure}

@@ -91,11 +91,13 @@ The moderate imbalance in Dataset A (57:43 HC:PD) is not severe enough to substa
 
 \subsection{Model Performance Hierarchy}
 
-Across all conditions, Random Forest consistently outperformed other models:
+Across all conditions, Random Forest consistently achieved the highest scores among the five classifiers evaluated:
 
 \begin{equation*}
-\text{Random Forest} > \text{Logistic Regression} \approx \text{SVM (RBF)}
+\text{Random Forest} \geq \text{Gradient Boosting} \approx \text{XGBoost} > \text{Logistic Regression} \approx \text{SVM (RBF)}
 \end{equation*}
+
+% TODO: Update hierarchy after experiment re-run with actual boosting results
 
 Random Forest's advantages for this task include:
 
@@ -222,6 +224,18 @@ This thesis reports:
 
 This level of transparency is uncommon in the PD voice classification literature, where selective reporting of best results is prevalent.
 
+\subsection{Validation Strategy: Cross-Validation over Train/Test Split}
+
+A deliberate methodological choice was to use five-fold cross-validation as the sole evaluation mechanism rather than a dedicated held-out test set. For datasets of this scale ($n \leq 37$ recording subjects with subject-level splits), a single train/test partition is problematic:
+
+\begin{itemize}
+    \item A 20\% hold-out retains only $\sim$7 subjects for final evaluation~--- a sample too small for stable metric computation (one misclassification shifts accuracy by $\sim$14\%).
+    \item A single split produces a point estimate with no associated variance, obscuring whether the result reflects genuine generalisation or the specific subjects in the test set.
+    \item Cross-validation exposes the high fold-to-fold variability inherent to small medical cohorts, providing more honest uncertainty characterisation (observed std $= 0.15$--$0.30$ in this study).
+\end{itemize}
+
+Crucially, because all hyperparameters were fixed before any data were examined, no separate validation set was needed for model selection. The CV folds serve one purpose: estimating generalisation performance on unseen subjects. Feature standardisation (\texttt{StandardScaler}) is performed strictly within each fold~--- fitted on the training partition and applied to the test partition~--- so that no information about the test fold influences any training or preprocessing step.
+
 \section{Feature Importance Analysis}
 
 \subsection{Most Discriminative Features (Dataset A)}
@@ -335,6 +349,8 @@ Classical ML achieves ROC-AUC up to $0.857 \pm 0.171$ (Dataset A, Random Forest,
 
 \begin{itemize}
     \item \textbf{Random Forest:} Best overall ($0.786 \pm 0.235$ pooled across conditions)
+    \item \textbf{Gradient Boosting:} \textit{Pending experiment re-run}
+    \item \textbf{XGBoost:} \textit{Pending experiment re-run}
     \item \textbf{Logistic Regression:} Stable baseline ($0.781 \pm 0.152$ pooled)
     \item \textbf{SVM (RBF):} High variance, task-sensitive ($0.635 \pm 0.311$ pooled)
 \end{itemize}

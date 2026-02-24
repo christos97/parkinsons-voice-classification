@@ -36,6 +36,16 @@ FIGURE_MAPPING = {
     "importance_readtext_categories.png": "fig_imp_readtext_cats.png",
     "importance_spontaneous_categories.png": "fig_imp_spontaneous_cats.png",
 
+    # Feature Importance - Appendix (GradientBoosting)
+    "importance_readtext_gradientboosting.png": "fig_imp_readtext_gb.png",
+    "importance_spontaneous_gradientboosting.png": "fig_imp_spontaneous_gb.png",
+    "importance_pd_speech_gradientboosting.png": "fig_imp_datasetb_gb.png",
+
+    # Feature Importance - Appendix (XGBoost)
+    "importance_readtext_xgboost.png": "fig_imp_readtext_xgb.png",
+    "importance_spontaneous_xgboost.png": "fig_imp_spontaneous_xgb.png",
+    "importance_pd_speech_xgboost.png": "fig_imp_datasetb_xgb.png",
+
 }
 
 # =============================================================================

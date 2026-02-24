@@ -248,6 +248,18 @@ info:
 sync-figures: ## Sync experiment figures to thesis folder
 	poetry run python scripts/sync_figures.py
 
+.PHONY: generate-plots
+generate-plots: ## Generate all plots (confusion matrices + ROC curves)
+	@echo "Generating confusion matrices..."
+	poetry run python scripts/generate_confusion_matrices.py
+	@echo "Generating ROC curves..."
+	poetry run python scripts/generate_roc_curves.py
+	@echo "Running feature importance analysis..."
+	poetry run pvc-importance
+	@echo "Syncing figures to thesis/figures/..."
+	$(MAKE) sync-figures
+	@echo "✓ All plots generated and synced"
+
 thesis: sync-figures
 	@echo "Building thesis PDF (using latexmk)..."
 	@cd thesis && latexmk -pdf -interaction=nonstopmode -quiet -f main.tex 2>/dev/null || latexmk -pdf -interaction=nonstopmode -quiet main.tex

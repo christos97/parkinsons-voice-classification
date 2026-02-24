@@ -1,10 +1,12 @@
 """
 Classifier Definitions
 
-Three classical ML models with default hyperparameters:
+Five classical ML models with default hyperparameters:
 - Logistic Regression
 - SVM (RBF kernel)
 - Random Forest
+- Gradient Boosting (sklearn)
+- XGBoost
 
 All wrapped in sklearn Pipelines with StandardScaler.
 """
@@ -13,7 +15,8 @@ from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
 from sklearn.linear_model import LogisticRegression
 from sklearn.svm import SVC
-from sklearn.ensemble import RandomForestClassifier
+from sklearn.ensemble import GradientBoostingClassifier, RandomForestClassifier
+from xgboost import XGBClassifier
 
 from parkinsons_voice_classification.config import RANDOM_SEED, USE_CLASS_WEIGHT_BALANCED
 
@@ -74,6 +77,36 @@ def get_models() -> dict[str, Pipeline]:
                         n_estimators=100,
                         random_state=RANDOM_SEED,
                         class_weight=class_weight,
+                    ),
+                ),
+            ]
+        ),
+        # Note: Boosting classifiers do not support class_weight="balanced"
+        # natively. When USE_CLASS_WEIGHT_BALANCED is True, the weighting
+        # applies only to the three models above.
+        "GradientBoosting": Pipeline(
+            [
+                ("scaler", StandardScaler()),
+                (
+                    "clf",
+                    GradientBoostingClassifier(
+                        n_estimators=100,
+                        learning_rate=0.1,
+                        random_state=RANDOM_SEED,
+                    ),
+                ),
+            ]
+        ),
+        "XGBoost": Pipeline(
+            [
+                ("scaler", StandardScaler()),
+                (
+                    "clf",
+                    XGBClassifier(
+                        n_estimators=100,
+                        learning_rate=0.1,
+                        random_state=RANDOM_SEED,
+                        eval_metric="logloss",
                     ),
                 ),
             ]

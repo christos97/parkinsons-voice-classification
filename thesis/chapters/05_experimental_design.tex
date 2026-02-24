@@ -5,7 +5,7 @@
 
 \section{Overview}
 
-This chapter details the experimental design, including the $2 \times 2 \times 3$ factorial structure, cross-validation protocols, and evaluation procedures. The design prioritizes methodological rigor over performance optimization, with all experiments conducted under identical conditions to enable fair comparisons. All experimental procedures were automated via command-line tools to ensure reproducibility.
+This chapter details the experimental design, including the $2 \times 2 \times 5$ factorial structure, cross-validation protocols, and evaluation procedures. The design prioritizes methodological rigor over performance optimization, with all experiments conducted under identical conditions to enable fair comparisons. All experimental procedures were automated via command-line tools to ensure reproducibility.
 
 \section{Research Questions}
 
@@ -75,17 +75,17 @@ PD (1) & 564 & 74.6\% & 2.94:1 \\
 
 \section{Experimental Matrix}
 
-\subsection{\texorpdfstring{$2 \times 2 \times 3$ Factorial Design}{2x2x3 Factorial Design}}
+\subsection{\texorpdfstring{$2 \times 2 \times 5$ Factorial Design}{2x2x5 Factorial Design}}
 
 The complete experimental design crosses three factors:
 
 \begin{enumerate}
     \item \textbf{Feature Set:} Baseline (47) vs Extended (78)
     \item \textbf{Class Weighting:} None (baseline) vs Balanced
-    \item \textbf{Model Architecture:} Logistic Regression vs SVM (RBF) vs Random Forest
+    \item \textbf{Model Architecture:} Logistic Regression vs SVM (RBF) vs Random Forest vs Gradient Boosting vs XGBoost
 \end{enumerate}
 
-This yields $2 \times 2 \times 3 = 12$ conditions per dataset/task combination.
+This yields $2 \times 2 \times 5 = 20$ conditions per dataset/task combination.
 
 \begin{table}[H]
 \centering
@@ -93,13 +93,13 @@ This yields $2 \times 2 \times 3 = 12$ conditions per dataset/task combination.
 \toprule
 \textbf{ID} & \textbf{Features} & \textbf{Weight} & \textbf{Models} & \textbf{Output Dir} \\
 \midrule
-C1 & Baseline (47) & None & LR, SVM, RF & \texttt{baseline/baseline/} \\
-C2 & Extended (78) & None & LR, SVM, RF & \texttt{baseline/extended/} \\
-C3 & Baseline (47) & Balanced & LR, SVM, RF & \texttt{weighted/baseline/} \\
-C4 & Extended (78) & Balanced & LR, SVM, RF & \texttt{weighted/extended/} \\
+C1 & Baseline (47) & None & LR, SVM, RF, GB, XGB & \texttt{baseline/baseline/} \\
+C2 & Extended (78) & None & LR, SVM, RF, GB, XGB & \texttt{baseline/extended/} \\
+C3 & Baseline (47) & Balanced & LR, SVM, RF, GB, XGB & \texttt{weighted/baseline/} \\
+C4 & Extended (78) & Balanced & LR, SVM, RF, GB, XGB & \texttt{weighted/extended/} \\
 \bottomrule
 \end{tabular}
-\caption{Experimental conditions (12 total: 4 conditions $\times$ 3 models each)}
+\caption{Experimental conditions (20 total: 4 conditions $\times$ 5 models each). Note: class weighting applies only to LR, SVM, and RF; GB and XGB do not support \texttt{class\_weight} natively.}
 \label{tab:conditions}
 \end{table}
 
@@ -111,11 +111,11 @@ C4 & Extended (78) & Balanced & LR, SVM, RF & \texttt{weighted/extended/} \\
 \toprule
 \textbf{Dataset/Task} & \textbf{Conditions} & \textbf{Models} & \textbf{CV Folds} & \textbf{Total Runs} \\
 \midrule
-Dataset A - ReadText & 4 & 3 & 5 & 60 \\
-Dataset A - SpontaneousDialogue & 4 & 3 & 5 & 60 \\
-Dataset B - PD Speech & 4 & 3 & 5 & 60 \\
+Dataset A - ReadText & 4 & 5 & 5 & 100 \\
+Dataset A - SpontaneousDialogue & 4 & 5 & 5 & 100 \\
+Dataset B - PD Speech & 4 & 5 & 5 & 100 \\
 \midrule
-\textbf{Grand Total} & & & & \textbf{180} \\
+\textbf{Grand Total} & & & & \textbf{300} \\
 \bottomrule
 \end{tabular}
 \caption{Total experimental runs across all datasets and conditions}
@@ -419,7 +419,7 @@ Feature extraction is fully deterministic (no random components). Combined with 
 \subsection{General Limitations}
 
 \begin{itemize}
-    \item \textbf{No held-out test set:} Performance reported on cross-validation only
+    \item \textbf{No held-out test set:} Performance estimated via 5-fold cross-validation only. A separate test set was deliberately omitted: with $n=37$ subjects (Dataset A), a 20\% hold-out at the subject level would yield only $\sim$7 test subjects~--- producing single-split estimates highly sensitive to which subjects happen to fall in that set. A one-subject swing in classification shifts accuracy by $\sim$14\%. Cross-validation returns five independent fold scores, providing variance-characterised estimates while maximising training data per fold.
     \item \textbf{No hyperparameter tuning:} Fixed parameters may be suboptimal for some conditions
     \item \textbf{Binary classification only:} Does not capture PD severity (H\&Y stages)
 \end{itemize}
@@ -429,7 +429,7 @@ Feature extraction is fully deterministic (no random components). Combined with 
 This experimental design chapter established:
 
 \begin{enumerate}
-    \item A comprehensive $2 \times 2 \times 3$ factorial design (12 conditions per dataset)
+    \item A comprehensive $2 \times 2 \times 5$ factorial design (20 conditions per dataset)
     \item Subject-aware cross-validation for Dataset A to prevent identity leakage
     \item ROC-AUC as the primary metric with 4 supporting secondary metrics
     \item Automated CLI-based workflow ensuring reproducibility
@@ -437,4 +437,4 @@ This experimental design chapter established:
     \item Transparent limitations and caveats for both datasets
 \end{enumerate}
 
-The next chapter presents the results from these 180 total experimental runs across all conditions, datasets, and models.
+The next chapter presents the results from these 300 total experimental runs across all conditions, datasets, and models.

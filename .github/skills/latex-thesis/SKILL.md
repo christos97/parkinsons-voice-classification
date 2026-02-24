@@ -7,13 +7,15 @@ description: Write, edit, and build the LaTeX MSc thesis .tex files on Parkinson
 
 Write and maintain the MSc thesis (`.tex` files) on Parkinson's Disease voice classification using classical machine learning. This skill covers LaTeX editing, result analysis, bibliography management, figure syncing, and research integrity.
 
+> You can always refer to the [Thesis Guide](./references/thesis-guide.md) for formatting requirements, abstract rules, and title page specifications.
+
 ## Research Context
 
 This thesis investigates binary classification of Parkinson's Disease (PD) vs Healthy Controls (HC) using voice data:
 
 - **Dataset A (MDVR-KCL)**: Raw audio → feature extraction → ML (n=37 subjects for ReadText, n=36 for SpontaneousDialogue)
 - **Dataset B (PD Speech Features)**: Pre-extracted features → ML (subject IDs unavailable)
-- **Models**: Logistic Regression, SVM (RBF), Random Forest — no deep learning
+- **Models**: Logistic Regression, SVM (RBF), Random Forest, Gradient Boosting, XGBoost — no deep learning
 - **Features**: 47 baseline (21 prosodic + 26 spectral), 78 extended
 - **Evaluation**: Accuracy, Precision, Recall, F1, ROC-AUC — all reported as mean ± std
 
@@ -121,7 +123,7 @@ Follow this process when translating experiment outputs into thesis discussion:
    - `outputs/results/weighted/summary.csv` — class-weighted results
 2. Compare across dimensions:
    - Tasks: ReadText vs SpontaneousDialogue
-   - Models: Logistic Regression vs SVM vs Random Forest
+   - Models: Logistic Regression vs SVM vs Random Forest vs Gradient Boosting vs XGBoost
    - Feature sets: baseline (47) vs extended (78)
 3. Report all metrics as mean ± std
 4. Frame findings with hedging language ("suggests", "observed")

@@ -175,7 +175,7 @@ def main():
         "--model",
         type=str,
         default="RandomForest",
-        choices=["LogisticRegression", "SVM_RBF", "RandomForest"],
+        choices=["LogisticRegression", "SVM_RBF", "RandomForest", "GradientBoosting", "XGBoost"],
         help="Model to train (default: RandomForest)",
     )
     parser.add_argument(
