@@ -1,61 +1,62 @@
-% Chapter 4: Methodology
+% Κεφάλαιο 4: Μεθοδολογία
 
-\chapter{Methodology}
+\chapter{Μεθοδολογία}
 \label{ch:methodology}
 
-\section{Feature Extraction Pipeline}
+\section{Διαδικασία εξαγωγής χαρακτηριστικών}
 
-\subsection{Pipeline Architecture}
+\subsection{Αρχιτεκτονική διαδικασίας}
 
-The feature extraction pipeline transforms raw audio into structured feature vectors suitable for machine learning:
+Η διαδικασία εξαγωγής χαρακτηριστικών μετατρέπει τον ακατέργαστο ήχο σε δομημένα διανύσματα χαρακτηριστικών κατάλληλα για μηχανική μάθηση:
 
 \begin{figure}[H]
 \centering
 \begin{verbatim}
 +-----------------+     +------------------+     +-----------------+
-|  Raw Audio      | --> | Feature          | --> | Feature         |
-|  (WAV files)    |     | Extraction       |     | Matrix (X, y)   |
+|  Ακατέργαστος   | --> | Εξαγωγή          | --> | Μήτρα           |
+|  ήχος (WAV)     |     | χαρακτηριστικών  |     | χαρακτηριστικών |
 +-----------------+     +------------------+     +-----------------+
                                |
                                v
                     +----------------------+
-                    | * Prosodic Features  |
-                    | * Spectral Features  |
+                    | * Προσωδιακά         |
+                    |   χαρακτηριστικά     |
+                    | * Φασματικά          |
+                    |   χαρακτηριστικά     |
                     +----------------------+
 \end{verbatim}
-\caption{Feature extraction pipeline architecture. Each audio file produces one feature vector.}
+\caption{Αρχιτεκτονική της διαδικασίας εξαγωγής χαρακτηριστικών. Κάθε αρχείο ήχου παράγει ένα διάνυσμα χαρακτηριστικών.}
 \label{fig:pipeline-architecture}
 \end{figure}
 
-\subsection{Audio Preprocessing}
+\subsection{Προεπεξεργασία ήχου}
 
-All audio files undergo standardized preprocessing to ensure consistent feature extraction:
+Όλα τα αρχεία ήχου υποβλήθηκαν στην ίδια διαδικασία προεπεξεργασίας, ώστε η εξαγωγή χαρακτηριστικών να γίνει με συνέπεια:
 
 \begin{enumerate}
-    \item \textbf{Load audio} at native sample rate using \texttt{librosa.load()}
-    \item \textbf{Resample} to 22,050 Hz (standardized across all recordings)
-    \item \textbf{Convert to mono} if stereo (channel averaging)
-    \item \textbf{Normalize amplitude} to $[-1, 1]$ range
-    \item \textbf{Trim silence} using energy-based detection (threshold: top 5\% energy)
+    \item \textbf{Φόρτωση ήχου} με τον αρχικό ρυθμό δειγματοληψίας χρησιμοποιώντας \texttt{librosa.load()}
+    \item \textbf{Επαναδειγματοληψία} στα 22.050 Hz (σταθερή σε όλες τις ηχογραφήσεις)
+    \item \textbf{Μετατροπή σε μονοφωνικό} αν το αρχείο ήταν στερεοφωνικό (μέσος όρος των δύο καναλιών).
+    \item \textbf{Κανονικοποίηση πλάτους} στο εύρος $[-1, 1]$
+    \item \textbf{Αφαίρεση σιωπής} χρησιμοποιώντας ανίχνευση βάσει ενέργειας (threshold 5\% της μέγιστης ενέργειας)
 \end{enumerate}
 
-The 22,050 Hz sample rate was chosen as it provides adequate frequency resolution for speech (Nyquist frequency: 11,025 Hz) while reducing computational cost compared to 44,100 Hz.
+Ο ρυθμός 22.050 Hz επιλέχθηκε γιατί είναι επαρκής για ανάλυση ομιλίας (Nyquist 11.025 Hz) και ταυτόχρονα μειώνει το υπολογιστικό κόστος σε σχέση με τα 44.100 Hz.
 
-\subsection{Prosodic Features (21 features)}
+\subsection{Προσωδιακά χαρακτηριστικά (21 χαρακτηριστικά)}
 
-Prosodic features capture suprasegmental voice characteristics known to be affected in PD. All prosodic features were extracted using Parselmouth~\citep{parselmouth2018}, a Python interface to Praat.
+Τα προσωδιακά χαρακτηριστικά περιγράφουν στοιχεία της φωνής που επηρεάζονται συχνά από τη νόσο του Πάρκινσον. Η εξαγωγή έγινε με το Parselmouth (Praat).
+\subsubsection{Θεμελιώδης συχνότητα (\texorpdfstring{$F_0$}{F0})}
 
-\subsubsection{Fundamental Frequency (\texorpdfstring{$F_0$}{F0})}
-
-Pitch extraction used the following parameters:
+Για την εξαγωγή του τόνου χρησιμοποιήθηκαν οι ακόλουθες παράμετροι:
 
 \begin{itemize}
-    \item \textbf{Algorithm:} Autocorrelation-based (Praat's default)
-    \item \textbf{Pitch range:} 75--500 Hz (covers male, female, and pathological voices)
-    \item \textbf{Time step:} 0.01 s (standard for voice analysis)
+    \item \textbf{Αλγόριθμος:} Βασισμένος στην αυτοσυσχέτιση (προεπιλογή του Praat)
+    \item \textbf{Εύρος τόνου:} 75--500 Hz (καλύπτει ανδρικές, γυναικείες και παθολογικές φωνές)
+    \item \textbf{Χρονικό βήμα:} 0,01 s (πρότυπο για την ανάλυση φωνής)
 \end{itemize}
 
-Four statistics were computed from the pitch contour:
+Τέσσερα στατιστικά στοιχεία υπολογίστηκαν από το περίγραμμα του τόνου:
 
 \begin{equation}
 F_0 = \{\mu_{F_0}, \sigma_{F_0}, \min_{F_0}, \max_{F_0}\}
@@ -64,46 +65,46 @@ F_0 = \{\mu_{F_0}, \sigma_{F_0}, \min_{F_0}, \max_{F_0}\}
 
 \subsubsection{Jitter}
 
-Jitter quantifies cycle-to-cycle variation in pitch period. Three measures were extracted:
+Το Jitter μετρά τη διακύμανση της περιόδου του τόνου από κύκλο σε κύκλο.
 
 \begin{equation}
 \text{Jitter}_{\text{local}} = \frac{1}{N-1} \sum_{i=1}^{N-1} \frac{|T_i - T_{i+1}|}{\bar{T}}
 \label{eq:jitter-local}
 \end{equation}
 
-where $T_i$ is the $i$-th pitch period and $\bar{T}$ is the mean period.
+όπου $T_i$ είναι η $i$-η περίοδος τόνου και $\bar{T}$ είναι η μέση περίοδος.
 
-Additional measures include:
+Πρόσθετα μέτρα περιλαμβάνουν:
 \begin{itemize}
-    \item \textbf{RAP (Relative Average Perturbation):} 3-point smoothing
-    \item \textbf{PPQ5:} 5-point period perturbation quotient
+    \item \textbf{RAP (Σχετική Μέση Διαταραχή):} εξομάλυνση 3 σημείων
+    \item \textbf{PPQ5:} πηλίκο διαταραχής περιόδου 5 σημείων
 \end{itemize}
 
 \subsubsection{Shimmer}
 
-Shimmer quantifies cycle-to-cycle variation in amplitude. Five measures were extracted:
+Το Shimmer μετρά τη διακύμανση της έντασης από κύκλο σε κύκλο.
 
 \begin{equation}
 \text{Shimmer}_{\text{local}} = \frac{1}{N-1} \sum_{i=1}^{N-1} \frac{|A_i - A_{i+1}|}{\bar{A}}
 \label{eq:shimmer-local}
 \end{equation}
 
-where $A_i$ is the $i$-th peak amplitude and $\bar{A}$ is the mean amplitude.
+όπου $A_i$ είναι το $i$-οστό μέγιστο πλάτος και $\bar{A}$ είναι το μέσο πλάτος.
 
-Additional measures include APQ3, APQ5, APQ11 (amplitude perturbation quotients with varying windows), and DDA (difference of differences of amplitudes).
+Πρόσθετα μέτρα περιλαμβάνουν APQ3, APQ5, APQ11 (συντελεστές διαταραχής πλάτους με μεταβαλλόμενα παράθυρα) και DDA (διαφορά των διαφορών των πλατών).
 
-\subsubsection{Harmonics-to-Noise Ratio (HNR)}
+\subsubsection{Αναλογία αρμονικών προς θόρυβο (HNR)}
 
-HNR quantifies the ratio of harmonic to noise components:
+Το HNR δείχνει πόσο «καθαρή» είναι η φωνή (αρμονικές έναντι θορύβου).
 
 \begin{itemize}
-    \item \textbf{Mean HNR:} Average HNR across the utterance (dB)
-    \item \textbf{Autocorrelation harmonicity:} Peak autocorrelation value
+    \item \textbf{Μέση HNR:} Μέση HNR (dB)
+    \item \textbf{Αυτοσυσχέτιση αρμονικότητας:} Μέγιστη τιμή αυτοσυσχέτισης
 \end{itemize}
 
-\subsubsection{Intensity}
+\subsubsection{Ένταση}
 
-Three intensity statistics (dB SPL):
+Τρεις στατιστικές έντασης (dB SPL):
 
 \begin{equation}
 I = \{\mu_I, \sigma_I, \max_I - \min_I\}
@@ -111,269 +112,296 @@ I = \{\mu_I, \sigma_I, \max_I - \min_I\}
 
 \subsubsection{Formants}
 
-First three formants ($F_1$, $F_2$, $F_3$) were extracted using Linear Predictive Coding (LPC):
+Τα τρία πρώτα formants ($F_1$, $F_2$, $F_3$) εξήχθησαν χρησιμοποιώντας γραμμική προβλεπτική κωδικοποίηση (LPC):
 
 \begin{itemize}
-    \item \textbf{LPC order:} 10 (sufficient for 3 formants at 22 kHz)
-    \item \textbf{Features:} Mean and standard deviation of each formant (6 features total)
+    \item \textbf{Σειρά LPC:} τάξης 10 (επαρκής για 3 formants στα 22 kHz)
+    \item \textbf{Χαρακτηριστικά:} Μέσος όρος και τυπική απόκλιση κάθε φωνητικού στοιχείου (6 χαρακτηριστικά συνολικά)
 \end{itemize}
 
 \begin{table}[H]
 \centering
 \begin{tabular}{@{}lcll@{}}
 \toprule
-\textbf{Feature Group} & \textbf{Count} & \textbf{Features} & \textbf{Tool} \\
+\textbf{Ομάδα χαρακτηριστικών} & \textbf{Αριθμός} & \textbf{Χαρακτηριστικά} & \textbf{Εργαλείο} \\
 \midrule
-Pitch ($F_0$) & 4 & mean, std, min, max & Parselmouth \\
-Jitter & 3 & local, RAP, PPQ5 & Parselmouth \\
-Shimmer & 5 & local, APQ3, APQ5, APQ11, DDA & Parselmouth \\
-Harmonicity & 2 & HNR mean, autocorr & Parselmouth \\
-Intensity & 3 & mean, std, range & Parselmouth \\
-Formants & 6 & $F_1$--$F_3$ mean, $F_1$--$F_3$ std & Parselmouth \\
+Τόνος ($F_0$) & 4 & μέσος όρος, τυπική απόκλιση, ελάχιστο, μέγιστο & Parselmouth \\
+Jitter & 3 & τοπικό, RAP, PPQ5 & Parselmouth \\
+Shimmer & 5 & τοπικό, APQ3, APQ5, APQ11, DDA & Parselmouth \\
+Αρμονικότητα & 2 & μέσος όρος HNR, αυτοσυσχέτιση & Parselmouth \\
+Intensity & 3 & μέσος όρος, τυπική απόκλιση, εύρος & Parselmouth \\
+Formants & 6 & $F_1$--$F_3$ μέσος όρος, $F_1$--$F_3$ τυπική απόκλιση & Parselmouth \\
 \midrule
-\textbf{Total} & \textbf{21} & & \\
+\textbf{Σύνολο} & \textbf{21} & & \\
 \bottomrule
 \end{tabular}
-\caption{Prosodic feature breakdown}
+\caption{Ανάλυση προσωδιακών χαρακτηριστικών}
 \label{tab:prosodic-features}
 \end{table}
 
-\subsection{Spectral Features}
+\subsection{Φασματικά χαρακτηριστικά}
 
-Spectral features capture frequency-domain characteristics using the \texttt{librosa} library~\citep{librosa2020}.
+Τα φασματικά χαρακτηριστικά περιγράφουν τη δομή του φάσματος συχνοτήτων της φωνής και εξήχθησαν χρησιμοποιώντας τη βιβλιοθήκη \texttt{librosa}~\citep{librosa2020}.
 
-\subsubsection{Mel-Frequency Cepstral Coefficients (MFCCs)}
+\subsubsection{Συντελεστές Mel-Frequency Cepstral (MFCC)}
 
-MFCCs are computed via the following steps:
+Οι MFCC υπολογίζονται μέσω των ακόλουθων βημάτων:
 
 \begin{enumerate}
-    \item \textbf{Pre-emphasis:} $y[n] = x[n] - 0.97 \cdot x[n-1]$
-    \item \textbf{Framing:} Window length = 2048 samples ($\approx$93 ms at 22 kHz)
-    \item \textbf{Windowing:} Hann window applied
-    \item \textbf{FFT:} 2048-point FFT
-    \item \textbf{Mel filterbank:} 128 triangular filters spanning 0--11,025 Hz
-    \item \textbf{Log compression:} $\log(\text{mel power spectrum})$
-    \item \textbf{DCT:} Discrete Cosine Transform to decorrelate coefficients
+    \item \textbf{Προέμφαση:} $y[n] = x[n] - 0{,}97 \cdot x[n-1]$
+    \item \textbf{Πλαίσιο:} Μήκος παραθύρου = 2048 δείγματα ($\approx$93 ms στα 22 kHz)
+    \item \textbf{Παράθυρο:} Εφαρμογή παραθύρου Hann
+    \item \textbf{FFT:} FFT 2048 σημείων
+    \item \textbf{Φίλτρο Mel:} 128 τριγωνικά φίλτρα που καλύπτουν 0--11.025 Hz
+    \item \textbf{Συμπίεση λογαρίθμου:} $\log(\text{mel power spectrum})$
+    \item \textbf{DCT:} Διακριτός μετασχηματισμός συνημιτόνου που χρησιμοποιείται για τη μείωση της συσχέτισης μεταξύ των συντελεστών
 \end{enumerate}
 
-Parameters used:
+Παράμετροι που χρησιμοποιήθηκαν:
 \begin{itemize}
-    \item \textbf{Number of coefficients:} 13 (MFCC 0--12)
-    \item \textbf{Hop length:} 512 samples ($\approx$23 ms at 22 kHz, 75\% overlap)
-    \item \textbf{Number of mel bands:} 128
+    \item \textbf{Αριθμός συντελεστών:} 13 (MFCC 0--12)
+    \item \textbf{Μήκος άλματος:} 512 δείγματα ($\approx$23 ms στα 22 kHz, 75\% επικάλυψη)
+    \item \textbf{Αριθμός ζωνών mel:} 128
 \end{itemize}
 
-MFCC 0 (the zeroth coefficient) captures energy information, while MFCCs 1--12 capture spectral envelope shape.
+Ο MFCC 0 (ο μηδενικός συντελεστής) περιγράφει κυρίως την ενέργεια του σήματος, ενώ οι MFCC 1–12 αποτυπώνουν το σχήμα του φασματικού περιβλήματος της φωνής.
 
-\subsubsection{Delta Coefficients}
+\subsubsection{Συντελεστές δέλτα}
 
-First-order temporal derivatives (delta coefficients) capture spectral dynamics:
+Οι χρονικές παράγωγοι πρώτης τάξης (συντελεστές δέλτα) καταγράφουν τη φασματική δυναμική:
 
 \begin{equation}
 \Delta_t[n] = \frac{\sum_{i=1}^{N} i \cdot (c_{t+i} - c_{t-i})}{2 \sum_{i=1}^{N} i^2}
 \label{eq:delta}
 \end{equation}
 
-where $c_t$ is the MFCC coefficient at frame $t$ and $N=2$ is the window size.
+όπου $c_t$ είναι ο συντελεστής MFCC στο πλαίσιο $t$ και $N=2$ είναι το μέγεθος του παραθύρου.
 
-\subsubsection{Baseline Spectral Features (26 features)}
+\subsubsection{Βασικά φασματικά χαρακτηριστικά (26 χαρακτηριστικά)}
 
-The baseline spectral feature set consists of:
+Το βασικό σύνολο φασματικών χαρακτηριστικών αποτελείται από:
 
 \begin{table}[H]
 \centering
 \begin{tabular}{@{}lcp{7cm}@{}}
 \toprule
-\textbf{Feature} & \textbf{Count} & \textbf{Description} \\
+\textbf{Χαρακτηριστικό} & \textbf{Αριθμός} & \textbf{Περιγραφή} \\
 \midrule
-MFCC mean & 13 & Temporal mean of MFCCs 0--12 \\
-Delta MFCC mean & 13 & Temporal mean of first-order derivatives \\
+Μέσος όρος MFCC & 13 & Χρονικός μέσος όρος των MFCC 0--12 \\
+Μέσος όρος Delta MFCC & 13 & Χρονικός μέσος όρος των παραγώγων πρώτης τάξης \\
 \midrule
-\textbf{Total} & \textbf{26} & \\
+\textbf{Σύνολο} & \textbf{26} & \\
 \bottomrule
 \end{tabular}
-\caption{Baseline spectral features}
+\caption{Βασικά φασματικά χαρακτηριστικά}
 \label{tab:baseline-spectral}
 \end{table}
 
-\subsubsection{Extended Spectral Features (57 features)}
+\subsubsection{Εκτεταμένα φασματικά χαρακτηριστικά (57 χαρακτηριστικά)}
 
-The extended feature set adds three groups of features designed to capture additional spectral and temporal variability:
+Το εκτεταμένο σύνολο χαρακτηριστικών περιλαμβάνει τρεις επιπλέον ομάδες, οι οποίες στοχεύουν να αποτυπώσουν περισσότερη φασματική και χρονική μεταβλητότητα της φωνής.
 
 \begin{table}[H]
 \centering
 \begin{tabular}{@{}lcp{7cm}@{}}
 \toprule
-\textbf{Feature} & \textbf{Count} & \textbf{Description} \\
+\textbf{Χαρακτηριστικό} & \textbf{Αριθμός} & \textbf{Περιγραφή} \\
 \midrule
-MFCC mean & 13 & Temporal mean of MFCCs 0--12 \\
-\textbf{MFCC std} & \textbf{13} & \textbf{Temporal std deviation (within-utterance variability)} \\
-Delta MFCC mean & 13 & Temporal mean of first-order derivatives \\
-\textbf{Delta-Delta MFCC mean} & \textbf{13} & \textbf{Temporal mean of second-order derivatives (acceleration)} \\
-\textbf{Spectral shape} & \textbf{5} & \textbf{Centroid, bandwidth, rolloff, flatness, ZCR} \\
+Μέσος όρος MFCC & 13 & Χρονικός μέσος όρος των MFCC 0--12 \\
+\textbf{MFCC std} & \textbf{13} & \textbf{Χρονική τυπική απόκλιση (μεταβλητότητα εντός της εκφώνησης)} \\
+Μέσος όρος Delta MFCC & 13 & Χρονικός μέσος όρος των παραγώγων πρώτης τάξης \\
+\textbf{Μέσος όρος Delta-Delta MFCC} & \textbf{13} & \textbf{Χρονικός μέσος όρος των παραγώγων δεύτερης τάξης (επιτάχυνση)} \\
+\textbf{Φασματικό σχήμα} & \textbf{5} & \textbf{Κέντρο βάρους, εύρος ζώνης, rolloff, επιπεδότητα, ZCR} \\
 \midrule
-\textbf{Total} & \textbf{57} & \\
+\textbf{Σύνολο} & \textbf{57} & \\
 \bottomrule
 \end{tabular}
-\caption{Extended spectral features (new features in bold)}
+\caption{Εκτεταμένα φασματικά χαρακτηριστικά (τα νέα χαρακτηριστικά εμφανίζονται με έντονα γράμματα)}
 \label{tab:extended-spectral}
 \end{table}
 
-The five spectral shape descriptors are:
+Οι πέντε περιγραφείς φασματικού σχήματος είναι:
 
 \begin{enumerate}
-    \item \textbf{Spectral Centroid:} Center of mass of the spectrum (Hz)
-    \item \textbf{Spectral Bandwidth:} Weighted standard deviation around centroid (Hz)
-    \item \textbf{Spectral Rolloff:} Frequency below which 85\% of energy is contained (Hz)
-    \item \textbf{Spectral Flatness:} Ratio of geometric to arithmetic mean (tonality measure)
-    \item \textbf{Zero-Crossing Rate:} Rate of sign changes in time-domain signal
+    \item \textbf{Φασματικό κέντρο βάρους:} Το «κέντρο μάζας» του φάσματος, δηλαδή το σημείο όπου συγκεντρώνεται η περισσότερη ενέργεια (σε Hz)
+    \item \textbf{Φασματικό εύρος ζώνης:} Πόσο απλώνεται το φάσμα γύρω από το κέντρο βάρους (σε Hz).
+    \item \textbf{Φασματική απόκλιση:} Η συχνότητα κάτω από την οποία βρίσκεται το 85\% της συνολικής ενέργειας του σήματος (Hz)
+    \item \textbf{Φασματική επιπεδότητα:} Δείκτης του πόσο «τονική» ή «θορυβώδης» είναι η φωνή (λόγος γεωμετρικού προς αριθμητικό μέσο όρο).
+    \item \textbf{Ρυθμός διέλευσης από το μηδέν:} Πόσο συχνά το σήμα αλλάζει πρόσημο στο χρονικό πεδίο, δηλαδή πόσες φορές περνά από το μηδέν.
 \end{enumerate}
 
-\subsection{Total Feature Counts}
+\subsection{Συνολικός αριθμός χαρακτηριστικών}
 
 \begin{table}[H]
 \centering
 \begin{tabular}{@{}lccc@{}}
 \toprule
-\textbf{Configuration} & \textbf{Prosodic} & \textbf{Spectral} & \textbf{Total} \\
+\textbf{Διαμόρφωση} & \textbf{Προσωδιακά} & \textbf{Φασματικά} & \textbf{Σύνολο} \\
 \midrule
-Baseline & 21 & 26 & \textbf{47} \\
-Extended & 21 & 57 & \textbf{78} \\
+Βασική γραμμή & 21 & 26 & \textbf{47} \\
+Εκτεταμένη & 21 & 57 & \textbf{78} \\
 \bottomrule
 \end{tabular}
-\caption{Total feature counts by configuration}
+\caption{Συνολικός αριθμός χαρακτηριστικών ανά διαμόρφωση}
 \label{tab:feature-counts}
 \end{table}
 
-\section{Feature Set Comparison}
+\section{Σύγκριση συνόλου χαρακτηριστικών}
 
-\subsection{Rationale for Extended Features}
+\subsection{Λόγοι για τα εκτεταμένα χαρακτηριστικά}
 
-The extended feature set was designed as a \textbf{controlled ablation study} to test the hypothesis that additional temporal and spectral information improves classification. Three feature groups were added:
+Το εκτεταμένο σύνολο χαρακτηριστικών σχεδιάστηκε ως μία \textbf{ελεγχόμενη δοκιμή}, 
+για να εξεταστεί αν η προσθήκη περισσότερης χρονικής και φασματικής πληροφορίας βελτιώνει την απόδοση της ταξινόμησης. 
+
+Προστέθηκαν τρεις ομάδες χαρακτηριστικών:
 
 \begin{enumerate}
-    \item \textbf{MFCC std (13):} Captures within-utterance variability---important for detecting instability in PD speech where motor fluctuations may manifest as increased spectral variance
-    \item \textbf{Delta-Delta MFCC (13):} Captures acceleration of spectral changes---sensitive to temporal dynamics and rate-of-change in articulatory movements
-    \item \textbf{Spectral shape (5):} Provides complementary global spectral descriptors not captured by MFCCs (e.g., overall tonality, spectral spread)
+    \item \textbf{MFCC std (13):} Μετρά τη μεταβλητότητα των MFCC μέσα σε κάθε ηχογράφηση. Αυτό είναι σημαντικό, γιατί η ομιλία σε ασθενείς με PD μπορεί να παρουσιάζει μεγαλύτερη αστάθεια.
+    \item \textbf{Delta-Delta MFCC (13):} Καταγράφει πόσο γρήγορα αλλάζουν τα φασματικά χαρακτηριστικά με τον χρόνο. Είναι ευαίσθητο στις χρονικές δυναμικές και στις αλλαγές της άρθρωσης.
+    \item \textbf{Φασματικό σχήμα (5):} Προσθέτουν γενικούς δείκτες του φάσματος (π.χ. τονικότητα, διασπορά), που δεν περιγράφονται πλήρως από τα MFCC.
 \end{enumerate}
 
-\subsection{Feature Extraction Reproducibility}
+\subsection{Αναπαραγωγιμότητα εξαγωγής χαρακτηριστικών}
 
-All parameters (random seed 42; 22\,050\,Hz sample rate; $F_0$ range 75--500\,Hz; 13 MFCCs with 2048-point FFT, 512-sample hop, 128 mel bands) were fixed in a central configuration module before experimentation, with results saved to CSV for all downstream experiments.
+Για να διασφαλιστεί η αναπαραγωγιμότητα, όλες οι βασικές παράμετροι ορίστηκαν από την αρχή σε κεντρικό αρχείο ρυθμίσεων (configuration file). Συγκεκριμένα:
 
-\section{Machine Learning Models}
+\begin{itemize}
+    \item Τυχαίος σπόρος: 42
+    \item Ρυθμός δειγματοληψίας: 22\,050\,Hz
+    \item Εύρος $F_0$: 75--500\,Hz
+    \item 13 MFCCs
+    \item FFT 2048 σημείων
+    \item Hop length: 512 δείγματα
+    \item 128 mel bands
+\end{itemize}
 
-\subsection{Model Specifications}
+Όλα τα εξαγόμενα χαρακτηριστικά αποθηκεύτηκαν σε αρχεία CSV και χρησιμοποιήθηκαν στα επόμενα πειράματα χωρίς περαιτέρω αλλαγές.
 
-Five classical ML models were selected for diverse inductive biases: Logistic Regression (linear baseline with L2 regularisation), SVM with RBF kernel (nonlinear kernel method), Random Forest (ensemble averaging with built-in feature importance), Gradient Boosting~\cite{friedman2001greedy} (sequential residual correction), and XGBoost~\cite{chen2016xgboost} (regularised boosting). All hyperparameters were fixed \emph{a priori} without dataset-specific tuning:
+\section{Μοντέλα μηχανικής μάθησης}
+
+\subsection{Προδιαγραφές μοντέλου}
+
+Επιλέχθηκαν πέντε κλασικά μοντέλα μηχανικής μάθησης, ώστε να καλυφθούν διαφορετικοί τρόποι μάθησης:
+
+\begin{itemize}
+    \item \textbf{Λογιστική Παλινδρόμηση:} ένα απλό γραμμικό μοντέλο με κανονικοποίηση L2.
+    \item \textbf{SVM με πυρήνα RBF:} μη γραμμική μέθοδος που μπορεί να μάθει πιο σύνθετα όρια απόφασης.
+    \item \textbf{Random Forest:} σύνολο δέντρων απόφασης που προσφέρει και εκτίμηση σημασίας χαρακτηριστικών.
+    \item \textbf{Gradient Boosting~\cite{friedman2001greedy}:} μοντέλο που βελτιώνει σταδιακά τα λάθη των προηγούμενων βημάτων.
+    \item \textbf{XGBoost~\cite{chen2016xgboost}:} βελτιστοποιημένη και κανονικοποιημένη εκδοχή του boosting.
+\end{itemize}
+
+Όλες οι υπερπαράμετροι ορίστηκαν εκ των προτέρων (\emph{a priori}) και δεν προσαρμόστηκαν ειδικά για κάποιο συγκεκριμένο σύνολο δεδομένων:
 
 \begin{table}[H]
 \centering
 \begin{tabular}{@{}llp{6cm}@{}}
 \toprule
-\textbf{Model} & \textbf{Type} & \textbf{Key Parameters} \\
+\textbf{Μοντέλο} & \textbf{Τύπος} & \textbf{Βασικές παράμετροι} \\
 \midrule
-Logistic Regression & Linear & $C=1.0$ (L2 regularization), max\_iter$=1000$, solver=`lbfgs' \\
-SVM (RBF) & Kernel & $C=1.0$ (regularization), gamma$=$`scale' (auto-scaled by features), kernel=`rbf' \\
+Λογιστική παλινδρόμηση & Γραμμική & $C=1.0$ (κανονικοποίηση L2), max\_iter$=1000$, solver=`lbfgs' \\
+SVM (RBF) & Πυρήνας & $C=1.0$ (κανονικοποίηση), gamma$=$`scale' (αυτόματη κλιμάκωση ανά χαρακτηριστικά), kernel=`rbf' \\
 Random Forest & Bagging & n\_estimators$=100$, max\_depth$=10$, min\_samples\_split$=2$, random\_state$=42$ \\
-Gradient Boosting & Boosting & n\_estimators$=100$, learning\_rate$=0.1$, max\_depth$=3$ (default), random\_state$=42$ \\
+Gradient Boosting & Boosting & n\_estimators$=100$, learning\_rate$=0.1$, max\_depth$=3$ (προεπιλογή), random\_state$=42$ \\
 XGBoost & Boosting & n\_estimators$=100$, learning\_rate$=0.1$, eval\_metric=`logloss', random\_state$=42$ \\
 \bottomrule
 \end{tabular}
-\caption{Model specifications. All parameters fixed before experiments.}
+\caption{Προδιαγραφές μοντέλου. Όλες οι παράμετροι καθορίστηκαν πριν από τα πειράματα.}
 \label{tab:model-specs}
 \end{table}
 
-\subsubsection{Logistic Regression}
+\subsubsection{Λογιστική παλινδρόμηση}
 
-The logistic regression model predicts class probabilities via:
+Το μοντέλο λογιστικής παλινδρόμησης προβλέπει τις πιθανότητες κλάσης μέσω:
 
 \begin{equation}
 P(y=1|\mathbf{x}) = \frac{1}{1 + e^{-(\mathbf{w}^T \mathbf{x} + b)}}
 \label{eq:logistic}
 \end{equation}
 
-with L2 regularization:
+με κανονικοποίηση L2:
 
 \begin{equation}
 \min_{\mathbf{w}, b} \left[ C \sum_{i=1}^{n} \log(1 + e^{-y_i(\mathbf{w}^T \mathbf{x}_i + b)}) + \frac{1}{2} \|\mathbf{w}\|_2^2 \right]
 \label{eq:l2-regularization}
 \end{equation}
 
-where $C=1.0$ controls the regularization strength.
+όπου $C=1{,}0$ ελέγχει την ισχύ της κανονικοποίησης.
 
-\subsubsection{Support Vector Machine}
+\subsubsection{Μηχανή Υποστήριξης Διανυσμάτων}
 
-The RBF kernel SVM learns a nonlinear decision boundary via:
+Ο πυρήνας RBF SVM μαθαίνει ένα μη γραμμικό όριο απόφασης μέσω:
 
 \begin{equation}
 K(\mathbf{x}_i, \mathbf{x}_j) = \exp\left(-\gamma \|\mathbf{x}_i - \mathbf{x}_j\|^2\right)
 \label{eq:rbf-kernel}
 \end{equation}
 
-where $\gamma = \frac{1}{n_{\text{features}} \cdot \text{Var}(\mathbf{X})}$ (auto-scaled).
+όπου $\gamma = \frac{1}{n_{\text{features}} \cdot \text{Var}(\mathbf{X})}$ (αυτόματη κλιμάκωση).
 
 \subsubsection{Random Forest}
 
-The Random Forest aggregates predictions from 100 decision trees:
+Το Random Forest συγκεντρώνει προβλέψεις από 100 δέντρα αποφάσεων:
 
 \begin{equation}
 \hat{y} = \frac{1}{N_{\text{trees}}} \sum_{t=1}^{N_{\text{trees}}} \hat{y}_t(\mathbf{x})
 \label{eq:random-forest}
 \end{equation}
 
-Each tree is trained on a bootstrap sample with random feature subsets at each split. The maximum depth of 10 was chosen to prevent overfitting on small datasets.
+Κάθε δέντρο εκπαιδεύεται σε ένα τυχαίο δείγμα των δεδομένων (bootstrap) και σε κάθε διαχωρισμό χρησιμοποιεί ένα τυχαίο υποσύνολο χαρακτηριστικών.
+
+Το μέγιστο βάθος 10 επιλέχθηκε ώστε να περιοριστεί η υπερπροσαρμογή (overfitting), ιδιαίτερα λόγω του μικρού μεγέθους των συνόλων δεδομένων.
 
 \subsubsection{Gradient Boosting}
 
-Gradient Boosting constructs an additive model in a stage-wise fashion, where each new tree corrects the residual errors of the ensemble~\cite{friedman2001greedy}:
+Το Gradient Boosting δημιουργεί το μοντέλο βήμα-βήμα, όπου κάθε νέο δέντρο προσπαθεί να διορθώσει τα λάθη που έκαναν τα προηγούμενα δέντρα~\cite{friedman2001greedy}:
 
 \begin{equation}
 F_m(\mathbf{x}) = F_{m-1}(\mathbf{x}) + \eta \cdot h_m(\mathbf{x})
 \label{eq:gradient-boosting}
 \end{equation}
 
-where $F_m$ is the ensemble after $m$ stages, $h_m$ is the weak learner (decision tree) fitted to the negative gradient of the loss function, and $\eta = 0.1$ is the learning rate. The learning rate shrinks the contribution of each tree, providing a regularisation effect.
+όπου $F_m$ είναι το σύνολο μετά από $m$ στάδια, $h_m$ είναι ο αδύναμος μαθητής (δέντρο αποφάσεων) προσαρμοσμένος στην αρνητική κλίση της συνάρτησης απώλειας και $\eta = 0{,}1$ είναι ο ρυθμός μάθησης. Ο ρυθμός μάθησης μειώνει τη συμβολή κάθε δέντρου, παρέχοντας αποτέλεσμα κανονικοποίησης.
 
 \subsubsection{XGBoost}
 
-XGBoost~\cite{chen2016xgboost} extends gradient boosting with explicit L1 and L2 regularisation on leaf weights:
+Το XGBoost \cite{chen2016xgboost} είναι μια βελτιωμένη εκδοχή του Gradient Boosting, η οποία προσθέτει κανονικοποίηση L1 και L2 στα βάρη των φύλλων των δέντρων, ώστε να μειώνει την υπερπροσαρμογή και να βελτιώνει τη γενίκευση.
 
 \begin{equation}
 \mathcal{L}(\phi) = \sum_{i=1}^{n} l(\hat{y}_i, y_i) + \sum_{k=1}^{K} \Omega(f_k), \quad \text{where } \Omega(f) = \gamma T + \frac{1}{2}\lambda \|\mathbf{w}\|^2
 \label{eq:xgboost}
 \end{equation}
 
-Here $T$ is the number of leaves, $\mathbf{w}$ is the vector of leaf weights, and $\gamma$, $\lambda$ are regularisation parameters. This regularisation helps prevent overfitting, which is particularly relevant for small-sample datasets.
+Εδώ $T$ είναι ο αριθμός των φύλλων, $\mathbf{w}$ είναι το διάνυσμα των βαρών φύλλων και $\gamma$, $\lambda$ είναι παράμετροι κανονικοποίησης. Αυτή η κανονικοποίηση βοηθά στην αποφυγή της υπερπροσαρμογής, η οποία είναι ιδιαίτερα σημαντική για σύνολα δεδομένων μικρού μεγέθους.
 
-\subsection{Class Weighting}
+\subsection{Στάθμιση βαρύτητας κλάσης}
 
-Class imbalance is addressed via the \texttt{class\_weight} parameter:
+Η ανισορροπία κλάσης αντιμετωπίζεται μέσω της παραμέτρου \texttt{class\_weight}:
 
 \begin{lstlisting}[language=Python]
-# Unweighted (baseline condition)
+# Χωρίς στάθμιση (βασική συνθήκη)
 class_weight = None
 
-# Weighted (balanced condition)
+# Με στάθμιση (ισορροπημένη συνθήκη)
 class_weight = "balanced"  # w_k = n_samples / (n_classes * n_k)
 \end{lstlisting}
 
-When \texttt{class\_weight="balanced"}, sample weights are computed as:
+Όταν \texttt{class\_weight="balanced"}, οι βαρύτητες των δειγμάτων υπολογίζονται ως εξής:
 
 \begin{equation}
 w_k = \frac{n_{\text{samples}}}{n_{\text{classes}} \cdot n_k}
 \label{eq:class-weight}
 \end{equation}
 
-where $n_k$ is the number of samples in class $k$. This ensures minority class errors are weighted more heavily during training.
+όπου $n_k$ είναι ο αριθμός των δειγμάτων στην κλάση $k$. Αυτό εξασφαλίζει ότι τα σφάλματα της μειοψηφικής κλάσης σταθμίζονται περισσότερο κατά τη διάρκεια της εκπαίδευσης.
 
-Three of the five models (Logistic Regression, SVM, Random Forest) support the \texttt{class\_weight} parameter natively via scikit-learn. The two boosting classifiers (Gradient Boosting and XGBoost) do not support \texttt{class\_weight="balanced"} natively; however, since the mild class imbalance (1.3:1) did not require reweighting in practice (see Chapter~\ref{ch:results}), this difference has no impact on the experimental design.
+Τρία από τα πέντε μοντέλα (Λογιστική Παλινδρόμηση, SVM, Random Forest) υποστηρίζουν εγγενώς την παράμετρο \texttt{class\_weight} μέσω του scikit-learn. Οι δύο ταξινομητές ενίσχυσης (Gradient Boosting και XGBoost) δεν υποστηρίζουν εγγενώς το \texttt{class\_weight="balanced"}. Ωστόσο, δεδομένου ότι η ήπια ανισορροπία κλάσεων (1,3:1) δεν απαιτούσε επαναστάθμιση στην πράξη (βλ. Κεφάλαιο~\ref{ch:results}), αυτή η διαφορά δεν έχει καμία επίδραση στο σχεδιασμό του πειράματος.
 
-\section{ML Pipeline Architecture}
+\section{Αρχιτεκτονική ML Pipeline}
 
-\subsection{Pipeline Structure}
+\subsection{Δομή Pipeline}
 
-All models use a standardized scikit-learn Pipeline:
+Όλα τα μοντέλα χρησιμοποιούν ένα τυποποιημένο scikit-learn Pipeline:
 
 \begin{lstlisting}[language=Python]
 from sklearn.pipeline import Pipeline
@@ -385,81 +413,84 @@ pipeline = Pipeline([
 ])
 \end{lstlisting}
 
-This ensures feature scaling is applied consistently and prevents data leakage.
+Αυτό εξασφαλίζει ότι η κλιμάκωση χαρακτηριστικών εφαρμόζεται με συνέπεια και αποτρέπει τη διαρροή δεδομένων.
 
-\subsection{Feature Standardisation}
+\subsection{Τυποποίηση χαρακτηριστικών}
 
-Features are standardised to zero mean and unit variance (\texttt{StandardScaler}) fitted exclusively on the training fold within each CV split, preventing information leakage from the test data.
+Τα χαρακτηριστικά κανονικοποιούνται ώστε να έχουν μέση τιμή 0 και τυπική απόκλιση 1 (\texttt{StandardScaler}).
 
-\section{Evaluation Framework}
+Η κανονικοποίηση υπολογίζεται μόνο στα δεδομένα εκπαίδευσης μέσα σε κάθε διαχωρισμό του k-fold cross-validation, ώστε να μη χρησιμοποιούνται πληροφορίες από το test set και να αποφεύγεται η διαρροή δεδομένων.
 
-\subsection{Cross-Validation Strategy}
+\section{Πλαίσιο αξιολόγησης}
+
+\subsection{Στρατηγική Cross-Validation}
 \label{sec:cv-rationale}
 
-In this thesis, \textbf{$K$-fold cross-validation serves as the primary validation strategy}: the model is trained on $K-1$ folds and evaluated on the remaining fold, which contains only samples that the model has never seen during training or feature standardisation~\citep{bishop2006pattern}. This procedure is repeated $K=5$ times, producing five independent estimates of generalisation performance. A separate held-out test set was not used because, with only $n=37$ subjects (Dataset A), reserving even 20\% for testing would yield approximately seven test subjects per fold under subject-level splitting~--- too few for stable metric computation. Cross-validation maximises data utility while still guaranteeing that each evaluation uses strictly unseen data.
+Σε αυτή τη εργασία, \textbf{η διασταυρούμενη επικύρωση $K$-fold αποτελεί την κύρια στρατηγική αξιολόγησης}: 
+το μοντέλο εκπαιδεύεται σε $K-1$ folds και αξιολογείται στο εναπομείναν fold, το οποίο περιλαμβάνει μόνο δείγματα που δεν έχουν χρησιμοποιηθεί ούτε στην εκπαίδευση ούτε στην εξόρυξη χαρακτηριστικών~\citep{bishop2006pattern}. 
+Η διαδικασία επαναλαμβάνεται $K=5$ φορές, παρέχοντας πέντε ανεξάρτητες εκτιμήσεις της απόδοσης γενίκευσης. 
+Δεν χρησιμοποιήθηκε ξεχωριστό σύνολο δοκιμής, καθώς με μόνο $n=37$ υποκείμενα (σύνολο δεδομένων A), η δέσμευση ακόμη και του 20\% για test set θα οδηγούσε σε περίπου επτά υποκείμενα δοκιμής ανά διαχωρισμό σε επίπεδο υποκειμένου, αριθμός ανεπαρκής για σταθερή εκτίμηση. 
 
-Since all hyperparameters were fixed \emph{a priori} (Table~\ref{tab:model-specs}), no inner hyperparameter-selection loop is required: the 5-fold CV here serves purely as an \textbf{evaluation mechanism}, not a tuning mechanism. This eliminates any risk of optimising hyperparameters towards the held-out data.
+H 5-fold CV χρησιμοποιείται αποκλειστικά ως \textbf{μηχανισμός αξιολόγησης} και όχι ως μηχανισμός ρύθμισης. 
+Έτσι αποφεύγεται οποιοσδήποτε κίνδυνος προσαρμογής των υπερπαραμέτρων στα δεδομένα αξιολόγησης.
 
-Different strategies were required for each dataset due to their structural differences:
+Απαιτήθηκαν διαφορετικές στρατηγικές επικύρωσης για κάθε σύνολο δεδομένων, λόγω των δομικών διαφορών που παρουσιάζουν.
 
 \begin{table}[H]
 \centering
 \begin{tabular}{@{}llcl@{}}
 \toprule
-\textbf{Dataset} & \textbf{Strategy} & \textbf{Folds} & \textbf{Grouping} \\
+\textbf{Σύνολο δεδομένων} & \textbf{Στρατηγική} & \textbf{Πτυχές} & \textbf{Ομαδοποίηση} \\
 \midrule
-Dataset A (MDVR-KCL) & Grouped Stratified & 5 & By subject\_id \\
-Dataset B (PD Speech) & Stratified & 5 & None (unavailable) \\
+Σύνολο δεδομένων A (MDVR-KCL) & Ομαδοποιημένο στρωματοποιημένο & 5 & Ανά subject\_id \\
+Σύνολο δεδομένων B (PD Speech) & Στρωματοποιημένο & 5 & Καμία (μη διαθέσιμη) \\
 \bottomrule
 \end{tabular}
-\caption{Cross-validation strategies}
+\caption{Στρατηγικές διασταυρούμενης επικύρωσης}
 \label{tab:cv-strategies}
 \end{table}
 
-\subsubsection{Dataset A: Grouped Cross-Validation}
+\subsubsection{Σύνολο δεδομένων A: Ομαδοποιημένη διασταυρούμενη επικύρωση}
 
-For Dataset A (MDVR-KCL), multiple recordings per subject necessitate subject-level splitting to prevent data leakage. The strategy ensures:
+Για το σύνολο δεδομένων A (MDVR-KCL), υπάρχουν πολλές εγγραφές από το ίδιο άτομο. Για να μην υπάρξει διαρροή δεδομένων, έγινε διαχωρισμός σε επίπεδο υποκειμένου. Αυτό σημαίνει ότι:
 
 \begin{itemize}
-    \item All recordings from the same subject appear in the same fold
-    \item Approximate class balance across folds (stratification by label)
-    \item Training never sees recordings from subjects in the test set
+    \item Όλες οι εγγραφές του ίδιου ατόμου μπαίνουν στο ίδιο fold
+    \item Υπάρχει περίπου ισορροπία μεταξύ των κλάσεων
+    \item Το μοντέλο δεν βλέπει ποτέ δεδομένα από άτομα που βρίσκονται στο σύνολο δοκιμής
 \end{itemize}
 
-This simulates realistic deployment where the model encounters entirely new speakers.
+Έτσι προσομοιώνεται μια ρεαλιστική κατάσταση, όπου το μοντέλο αξιολογείται σε νέους ομιλητές.
 
-\subsubsection{Dataset B: Standard Stratified Cross-Validation}
+\subsubsection{Σύνολο δεδομένων B: Τυπική cross-validation}
 
-For Dataset B (PD Speech Features), subject IDs are unavailable. Standard stratified 5-fold cross-validation was used with the caveat that results may be optimistic if the same subjects appear across samples.
+Στο σύνολο δεδομένων B δεν υπάρχουν αναγνωριστικά υποκειμένων. Για αυτό χρησιμοποιήθηκε τυπική 5-fold cross-validation. Ωστόσο, τα αποτελέσματα μπορεί να είναι πιο αισιόδοξα, αν δείγματα του ίδιου ατόμου βρίσκονται σε διαφορετικά folds.
 
-\subsection{Evaluation Metrics}
+\subsection{Μετρήσεις αξιολόγησης}
 \label{sec:eval-metrics}
 
-Five standard classification metrics were computed for each fold:
+Υπολογίστηκαν πέντε βασικές μετρήσεις ταξινόμησης σε κάθε fold:
 
 \begin{table}[H]
 \centering
 \begin{tabular}{@{}lp{4cm}p{6cm}@{}}
 \toprule
-\textbf{Metric} & \textbf{Formula} & \textbf{Interpretation} \\
+\textbf{Μέτρηση} & \textbf{Τύπος} & \textbf{Ερμηνεία} \\
 \midrule
-Accuracy & $\frac{TP+TN}{TP+TN+FP+FN}$ & Overall correctness (baseline for comparison) \\
-Precision & $\frac{TP}{TP+FP}$ & Positive predictive value (PD prediction reliability) \\
-Recall & $\frac{TP}{TP+FN}$ & Sensitivity (true positive rate for PD cases) \\
-F1 Score & $\frac{2 \cdot P \cdot R}{P+R}$ & Harmonic mean balancing precision and recall \\
-ROC-AUC & $\int_0^1 \text{TPR}(t) \, d\text{FPR}(t)$ & Threshold-independent discrimination ability \\
+Ακρίβεια & $\frac{TP+TN}{TP+TN+FP+FN}$ & Ποσοστό σωστών προβλέψεων συνολικά \\
+Προβλεψιμότητα & $\frac{TP}{TP+FP}$ & Από τις προβλέψεις PD, πόσες ήταν σωστές \\
+Ανάκληση & $\frac{TP}{TP+FN}$ & Από τα πραγματικά PD, πόσα βρέθηκαν σωστά \\
+Βαθμολογία F1 & $\frac{2 \cdot P \cdot R}{P+R}$ & Ισορροπία μεταξύ προβλεψιμότητας και ανάκλησης \\
+ROC-AUC & $\int_0^1 \text{TPR}(t) \, d\text{FPR}(t)$ & Ικανότητα διάκρισης ανεξάρτητα από threshold \\
 \bottomrule
 \end{tabular}
-\caption{Evaluation metrics}
+\caption{Μετρήσεις αξιολόγησης}
 \label{tab:metrics}
 \end{table}
 
-\textbf{Primary metric:} ROC-AUC was selected as the primary metric because:
+\textbf{Κύρια μέτρηση:} Επιλέχθηκε το ROC-AUC γιατί:
 \begin{itemize}
-    \item Threshold-independent (evaluates discrimination across all thresholds)
-    \item Robust to class imbalance
-    \item Clinically interpretable (probability that a random PD patient scores higher than a random HC)
+    \item δεν εξαρτάται από ένα συγκεκριμένο threshold,
+    \item είναι πιο σταθερό όταν οι κλάσεις δεν είναι ισορροπημένες,
+    \item έχει σαφή ερμηνεία (πιθανότητα ένας τυχαίος PD να έχει υψηλότερη βαθμολογία από έναν τυχαίο HC).
 \end{itemize}
-
-
-

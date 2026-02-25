@@ -1,169 +1,169 @@
-% Chapter 9: Conclusion
+% Κεφάλαιο 9: Συμπέρασμα
 
-\chapter{Conclusion}
+\chapter{Συμπέρασμα}
 \label{ch:conclusion}
 
-\section{Summary of Work}
+\section{Περίληψη της εργασίας}
 
-This thesis investigated voice-based classification of Parkinson's Disease (PD) versus healthy controls (HC) using classical machine learning approaches. The work addressed key methodological challenges in the field, including subject-level data leakage, class imbalance, and feature representation.
+Η παρούσα εργασία διερεύνησε την ταξινόμηση με βάση τη φωνή της νόσου του Πάρκινσον (PD) σε σύγκριση με υγιείς μάρτυρες (HC) χρησιμοποιώντας κλασικές μεθόδους μηχανικής μάθησης. Η εργασία ασχολήθηκε με βασικές μεθοδολογικές προκλήσεις στον τομέα, όπως διαρροή δεδομένων σε επίπεδο υποκειμένου, ανισορροπία κλάσεων και αναπαράσταση χαρακτηριστικών.
 
-\subsection{Contributions}
+\subsection{Συνεισφορές}
 
 \begin{enumerate}
-    \item \textbf{Rigorous Evaluation Framework:} Grouped stratified cross-validation with a systematic 2$\times$2 factorial design (features $\times$ class weighting) and transparent reporting across all conditions.
-    \item \textbf{Feature Engineering Investigation:} Extended the feature set from 47 to 78 acoustic features, demonstrating up to +23pp ROC-AUC improvement and identifying $F_0$, MFCCs, and harmonicity as most discriminative.
-    \item \textbf{Class Weighting Analysis:} Evaluated \texttt{class\_weight="balanced"} across all models, finding modest and inconsistent effects on moderately imbalanced data.
-    \item \textbf{Reproducible Pipeline:} CLI tools, fixed random seeds, documented parameters, and a non-diagnostic research demonstration interface (Appendix~\ref{ch:demo-app}).
+    \item \textbf{Αυστηρό πλαίσιο αξιολόγησης:} Ομαδοποιημένη στρωματοποιημένη διασταυρούμενη επικύρωση με συστηματικό σχεδιασμό 2$\times$2 (χαρακτηριστικά $\times$ στάθμιση κατηγοριών) και διαφανή αναφορά σε όλες τις συνθήκες.
+    \item \textbf{Έρευνα μηχανικής χαρακτηριστικών:} Επέκταση του συνόλου χαρακτηριστικών από 47 σε 78 ακουστικά χαρακτηριστικά, επιδεικνύοντας βελτίωση έως +23pp ROC-AUC και προσδιορίζοντας τα $F_0$, MFCCs και την αρμονικότητα ως τα πιο διακριτικά.
+    \item \textbf{Ανάλυση στάθμισης κλάσης:} Αξιολόγηση \texttt{class\_weight=«balanced»} σε όλα τα μοντέλα, διαπιστώνοντας μέτρια και ασυνεπή αποτελέσματα σε μέτρια ανισορροπημένα δεδομένα.
+    \item \textbf{Αναπαραγώγιμη ροή εργασιών:} Εργαλεία CLI, σταθεροποιημένοι τυχαίοι σπόροι, τεκμηριωμένες παράμετροι και μια διεπαφή επίδειξης έρευνας χωρίς διαγνωστικά στοιχεία (Παράρτημα~\ref{ch:demo-app}).
 \end{enumerate}
 
-\section{Key Findings}
+\section{Βασικά ευρήματα}
 
-\subsection{Primary Results}
+\subsection{Πρωταρχικά αποτελέσματα}
 
 \begin{table}[H]
-\centering
-\begin{tabular}{@{}lp{8cm}@{}}
-\toprule
-\textbf{Finding} & \textbf{Evidence} \\
-\midrule
-Best ROC-AUC (Dataset A): $0.857 \pm 0.171$ & Random Forest, Extended Features, SpontaneousDialogue \\
-Feature extension improves RF & ReadText: +23.3pp ROC-AUC; Spontaneous: +2.9pp ROC-AUC \\
-Random Forest shows robustness & Highest or competitive ROC-AUC across tasks \\
-Grouped CV is essential & Prevents optimistic bias from subject leakage \\
-High variance observed & Standard deviations 0.13--0.43 across metrics \\
-\bottomrule
-\end{tabular}
-\caption{Primary research findings (Dataset A, baseline class weighting)}
-\label{tab:primary-findings}
+    \centering
+    \caption{Κύρια ευρήματα της έρευνας (σύνολο δεδομένων A, στάθμιση βασικής κατηγορίας)}
+    \label{tab:primary-findings}
+    \begin{tabular}{@{}lp{8cm}@{}}
+        \toprule
+        \textbf{Εύρημα} & \textbf{Απόδειξη} \\
+        \midrule
+        Καλύτερο ROC-AUC (σύνολο δεδομένων Α): $0{,}857 \pm 0{,}171$ & Random Forest, Extended Features, SpontaneousDialogue \\
+        Η επέκταση χαρακτηριστικών βελτιώνει το RF & ReadText: +23,3pp ROC-AUC; Spontaneous: +2,9pp ROC-AUC \\
+        Το Random Forest δείχνει ανθεκτικότητα & Υψηλότερο ή ανταγωνιστικό ROC-AUC σε όλες τις εργασίες \\
+        Το ομαδοποιημένο CV είναι απαραίτητο & Αποτρέπει την αισιόδοξη μεροληψία από τη διαρροή υποκειμένων \\
+        Παρατηρήθηκε υψηλή διακύμανση & Τυπικές αποκλίσεις 0,13--0,43 σε όλες τις μετρήσεις \\
+        \bottomrule
+    \end{tabular}
 \end{table}
 
-Best performance is summarised in Table~\ref{tab:primary-findings}; full per-model importance rankings are in Appendix~\ref{app:feature-importance}.
+Η καλύτερη απόδοση συνοψίζεται στον Πίνακα~\ref{tab:primary-findings}· οι πλήρεις κατατάξεις σημασίας ανά μοντέλο βρίσκονται στο Παράρτημα~\ref{app:feature-importance}.
 
-\section{Research Questions Answered}
+\section{Απαντηθέντα ερευνητικά ερωτήματα}
 
-\subsection{RQ1: How do classical ML models perform on PD voice classification?}
+\subsection{RQ1: Πώς αποδίδουν τα κλασικά μοντέλα ML στην ταξινόμηση φωνής PD;}
 
-Classical ML achieves \textbf{ROC-AUC up to 0.857 $\pm$ 0.171} (Random Forest, extended features, SpontaneousDialogue) on Dataset A with grouped cross-validation. However, performance varies substantially:
+Το κλασικό ML επιτυγχάνει \textbf{ROC-AUC έως $0{,}857 \pm 0{,}171$} (Random Forest, εκτεταμένα χαρακτηριστικά, SpontaneousDialogue) στο σύνολο δεδομένων Α με ομαδοποιημένη διασταυρούμενη επικύρωση. Ωστόσο, η απόδοση ποικίλλει σημαντικά:
 
 \begin{itemize}
-    \item ReadText: 0.590--0.834 ROC-AUC (baseline features, across models)
-    \item SpontaneousDialogue: 0.407--0.857 ROC-AUC (baseline $\rightarrow$ extended, RF)
-    \item High variance due to small sample size (n=37 subjects)
-    \item Some SVM folds produced ROC-AUC $< 0.5$, indicating instability
+    \item ReadText: 0,590--0,834 ROC-AUC (βασικά χαρακτηριστικά, σε όλα τα μοντέλα)
+    \item SpontaneousDialogue: 0,407--0,857 ROC-AUC (βασικά $\rightarrow$ εκτεταμένα, RF)
+    \item Μεγάλη διακύμανση λόγω μικρού μεγέθους δείγματος ($n=37$ άτομα)
+    \item Ορισμένες πτυχές SVM παρήγαγαν ROC-AUC $< 0{,}5$, υποδηλώνοντας αστάθεια
 \end{itemize}
 
-This demonstrates the \textbf{feasibility} of voice-based PD classification, but highlights the \textbf{challenge} of robust performance on small datasets.
+Αυτό αποδεικνύει τη \textbf{εφικτότητα} της ταξινόμησης PD με βάση τη φωνή, αλλά υπογραμμίζει την \textbf{πρόκληση} της σταθερής απόδοσης σε μικρά σύνολα δεδομένων.
 
-\subsection{RQ2: Does feature set extension improve classification performance?}
+\subsection{RQ2: Η επέκταση του συνόλου χαρακτηριστικών βελτιώνει την απόδοση της ταξινόμησης;}
 
-\textbf{Task-dependent.} Extending from 47 baseline to 78 extended features:
+\textbf{Εξαρτάται από την εργασία.} Επέκταση από 47 βασικά σε 78 εκτεταμένα χαρακτηριστικά:
 
 \textbf{ReadText (Random Forest):}
 \begin{itemize}
-    \item Baseline: 0.590 $\pm$ 0.302 ROC-AUC
-    \item Extended: 0.822 $\pm$ 0.166 ROC-AUC
-    \item Improvement: +23.3 percentage points (+39\% relative)
-    \item Variance reduced from 0.302 to 0.166
+    \item Βασική γραμμή: $0{,}590 \pm 0{,}302$ ROC-AUC
+    \item Επεκταμένα: $0{,}822 \pm 0{,}166$ ROC-AUC
+    \item Βελτίωση: +23,3 ποσοστιαίες μονάδες (+39\% σχετική)
+    \item Η διακύμανση μειώθηκε από 0,302 σε 0,166
 \end{itemize}
 
 \textbf{SpontaneousDialogue (Random Forest):}
 \begin{itemize}
-    \item Baseline: 0.828 $\pm$ 0.148 ROC-AUC
-    \item Extended: 0.857 $\pm$ 0.171 ROC-AUC
-    \item Improvement: +2.9 percentage points (modest)
+    \item Βασική γραμμή: $0{,}828 \pm 0{,}148$ ROC-AUC
+    \item Επεκταμένη: $0{,}857 \pm 0{,}171$ ROC-AUC
+    \item Βελτίωση: +2,9 ποσοστιαίες μονάδες (μέτρια)
 \end{itemize}
 
-The additional features capturing spectral variability (MFCC std), temporal dynamics (delta-delta MFCC), and spectral shape contributed most significantly to ReadText performance. Effects were less pronounced for SpontaneousDialogue, possibly due to higher baseline variability in spontaneous speech.
+Τα πρόσθετα χαρακτηριστικά που καταγράφουν τη φασματική μεταβλητότητα (MFCC std), τη χρονική δυναμική (delta-delta MFCC) και το φασματικό σχήμα συνέβαλαν σημαντικά στην απόδοση του ReadText. Τα αποτελέσματα ήταν λιγότερο έντονα για το SpontaneousDialogue, πιθανώς λόγω της υψηλότερης μεταβλητότητας της βασικής γραμμής στην αυθόρμητη ομιλία.
 
-\subsection{RQ3: Does class weighting improve performance on imbalanced datasets?}
+\subsection{RQ3: Βελτιώνει η στάθμιση των κλάσεων την απόδοση σε μη ισορροπημένα σύνολα δεδομένων;}
 
-\textbf{Minimal effects observed.} On Dataset A (HC:PD ratio 1.31:1 for ReadText, 1.40:1 for SpontaneousDialogue), class weighting showed inconsistent effects:
+\textbf{Παρατηρήθηκαν ελάχιστα αποτελέσματα.} Στο σύνολο δεδομένων Α (αναλογία HC:PD 1,31:1 για το ReadText, 1,40:1 για το SpontaneousDialogue), η στάθμιση των κλάσεων έδειξε ασυνεπή αποτελέσματα:
 
-\textbf{ReadText (Random Forest, extended features):}
+\textbf{ReadText (Random Forest, εκτεταμένα χαρακτηριστικά):}
 \begin{itemize}
-    \item Unweighted: 0.822 $\pm$ 0.166 ROC-AUC
-    \item Weighted: 0.805 $\pm$ 0.182 ROC-AUC
-    \item Change: -1.7pp (slight decrease)
+    \item Χωρίς στάθμιση: $0{,}822 \pm 0{,}166$ ROC-AUC
+    \item Με στάθμιση: $0{,}805 \pm 0{,}182$ ROC-AUC
+    \item Αλλαγή: -1,7pp (ελαφρά μείωση)
 \end{itemize}
 
-\textbf{SpontaneousDialogue (Random Forest, baseline features):}
+\textbf{SpontaneousDialogue (Random Forest, βασικά χαρακτηριστικά):}
 \begin{itemize}
-    \item Unweighted: 0.828 $\pm$ 0.148 ROC-AUC
-    \item Weighted: 0.827 $\pm$ 0.133 ROC-AUC
-    \item Change: -0.1pp (negligible)
+    \item Χωρίς στάθμιση: $0{,}828 \pm 0{,}148$ ROC-AUC
+    \item Με στάθμιση: $0{,}827 \pm 0{,}133$ ROC-AUC
+    \item Αλλαγή: -0,1pp (αμελητέα)
 \end{itemize}
 
-The moderate imbalance (1.3:1) may not be severe enough to benefit from weighting. Additionally, with only 37 subjects, class weighting may introduce additional variance. Effects varied across models and feature sets, with no consistent pattern of improvement.
+Η μέτρια ανισορροπία (1,3:1) μπορεί να μην είναι αρκετά σοβαρή ώστε να ωφεληθεί από τη στάθμιση. Επιπλέον, με μόνο 37 άτομα, η στάθμιση των κατηγοριών μπορεί να εισαγάγει επιπλέον διακύμανση. Τα αποτελέσματα ποίκιλαν μεταξύ των μοντέλων και των συνόλων χαρακτηριστικών, χωρίς να υπάρχει σταθερό μοτίβο βελτίωσης.
 
-\subsection{RQ4: How do results compare between grouped and standard CV?}
+\subsection{RQ4: Πώς συγκρίνονται τα αποτελέσματα μεταξύ της ομαδοποιημένης και της τυπικής CV;}
 
-\textbf{Dataset A (Grouped CV, n=37 subjects):}
+\textbf{Σύνολο δεδομένων Α (ομαδοποιημένη CV, $n=37$ άτομα):}
 \begin{itemize}
-    \item Random Forest: 0.590--0.857 ROC-AUC
-    \item High variance (std 0.15--0.30)
-    \item Subject-level generalization
+    \item Random Forest: 0,590--0,857 ROC-AUC
+    \item Υψηλή διακύμανση (std 0,15--0,30)
+    \item Γενίκευση σε επίπεδο υποκειμένου
 \end{itemize}
 
-\textbf{Dataset B (Standard CV, n=756 samples, subject IDs unknown):}
+\textbf{Σύνολο δεδομένων Β (Τυπική CV, $n=756$ δείγματα, άγνωστα αναγνωριστικά υποκειμένων):}
 \begin{itemize}
-    \item Random Forest: 0.940--0.949 ROC-AUC (baseline/weighted)
-    \item Low variance (std 0.012--0.013)
-    \item Unknown within-subject correlation
+    \item Random Forest: 0,940--0,949 ROC-AUC (βασική γραμμή/σταθμισμένη)
+    \item Χαμηλή διακύμανση (std 0,012--0,013)
+    \item Άγνωστη συσχέτιση εντός υποκειμένου
 \end{itemize}
 
-Dataset B shows substantially higher performance (+8--12pp ROC-AUC) and lower variance, consistent with potential optimistic bias from subject leakage. \textbf{Grouped CV provides more conservative but more realistic estimates} of out-of-subject generalization. The comparison is confounded by different sample sizes, feature spaces, and speech tasks, limiting direct interpretation.
+Το σύνολο δεδομένων Β παρουσιάζει σημαντικά υψηλότερη απόδοση (+8--12pp ROC-AUC) και χαμηλότερη διακύμανση, σε συμφωνία με την πιθανή αισιόδοξη μεροληψία από τη διαρροή υποκειμένων. \textbf{Η ομαδοποιημένη CV παρέχει πιο συντηρητικές αλλά πιο ρεαλιστικές εκτιμήσεις} της γενίκευσης εκτός υποκειμένου. Η σύγκριση περιπλέκεται από διαφορετικά μεγέθη δειγμάτων, χώρους χαρακτηριστικών και εργασίες ομιλίας, περιορίζοντας την άμεση ερμηνεία.
 
-\subsection{RQ5: Do speech tasks yield different classification performance?}
+\subsection{RQ5: Οι εργασίες ομιλίας αποδίδουν διαφορετική απόδοση ταξινόμησης;}
 
-\textbf{Baseline features show task differences:}
+\textbf{Τα βασικά χαρακτηριστικά παρουσιάζουν διαφορές στις εργασίες:}
 \begin{itemize}
-    \item ReadText: 0.590 $\pm$ 0.302 ROC-AUC (Random Forest, baseline)
-    \item SpontaneousDialogue: 0.828 $\pm$ 0.148 ROC-AUC (Random Forest, baseline)
-    \item Difference: +23.8pp in favor of spontaneous speech
+    \item ReadText: $0{,}590 \pm 0{,}302$ ROC-AUC (Random Forest, βασική γραμμή)
+    \item SpontaneousDialogue: $0{,}828 \pm 0{,}148$ ROC-AUC (Random Forest, βασική γραμμή)
+    \item Διαφορά: +23,8pp υπέρ της αυθόρμητης ομιλίας
 \end{itemize}
 
-\textbf{Extended features reduce gap:}
+\textbf{Τα εκτεταμένα χαρακτηριστικά μειώνουν το χάσμα:}
 \begin{itemize}
-    \item ReadText: 0.822 $\pm$ 0.166 (extended)
-    \item SpontaneousDialogue: 0.857 $\pm$ 0.171 (extended)
-    \item Difference: +3.5pp (converged)
+    \item ReadText: $0{,}822 \pm 0{,}166$ (εκτεταμένο)
+    \item SpontaneousDialogue: $0{,}857 \pm 0{,}171$ (επεκταμένο)
+    \item Διαφορά: +3,5pp (συγκλίνουσα)
 \end{itemize}
 
-SpontaneousDialogue may capture naturalistic PD speech characteristics (monotone prosody, reduced variability) more effectively than structured reading. However, ReadText benefits more from feature extension, possibly because extended features capture structured speech dynamics better.
+Το SpontaneousDialogue μπορεί να καταγράψει τα φυσιολογικά χαρακτηριστικά της ομιλίας PD (μονοτονική προσωδία, μειωμένη μεταβλητότητα) πιο αποτελεσματικά από την δομημένη ανάγνωση. Ωστόσο, το ReadText επωφελείται περισσότερο από την επέκταση χαρακτηριστικών, πιθανώς επειδή τα επεκταμένα χαρακτηριστικά καταγράφουν καλύτερα τη δομημένη δυναμική της ομιλίας.
 
-\section{Implications}
+\section{Επιπτώσεις}
 
-\subsection{For Researchers}
-
-\begin{itemize}
-    \item \textbf{Use grouped CV} when multiple recordings per subject exist
-    \item \textbf{Include variability features} (std, delta-delta) in feature sets
-    \item \textbf{Report all conditions} rather than cherry-picking best results
-    \item \textbf{Acknowledge limitations} transparently
-\end{itemize}
-
-\subsection{For Practitioners}
+\subsection{Για ερευνητές}
 
 \begin{itemize}
-    \item Voice-based PD screening is feasible but not yet clinical-grade
-    \item Random Forest provides a robust baseline for similar tasks
-    \item Feature interpretability supports clinical understanding
-    \item Results require validation on independent cohorts
+    \item \textbf{Χρησιμοποιήστε ομαδοποιημένο CV} όταν υπάρχουν πολλαπλές ηχογραφήσεις ανά θέμα
+    \item \textbf{Συμπεριλάβετε χαρακτηριστικά μεταβλητότητας} (std, delta-delta) στα σύνολα χαρακτηριστικών
+    \item \textbf{Αναφέρετε όλες τις συνθήκες} αντί να επιλέγετε τα καλύτερα αποτελέσματα
+    \item \textbf{Αναγνωρίστε τους περιορισμούς} με διαφάνεια
 \end{itemize}
 
-\subsection{For Dataset Creators}
+\subsection{Για τους επαγγελματίες}
 
 \begin{itemize}
-    \item \textbf{Always include subject identifiers} to enable proper CV
-    \item Document recording conditions and equipment
-    \item Provide demographic information
-    \item Consider longitudinal designs
+    \item Η φωνητική εξέταση για την PD είναι εφικτή, αλλά δεν έχει ακόμη κλινική αξιοπιστία
+    \item Το Random Forest παρέχει μια ισχυρή βάση για παρόμοιες εργασίες
+    \item Η ερμηνευσιμότητα των χαρακτηριστικών υποστηρίζει την κλινική κατανόηση
+    \item Τα αποτελέσματα απαιτούν επικύρωση σε ανεξάρτητες ομάδες
 \end{itemize}
 
-\section{Future Directions}
+\subsection{Για τους δημιουργούς συνόλων δεδομένων}
 
-Short-term extensions include hyperparameter optimisation with nested cross-validation, feature selection to reduce dimensionality, multi-task fusion (ReadText and SpontaneousDialogue combined), and additional acoustic features (wavelets, TQWT). Medium-term research should prioritise external validation on independent cohorts, longitudinal tracking of disease progression, and multi-class severity classification. Long-term, voice-based PD monitoring could integrate into smartphone applications alongside multi-modal biomarkers (voice, gait, tremor) and undergo prospective clinical validation.
+\begin{itemize}
+    \item \textbf{Πάντα να περιλαμβάνετε αναγνωριστικά υποκειμένων} για να επιτρέψετε τη σωστή CV
+    \item Τεκμηριώστε τις συνθήκες και τον εξοπλισμό καταγραφής
+    \item Παρέχετε δημογραφικές πληροφορίες
+    \item Εξετάστε το ενδεχόμενο διαχρονικών σχεδίων
+\end{itemize}
 
-\section{Closing Remarks}
+\section{Μελλοντικές κατευθύνσεις}
 
-This thesis demonstrates that \textbf{voice-based Parkinson's Disease classification is feasible} using classical machine learning with carefully engineered acoustic features, achieving ROC-AUC up to 0.857 on Dataset A with grouped cross-validation. By prioritising \textbf{methodological validity over performance optimisation}---transparent subject-level splits, fixed parameters, and full variance reporting---this work provides a replicable foundation on which future studies can address the identified limitations of small sample size, absence of external validation, and binary task scope.
+Οι βραχυπρόθεσμες επεκτάσεις περιλαμβάνουν βελτιστοποίηση υπερπαραμέτρων με ένθετη διασταυρούμενη επικύρωση, επιλογή χαρακτηριστικών για τη μείωση της διαστατικότητας, σύνθεση πολλαπλών εργασιών (συνδυασμός ReadText και SpontaneousDialogue) και πρόσθετα ακουστικά χαρακτηριστικά (wavelets, TQWT). Η μεσοπρόθεσμη έρευνα θα πρέπει να δώσει προτεραιότητα στην εξωτερική επικύρωση σε ανεξάρτητες κοόρτες, στη διαχρονική παρακολούθηση της εξέλιξης της νόσου και στην ταξινόμηση της σοβαρότητας σε πολλές κατηγορίες. Μακροπρόθεσμα, η φωνητική παρακολούθηση της νόσου του Πάρκινσον θα μπορούσε να ενσωματωθεί σε εφαρμογές για smartphone μαζί με πολυτροπικούς βιοδείκτες (φωνή, βάδισμα, τρόμος) και να υποβληθεί σε προοπτική κλινική επικύρωση.
+
+\section{Τελικές παρατηρήσεις}
+
+Η παρούσα εργασία αποδεικνύει ότι \textbf{η ταξινόμηση της νόσου του Πάρκινσον με βάση τη φωνή είναι εφικτή} χρησιμοποιώντας κλασική μηχανική μάθηση με προσεκτικά σχεδιασμένα ακουστικά χαρακτηριστικά, επιτυγχάνοντας ROC-AUC έως 0,857 στο σύνολο δεδομένων Α με ομαδοποιημένη διασταυρούμενη επικύρωση. Δίνοντας προτεραιότητα στην \textbf{μεθοδολογική εγκυρότητα έναντι της βελτιστοποίησης της απόδοσης}---διαφανείς διαχωρισμοί σε επίπεδο υποκειμένου, σταθερές παράμετροι και πλήρης αναφορά διακύμανσης---η εργασία αυτή παρέχει μια επαναλήψιμη βάση πάνω στην οποία μελλοντικές μελέτες μπορούν να αντιμετωπίσουν τους προσδιορισμένους περιορισμούς του μικρού μεγέθους του δείγματος, της απουσίας εξωτερικής επικύρωσης και του δυαδικού πεδίου εφαρμογής.

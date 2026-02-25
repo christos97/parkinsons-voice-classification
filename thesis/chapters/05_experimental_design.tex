@@ -1,69 +1,73 @@
-% Chapter 5: Experimental Design
+% Κεφάλαιο 5: Σχεδιασμός πειράματος
 
-\chapter{Experimental Design}
+\chapter{Σχεδιασμός πειράματος}
 \label{ch:experimental-design}
 
-\section{Research Questions}
+\section{Ερευνητικά ερωτήματα}
 
-The experiments address the following research questions:
+Τα πειράματα εξετάζουν τα παρακάτω ερωτήματα:
 
 \begin{description}
-    \item[RQ1:] How do classical ML models perform on PD voice classification using acoustic features?
-    \item[RQ2:] Does feature set extension (47 $\rightarrow$ 78 features) improve classification performance?
-    \item[RQ3:] Does balanced class weighting improve performance on imbalanced datasets?
-    \item[RQ4:] How do results compare between Dataset A (subject-aware CV) and Dataset B (standard CV)?
-    \item[RQ5:] Do speech tasks (read vs spontaneous speech) yield different classification performance?
+    \item[RQ1:] Πόσο καλά αποδίδουν τα κλασικά μοντέλα ML στην αναγνώριση PD από φωνητικά χαρακτηριστικά;
+    \item[RQ2:] Βελτιώνεται η απόδοση όταν αυξάνονται τα χαρακτηριστικά από 47 σε 78;
+    \item[RQ3:] Βοηθά η ισορροπημένη στάθμιση κλάσεων σε μη ισορροπημένα δεδομένα;
+    \item[RQ4:] Υπάρχουν διαφορές στα αποτελέσματα μεταξύ του συνόλου δεδομένων Α (CV σε επίπεδο υποκειμένου) και του συνόλου δεδομένων Β (τυπικό CV);
+    \item[RQ5:] Υπάρχει διαφορά στην απόδοση μεταξύ ανάγνωσης και αυθόρμητης ομιλίας;
 \end{description}
 
-\section{Experimental Matrix}
+\section{Πειραματικός πίνακας}
 
-\subsection{\texorpdfstring{$2 \times 2 \times 5$ Factorial Design}{2x2x5 Factorial Design}}
+\subsection{\texorpdfstring{$2 \times 2 \times 5$ Παραγοντικός σχεδιασμός}{2x2x5 Παραγοντικός σχεδιασμός}}
 
-The complete experimental design crosses three factors:
+Ο σχεδιασμός περιλαμβάνει τρεις παράγοντες:
 
 \begin{enumerate}
-    \item \textbf{Feature Set:} Baseline (47) vs Extended (78)
-    \item \textbf{Class Weighting:} None (baseline) vs Balanced
-    \item \textbf{Model Architecture:} Logistic Regression vs SVM (RBF) vs Random Forest vs Gradient Boosting vs XGBoost
+    \item \textbf{Σύνολο χαρακτηριστικών:} 47 (baseline) ή 78 (extended)
+    \item \textbf{Στάθμιση κλάσεων:} χωρίς ή με ισορροπημένη στάθμιση
+    \item \textbf{Μοντέλο:} LR, SVM (RBF), RF, Gradient Boosting, XGBoost
 \end{enumerate}
 
-This yields $2 \times 2 \times 5 = 20$ conditions per dataset/task combination.
+Συνολικά: $2 \times 2 \times 5 = 20$ συνθήκες για κάθε dataset/εργασία.
 
 \begin{table}[H]
 \centering
 \begin{tabular}{@{}llllp{3cm}@{}}
 \toprule
-\textbf{ID} & \textbf{Features} & \textbf{Weight} & \textbf{Models} & \textbf{Output Dir} \\
+\textbf{ID} & \textbf{Χαρακτηριστικά} & \textbf{Στάθμιση} & \textbf{Μοντέλα} & \textbf{Έξοδος} \\
 \midrule
-C1 & Baseline (47) & None & LR, SVM, RF, GB, XGB & \texttt{baseline/baseline/} \\
-C2 & Extended (78) & None & LR, SVM, RF, GB, XGB & \texttt{baseline/extended/} \\
-C3 & Baseline (47) & Balanced & LR, SVM, RF, GB, XGB & \texttt{weighted/baseline/} \\
-C4 & Extended (78) & Balanced & LR, SVM, RF, GB, XGB & \texttt{weighted/extended/} \\
+C1 & 47 & Καμία & LR, SVM, RF, GB, XGB & \texttt{baseline/baseline/} \\
+C2 & 78 & Καμία & LR, SVM, RF, GB, XGB & \texttt{baseline/extended/} \\
+C3 & 47 & Ισορροπημένη & LR, SVM, RF, GB, XGB & \texttt{weighted/baseline/} \\
+C4 & 78 & Ισορροπημένη & LR, SVM, RF, GB, XGB & \texttt{weighted/extended/} \\
 \bottomrule
 \end{tabular}
-\caption{Experimental conditions (20 total: 4 conditions $\times$ 5 models each). Note: class weighting applies only to LR, SVM, and RF; GB and XGB do not support \texttt{class\_weight} natively.}
+\caption{Πειραματικές συνθήκες (4 συνθήκες $\times$ 5 μοντέλα = 20). Σημείωση: η στάθμιση εφαρμόζεται σε LR, SVM και RF.}
 \label{tab:conditions}
 \end{table}
 
-\subsection{Total Experimental Runs}
+\subsection{Συνολικές πειραματικές εκτελέσεις}
 
 \begin{table}[H]
 \centering
 \begin{tabular}{@{}lcccc@{}}
 \toprule
-\textbf{Dataset/Task} & \textbf{Conditions} & \textbf{Models} & \textbf{CV Folds} & \textbf{Total Runs} \\
+\textbf{Dataset/Εργασία} & \textbf{Συνθήκες} & \textbf{Μοντέλα} & \textbf{CV Folds} & \textbf{Σύνολο} \\
 \midrule
 Dataset A - ReadText & 4 & 5 & 5 & 100 \\
 Dataset A - SpontaneousDialogue & 4 & 5 & 5 & 100 \\
 Dataset B - PD Speech & 4 & 5 & 5 & 100 \\
 \midrule
-\textbf{Grand Total} & & & & \textbf{300} \\
+\textbf{Σύνολο} & & & & \textbf{300} \\
 \bottomrule
 \end{tabular}
-\caption{Total experimental runs across all datasets and conditions}
+\caption{Συνολικός αριθμός πειραμάτων}
 \label{tab:total-runs}
 \end{table}
 
-\section{Experimental Protocols and Reproducibility}
+\section{Πειραματικά πρωτόκολλα και αναπαραγωγιμότητα}
 
-Cross-validation strategies (grouped stratified K-fold for Dataset A, stratified K-fold for Dataset B), evaluation metrics, and statistical reporting are defined in Chapter~\ref{ch:methodology} (Sections~\ref{sec:cv-rationale} and~\ref{sec:eval-metrics}). All experiments used \texttt{random\_state=42} for reproducibility. Dataset B results should be interpreted cautiously due to the absence of subject identifiers (Section~\ref{cav:dataset-b-leakage}). Limitations are catalogued in Chapter~\ref{ch:limitations}.
+Χρησιμοποιήθηκε 5-fold cross-validation (σε επίπεδο υποκειμένου για το Dataset A και στρωματοποιημένο για το Dataset B).
+Όλα τα πειράματα εκτελέστηκαν με \texttt{random\_state=42} για αναπαραγωγιμότητα.
+
+Τα αποτελέσματα του Dataset B πρέπει να εξετάζονται με προσοχή λόγω της έλλειψης αναγνωριστικών υποκειμένων (βλ.\ ενότητα~\ref{cav:dataset-b-leakage}).
+Οι περιορισμοί παρουσιάζονται στο κεφάλαιο~\ref{ch:limitations}.
