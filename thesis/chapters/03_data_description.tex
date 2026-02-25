@@ -1,215 +1,178 @@
-% Chapter 3: Data Description
-
-\chapter{Data Description}
+% Κεφάλαιο 3: Περιγραφή δεδομένων
+\chapter{Περιγραφή δεδομένων}
 \label{ch:data-description}
-
-\section{Dataset A: MDVR-KCL}
-
-\subsection{Source and Collection}
-
-The Mobile Device Voice Recordings from King's College London (MDVR-KCL) dataset~\cite{mdvr_kcl_2019} was collected specifically for Parkinson's Disease research using smartphone recordings. The dataset is publicly available on Zenodo with DOI \texttt{10.5281/zenodo.2867215}.
-
-\subsubsection{Collection Context}
-
+\section{Σύνολο δεδομένων Α: MDVR-KCL}
+\subsection{Πηγή και συλλογή}
+Το σύνολο δεδομένων Mobile Device Voice Recordings from King's College London (MDVR-KCL)~\cite{mdvr_kcl_2019} συλλέχθηκε ειδικά για την έρευνα της νόσου του Πάρκινσον χρησιμοποιώντας ηχογραφήσεις από smartphone. Το σύνολο δεδομένων είναι διαθέσιμο στο Zenodo με DOI \texttt{10.5281/zenodo.2867215}.
+\subsubsection{Πλαίσιο συλλογής}
 \begin{table}[H]
 \centering
 \begin{tabular}{@{}ll@{}}
 \toprule
-\textbf{Property} & \textbf{Value} \\
+\textbf{Ιδιότητα} & \textbf{Τιμή} \\
 \midrule
-Collection Period & 26--29 September 2017 \\
-Location & King's College London Hospital, Denmark Hill, London, UK \\
-Recording Device & Motorola Moto G4 smartphone \\
-Environment & Clinical examination room ($\sim$10 m²) \\
-Reverberation Time & $\sim$500 ms \\
-Audio Capture & Direct microphone signal (no GSM compression) \\
+Περίοδος συλλογής & 26-29 Σεπτεμβρίου 2017 \\
+Τοποθεσία & King's College London Hospital, Denmark Hill, Λονδίνο, Ηνωμένο Βασίλειο \\
+Συσκευή εγγραφής & Smartphone Motorola Moto G4 \\
+Περιβάλλον & Κλινική αίθουσα εξετάσεων ($\sim$10 m²) \\
+Χρόνος αντήχησης & $\sim$500 ms \\
+Λήψη ήχου & Άμεσο σήμα μικροφώνου (χωρίς συμπίεση GSM) \\
 \bottomrule
 \end{tabular}
-\caption{MDVR-KCL data collection context}
+\caption{Πλαίσιο συλλογής δεδομένων MDVR-KCL}
 \label{tab:collection-context}
 \end{table}
-
-Recordings were captured within the reverberation radius directly from the microphone signal (not GSM-compressed), resulting in acoustically clean audio suitable for feature extraction.
-
-\subsection{Audio Specifications}
-
+Οι ηχογραφήσεις πραγματοποιήθηκαν εντός της ακτίνας αντήχησης απευθείας από το σήμα του μικροφώνου (χωρίς συμπίεση GSM), με αποτέλεσμα έναν ακουστικά καθαρό ήχο κατάλληλο για εξαγωγή χαρακτηριστικών.
+\subsection{Προδιαγραφές ήχου}
 \begin{table}[H]
 \centering
 \begin{tabular}{@{}ll@{}}
 \toprule
-\textbf{Property} & \textbf{Value} \\
+\textbf{Ιδιότητα} & \textbf{Τιμή} \\
 \midrule
-Format & WAV (uncompressed PCM) \\
-Native Sample Rate & 44.1 kHz \\
-Processing Sample Rate & 22.05 kHz (resampled) \\
-Bit Depth & 16-bit signed integer \\
-Channels & Mono \\
-Compression & None \\
+Μορφή & WAV (μη συμπιεσμένο PCM) \\
+Εγγενής ρυθμός δειγματοληψίας & 44,1 kHz \\
+Ρυθμός δειγματοληψίας επεξεργασίας & 22,05 kHz (επαναδειγματοληψία) \\
+Βάθος bit & 16-bit υπογεγραμμένος ακέραιος \\
+Κανάλια & Μονοφωνικό \\
+Συμπίεση & Καμία \\
 \bottomrule
 \end{tabular}
-\caption{Audio specifications for Dataset A}
+\caption{Προδιαγραφές ήχου για το σύνολο δεδομένων Α}
 \label{tab:audio-specs}
 \end{table}
-
-All audio files are resampled to 22.05 kHz for feature extraction to ensure consistency and computational efficiency while preserving sufficient frequency resolution for speech analysis (Nyquist frequency: 11.025 kHz).
-
-\subsection{Speech Tasks}
-
-The dataset includes two distinct speech tasks designed to capture different aspects of vocal production:
-
+Όλα τα αρχεία ήχου μετατράπηκαν σε συχνότητα δειγματοληψίας 22,05 kHz πριν από την εξαγωγή χαρακτηριστικών. Αυτό έγινε για να υπάρχει συνέπεια στα δεδομένα και να μειωθεί το υπολογιστικό κόστος, χωρίς να χάνεται η απαραίτητη ποιότητα για την ανάλυση της ομιλίας.\subsection{Εργασίες ομιλίας}
+Το σύνολο δεδομένων περιλαμβάνει δύο διακριτές εργασίες ομιλίας που έχουν σχεδιαστεί για να καταγράφουν διαφορετικές πτυχές της φωνητικής παραγωγής:
 \begin{table}[H]
 \centering
 \begin{tabular}{@{}llccc@{}}
 \toprule
-\textbf{Task} & \textbf{Description} & \textbf{Subjects} & \textbf{HC} & \textbf{PD} \\
+\textbf{Εργασία} & \textbf{Περιγραφή} & \textbf{Θέματα} & \textbf{HC} & \textbf{PD} \\
 \midrule
-ReadText & "The North Wind and the Sun" passage & 37 & 21 & 16 \\
-SpontaneousDialogue & Free conversation with examiner & 36 & 21 & 15 \\
+ReadText & Απόσπασμα από το «Ο Βόρειος Άνεμος και ο Ήλιος» & 37 & 21 & 16 \\
+SpontaneousDialogue & Ελεύθερη συνομιλία με τον εξεταστή & 36 & 21 & 15 \\
 \bottomrule
 \end{tabular}
-\caption{Speech tasks in MDVR-KCL dataset}
+\caption{Εργασίες ομιλίας στο σύνολο δεδομένων MDVR-KCL}
 \label{tab:speech-tasks}
 \end{table}
-
-\textbf{Note:} Subject ID18 is missing from the SpontaneousDialogue task, resulting in one fewer recording for that condition.
-
-\subsection{Class Distribution}
-
+\textbf{Σημείωση:} Το υποκείμενο ID18 λείπει από την εργασία SpontaneousDialogue, με αποτέλεσμα να υπάρχει μία λιγότερη εγγραφή για αυτή την κατάσταση.
+\subsection{Κατανομή τάξεων}
 \begin{verbatim}
-ReadText Task:
-+-- HC (Healthy Control): 21 subjects (56.8%)
-+-- PD (Parkinson's Disease): 16 subjects (43.2%)
-
-SpontaneousDialogue Task:
-+-- HC (Healthy Control): 21 subjects (58.3%)
-+-- PD (Parkinson's Disease): 15 subjects (41.7%)
+Εργασία ReadText:
++-- HC (Υγιείς μάρτυρες): 21 υποκείμενα (56,8%)
++-- PD (Νόσος του Πάρκινσον): 16 άτομα (43,2%)
+Εργασία SpontaneousDialogue:
++-- HC (Υγιής έλεγχος): 21 άτομα (58,3%)
++-- PD (Νόσος του Πάρκινσον): 15 άτομα (41,7%)
 \end{verbatim}
-
-\textbf{Imbalance Ratio:} Moderate ($\sim$57:43 HC:PD). Class weighting experiments were conducted to assess impact on classification performance.
-
-\subsection{Known Anomalies}
-
+\textbf{Αναλογία ανισορροπίας:} Μέτρια ($\sim$57:43 HC:PD). Διεξήχθησαν πειράματα στάθμισης κατηγοριών για την αξιολόγηση της επίδρασης στην απόδοση της ταξινόμησης.
+\subsection{Γνωστές ανωμαλίες}
 \begin{itemize}
-    \item \textbf{ID18:} Missing from SpontaneousDialogue task (36 subjects vs.\ 37 in ReadText).
+    \item \textbf{ID18:} Λείπει από την εργασία SpontaneousDialogue (36 άτομα έναντι 37 στην εργασία ReadText).
 \end{itemize}
-
-\section{Dataset B: PD Speech Features}
-
-\subsection{Source}
-
-Pre-extracted acoustic features from the UCI Machine Learning Repository, distributed via Kaggle~\cite{pd_speech_features_kaggle}. The dataset contains 752 acoustic features pre-computed from sustained vowel phonations.
-
-\subsection{Collection Context}
-
+\section{Σύνολο δεδομένων Β: Χαρακτηριστικά ομιλίας PD}
+\subsection{Πηγή}
+Προ-εξορυσσόμενα ακουστικά χαρακτηριστικά από το UCI Machine Learning Repository, διανεμημένα μέσω Kaggle~\cite{pd_speech_features_kaggle}. Το σύνολο δεδομένων περιέχει 752 ακουστικά χαρακτηριστικά που έχουν υπολογιστεί εκ των προτέρων από παρατεταμένες φωνητικές φωνές.
+\subsection{Πλαίσιο συλλογής}
 \begin{table}[H]
 \centering
 \begin{tabular}{@{}ll@{}}
 \toprule
-\textbf{Property} & \textbf{Value} \\
+\textbf{Ιδιότητα} & \textbf{Τιμή} \\
 \midrule
-Institution & Istanbul University, Cerrahpaşa Faculty of Medicine \\
-Collection Period & Not specified in metadata \\
-PD Subjects & 188 \\
-HC Subjects & 64 \\
-Age Range (PD) & 33--87 years \\
-Age Range (HC) & 41--82 years \\
-Speech Task & Sustained phonation of vowel /a/ \\
-Repetitions & 3 per subject \\
-Native Sample Rate & 44.1 kHz (reported in metadata) \\
+Ίδρυμα & Πανεπιστήμιο Κωνσταντινούπολης, Ιατρική Σχολή Cerrahpaşa \\
+Περίοδος συλλογής & Δεν προσδιορίζεται στα μεταδεδομένα \\
+Συμμετέχοντες με PD & 188 \\
+Θέματα HC & 64 \\
+Ηλικιακό εύρος (PD) & 33--87 έτη \\
+Ηλικιακό εύρος (HC) & 41--82 έτη \\
+Λεκτική εργασία & Παρατεταμένη φώνηση του φωνήεντος /a/ \\
+Επαναλήψεις & 3 ανά θέμα \\
+Φυσικό ρυθμό δειγματοληψίας & 44,1 kHz (αναφέρεται στα μεταδεδομένα) \\
 \bottomrule
 \end{tabular}
-\caption{Collection context for Dataset B}
+\caption{Πλαίσιο συλλογής για το σύνολο δεδομένων Β}
 \label{tab:dataset-b-context}
 \end{table}
-
-\subsection{Data Format}
-
+\subsection{Μορφή δεδομένων}
 \begin{itemize}
-    \item \textbf{Format:} CSV (comma-separated values)
-    \item \textbf{Rows:} 756 samples (multiple per subject)
-    \item \textbf{Columns:} 753 total (752 features + 1 binary label)
-    \item \textbf{Label encoding:} 1 = PD, 0 = HC
-    \item \textbf{Subject IDs:} \textbf{Not provided} (critical limitation)
+    \item \textbf{Μορφή:} CSV (τιμές διαχωρισμένες με κόμμα)
+    \item \textbf{Σειρές:} 756 δείγματα (πολλαπλά ανά υποκείμενο)
+    \item \textbf{Στήλες:} 753 συνολικά (752 χαρακτηριστικά + 1 δυαδική ετικέτα)
+    \item \textbf{Κωδικοποίηση ετικέτας:} 1 = PD, 0 = HC
+    \item \textbf{Αναγνωριστικά υποκειμένων:} \textbf{Δεν παρέχονται} (κρίσιμος περιορισμός)
 \end{itemize}
-
-\subsection{Class Distribution}
-
+\subsection{Κατανομή κλάσεων}
 \begin{table}[H]
 \centering
 \begin{tabular}{@{}lcc@{}}
 \toprule
-\textbf{Class} & \textbf{Samples} & \textbf{Percentage} \\
+\textbf{Κατηγορία} & \textbf{Δείγματα} & \textbf{Ποσοστό} \\
 \midrule
-HC (0) & 192 & 25.4\% \\
-PD (1) & 564 & 74.6\% \\
+HC (0) & 192 & 25,4\% \\
+PD (1) & 564 & 74,6\% \\
 \bottomrule
 \end{tabular}
-\caption{Class distribution in Dataset B}
+\caption{Κατανομή κλάσεων στο σύνολο δεδομένων Β}
 \label{tab:dataset-b-distribution}
 \end{table}
-
-\textbf{Imbalance Ratio:} Severe ($\sim$25:75 HC:PD), necessitating class weighting strategies in model training.
-
-\subsection{Feature Categories}
-
-The 752 features span multiple acoustic domains computed by the original authors:
-
+\textbf{Αναλογία ανισορροπίας:} Σοβαρή ($\sim$25:75 HC:PD), που απαιτεί στρατηγικές στάθμισης κλάσεων στην εκπαίδευση του μοντέλου.
+\subsection{Κατηγορίες χαρακτηριστικών}
+Τα 752 χαρακτηριστικά καλύπτουν πολλαπλούς ακουστικούς τομείς που υπολογίστηκαν από τους αρχικούς συγγραφείς:
 \begin{table}[H]
 \centering
 \begin{tabular}{@{}lcp{7cm}@{}}
 \toprule
-\textbf{Category} & \textbf{Count} & \textbf{Description} \\
+\textbf{Κατηγορία} & \textbf{Αριθμός} & \textbf{Περιγραφή} \\
 \midrule
-Baseline & 22 & Jitter variants, shimmer variants, HNR, NHR \\
-Intensity & 3 & Min, max, mean intensity \\
-Formants & 36 & $F_1$--$F_4$ frequency and bandwidth statistics \\
-MFCCs & 84 & Mean, std, delta for MFCC 0--12 \\
-Wavelet (DWT) & 182 & Discrete wavelet decomposition features \\
-TQWT & 432 & Tunable Q-factor wavelet transform features \\
-Other & 7 & PPE, DFA, RPDE, numPulses, GQ, GNE, VFER \\
+Βασική γραμμή & 22 & Παραλλαγές jitter, παραλλαγές shimmer, HNR, NHR \\
+Ένταση & 3 & Ελάχιστη, μέγιστη, μέση ένταση \\
+Φορμάντες & 36 & Στατιστικά στοιχεία συχνότητας και εύρους ζώνης $F_1$--$F_4$ \\
+MFCCs & 84 & Μέσος όρος, τυπική απόκλιση, δέλτα για MFCC 0--12 \\
+Wavelet (DWT) & 182 & Χαρακτηριστικά διακριτής αποσύνθεσης wavelet \\
+TQWT & 432 & Χαρακτηριστικά μετασχηματισμού wavelet με ρυθμιζόμενο συντελεστή Q \\
+Άλλα & 7 & PPE, DFA, RPDE, numPulses, GQ, GNE, VFER \\
 \bottomrule
 \end{tabular}
-\caption{Feature categories in Dataset B (752 total)}
+\caption{Κατηγορίες χαρακτηριστικών στο σύνολο δεδομένων Β (752 συνολικά)}
 \label{tab:dataset-b-features}
 \end{table}
-
-\subsection{Methodological Caveats}
-
+\subsection{Μεθοδολογικές προειδοποιήσεις}
 \begin{quote}
-\textbf{Critical Limitation:} No subject identifiers are available in Dataset B. This prevents validation of true out-of-subject generalization, as the same subject may appear in both training and test folds during cross-validation.
+\textbf{Κρίσιμος περιορισμός:} Ένας σημαντικός περιορισμός είναι ότι στο ΣΔ B δεν υπάρχουν αναγνωριστικά υποκειμένων. Αυτό σημαίνει ότι δεν γνωρίζουμε ποια δείγματα ανήκουν στο ίδιο άτομο. Έτσι, κατά τη διασταυρούμενη επικύρωση, είναι πιθανό δείγματα από το ίδιο άτομο να βρίσκονται και στο σύνολο εκπαίδευσης και στο σύνολο δοκιμής.
 \end{quote}
-
-Given that 756 samples were collected from 252 subjects (188 PD + 64 HC) with 3 repetitions each, standard stratified 5-fold cross-validation may place samples from the same subject in different folds, leading to:
-
+Δεδομένου ότι συλλέχθηκαν 756 δείγματα από 252 υποκείμενα (188 PD + 64 HC) με 3 επαναλήψεις το καθένα, η τυπική στρωματοποιημένη διασταυρούμενη επικύρωση 5 πτυχών μπορεί να τοποθετήσει δείγματα από το ίδιο υποκείμενο σε διαφορετικές πτυχές, οδηγώντας σε:
 \begin{itemize}
-    \item \textbf{Optimistically biased performance estimates} (overestimation of generalization)
-    \item \textbf{Violation of independence assumption} in cross-validation
-    \item \textbf{Inability to assess subject-level generalization}
+    \item \textbf{Αισιόδοξες εκτιμήσεις απόδοσης} υπερεκτίμηση της γενίκευσης (τα αποτελέσματα φαίνονται καλύτερα από ό,τι είναι στην πράξη)
+    \item \textbf{Παραβίαση της υπόθεσης ανεξαρτησίας} μεταξύ εκπαίδευσης και δοκιμής (τα δείγματα δεν είναι πραγματικά ανεξάρτητα, καθώς προέρχονται από τα ίδια άτομα)
+    \item \textbf{Αδυναμία αξιολόγησης της γενίκευσης σε νέο άτομο} (δεν μπορούμε να πούμε πόσο καλά θα λειτουργούσε το μοντέλο σε ένα νέο άτομο που δεν έχει δει ποτέ πριν)
 \end{itemize}
+Τα αποτελέσματα στο σύνολο δεδομένων Β πρέπει να ερμηνεύονται με προσοχή, λαμβάνοντας υπόψη αυτούς τους περιορισμούς. 
+Επιπλέον:
+Δεν υπάρχει πρόσβαση στον αρχικό (ακατέργαστο) ήχο, οπότε δεν μπορούμε να ελέγξουμε ή να προσθέσουμε νέα χαρακτηριστικά.
+Τα δεδομένα περιλαμβάνουν μόνο παρατεταμένη φώνηση φωνηέντων και όχι φυσική, συνεχόμενη ομιλία, άρα δεν αντικατοπτρίζουν πλήρως την καθημερινή ομιλία.
+Το σύνολο περιλαμβάνει 752 χαρακτηριστικά, αριθμός που σε σχέση με το διαθέσιμο μέγεθος δείγματος μπορεί να οδηγήσει σε overfitting.
 
-Results on Dataset B should be interpreted cautiously with these limitations in mind. Additional constraints include: no access to raw audio (cannot verify or extend features); sustained vowel phonation only (does not represent connected speech); and 752-dimensional features that may cause overfitting at the available sample size.
-
-\section{Cross-Dataset Comparison}
-
-\subsection{Key Differences}
-
+\section{Σύγκριση μεταξύ συνόλων δεδομένων}
+\subsection{Βασικές διαφορές}
 \begin{table}[H]
 \centering
 \begin{tabular}{@{}lll@{}}
 \toprule
-\textbf{Aspect} & \textbf{Dataset A} & \textbf{Dataset B} \\
+\textbf{Πτυχή} & \textbf{Σύνολο δεδομένων Α} & \textbf{Σύνολο δεδομένων Β} \\
 \midrule
-Data format & Raw audio (WAV) & Pre-extracted features (CSV) \\
-Sample size & 37 subjects (73 recordings) & 756 rows (subjects unknown) \\
-Subject tracking & Available & \textbf{Unavailable} \\
-Feature dimensionality & 47 (baseline) or 78 (extended) & 752 (fixed) \\
-Speech task & Read text / Dialogue & Sustained /a/ phonation \\
-Feature extraction & Controlled (this work) & Pre-computed (black box) \\
-Cross-validation & Grouped (subject-level) & Standard (row-level) \\
-Clinical metadata & H\&Y, UPDRS available & None \\
+Μορφή δεδομένων & Ακατέργαστος ήχος (WAV) & Προεξάχθέντα χαρακτηριστικά (CSV) \\
+Μέγεθος δείγματος & 37 άτομα (73 ηχογραφήσεις) & 756 σειρές (άγνωστα άτομα) \\
+Παρακολούθηση ατόμων & Διαθέσιμη & \textbf{Μη διαθέσιμη} \\
+Διαστατικότητα χαρακτηριστικών & 47 (βασική γραμμή) ή 78 (επεκταμένη) & 752 (σταθερή) \\
+Εργασία ομιλίας & Ανάγνωση κειμένου / Διάλογος & Συνεχής φώνηση /a/ \\
+Εξαγωγή χαρακτηριστικών & Ελεγχόμενη (αυτή η εργασία) & Προϋπολογισμένη (μαύρο κουτί) \\
+Διασταυρούμενη επικύρωση & Ομαδοποιημένη (επίπεδο υποκειμένου) & Τυπική (επίπεδο σειράς) \\
+Κλινικά μεταδεδομένα & H\&Y, UPDRS διαθέσιμα & Κανένα \\
 \bottomrule
 \end{tabular}
-\caption{Detailed cross-dataset comparison}
+\caption{Λεπτομερής σύγκριση μεταξύ συνόλων δεδομένων}
 \label{tab:cross-dataset-comparison}
 \end{table}
 
