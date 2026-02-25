@@ -600,8 +600,8 @@ def plot_roc_curves(
 
     ax.set_xlabel("False Positive Rate", fontsize=11)
     ax.set_ylabel("True Positive Rate", fontsize=11)
-    ax.set_xlim([0.0, 1.0])
-    ax.set_ylim([0.0, 1.05])
+    ax.set_xlim((0.0, 1.0))
+    ax.set_ylim((0.0, 1.05))
 
     if title is None:
         title = "ROC Curves (Mean ± Std across CV folds)"

@@ -10,34 +10,10 @@ This thesis investigated voice-based classification of Parkinson's Disease (PD) 
 \subsection{Contributions}
 
 \begin{enumerate}
-    \item \textbf{Rigorous Evaluation Framework}
-    \begin{itemize}
-        \item Implemented grouped stratified cross-validation to prevent subject leakage
-        \item Systematic 2$\times$2 factorial design (features $\times$ class weighting)
-        \item Transparent reporting of all conditions with confidence intervals
-    \end{itemize}
-    
-    \item \textbf{Feature Engineering Investigation}
-    \begin{itemize}
-        \item Extended feature set from 47 to 78 acoustic features
-        \item Demonstrated +8.7 percentage point ROC-AUC improvement
-        \item Identified most discriminative features ($F_0$, MFCCs, harmonicity)
-    \end{itemize}
-    
-    \item \textbf{Class Weighting Analysis}
-    \begin{itemize}
-        \item Evaluated \texttt{class\_weight="balanced"} across all models
-        \item Found modest effects on moderately imbalanced data
-        \item Documented interaction between features and weighting
-    \end{itemize}
-    
-    \item \textbf{Reproducible Pipeline}
-    \begin{itemize}
-        \item CLI-based tools for feature extraction and experiments
-        \item Fixed random seeds and documented parameters
-        \item Complete code repository with documentation
-        \item A non-diagnostic research demonstration interface illustrating the inference workflow (Appendix~\ref{ch:demo-app})
-    \end{itemize}
+    \item \textbf{Rigorous Evaluation Framework:} Grouped stratified cross-validation with a systematic 2$\times$2 factorial design (features $\times$ class weighting) and transparent reporting across all conditions.
+    \item \textbf{Feature Engineering Investigation:} Extended the feature set from 47 to 78 acoustic features, demonstrating up to +23pp ROC-AUC improvement and identifying $F_0$, MFCCs, and harmonicity as most discriminative.
+    \item \textbf{Class Weighting Analysis:} Evaluated \texttt{class\_weight="balanced"} across all models, finding modest and inconsistent effects on moderately imbalanced data.
+    \item \textbf{Reproducible Pipeline:} CLI tools, fixed random seeds, documented parameters, and a non-diagnostic research demonstration interface (Appendix~\ref{ch:demo-app}).
 \end{enumerate}
 
 \section{Key Findings}
@@ -61,42 +37,7 @@ High variance observed & Standard deviations 0.13--0.43 across metrics \\
 \label{tab:primary-findings}
 \end{table}
 
-\subsection{Best Configuration}
-
-\textbf{ReadText Task:}
-\begin{verbatim}
-Model:           Random Forest
-Features:        Extended (78)
-Class Weighting: None
-ROC-AUC:         0.822 ± 0.166
-Accuracy:        81.8% ± 14.0%
-\end{verbatim}
-
-\textbf{SpontaneousDialogue Task:}
-\begin{verbatim}
-Model:           Random Forest
-Features:        Extended (78)
-Class Weighting: None
-ROC-AUC:         0.857 ± 0.171
-Accuracy:        77.9% ± 16.1%
-\end{verbatim}
-
-\textbf{Note:} These results are from Dataset A (MDVR-KCL) with grouped cross-validation, representing conservative out-of-subject generalization estimates.
-
-\subsection{Feature Importance Insights}
-
-The most discriminative features for PD detection (Random Forest, ReadText task) include:
-
-\begin{enumerate}
-    \item \textbf{f0\_max} --- Maximum fundamental frequency (pitch ceiling)
-    \item \textbf{delta\_mfcc\_2\_mean} --- Second-order MFCC temporal dynamics
-    \item \textbf{f3\_std} --- Third formant variability
-    \item \textbf{autocorr\_harmonicity} --- Voice quality measure (periodicity)
-    \item \textbf{intensity\_mean} --- Overall vocal intensity
-    \item \textbf{shimmer\_apq3} --- Amplitude perturbation (short-term)
-\end{enumerate}
-
-These align with known clinical manifestations of PD: reduced pitch range, monotone speech (low F0 variability), hypophonia (reduced intensity), and voice quality degradation (harmonicity, shimmer).
+Best performance is summarised in Table~\ref{tab:primary-findings}; full per-model importance rankings are in Appendix~\ref{app:feature-importance}.
 
 \section{Research Questions Answered}
 
@@ -219,65 +160,10 @@ SpontaneousDialogue may capture naturalistic PD speech characteristics (monotone
     \item Consider longitudinal designs
 \end{itemize}
 
-\section{Limitations Recap}
-
-Key limitations that bound the interpretation of results:
-
-\begin{enumerate}
-    \item \textbf{Small sample size} (37 subjects) creates high variance
-    \item \textbf{No hyperparameter tuning} may underestimate potential
-    \item \textbf{Single dataset source} limits generalization claims
-    \item \textbf{Binary classification only} --- no severity prediction
-    \item \textbf{No external validation} on independent test set
-\end{enumerate}
-
 \section{Future Directions}
 
-\subsection{Short-term Extensions}
-
-\begin{itemize}
-    \item Hyperparameter optimization with nested CV
-    \item Feature selection to reduce dimensionality
-    \item Multi-task fusion (ReadText + SpontaneousDialogue)
-    \item Additional acoustic features (wavelets, TQWT)
-\end{itemize}
-
-\subsection{Medium-term Research}
-
-\begin{itemize}
-    \item External validation on independent datasets
-    \item Deep learning with appropriate regularization
-    \item Longitudinal tracking of disease progression
-    \item Multi-class classification (severity levels)
-\end{itemize}
-
-\subsection{Long-term Vision}
-
-\begin{itemize}
-    \item Integration into smartphone applications
-    \item Multi-modal biomarkers (voice + gait + tremor)
-    \item Personalized baselines for individual tracking
-    \item Clinical validation studies
-\end{itemize}
+Short-term extensions include hyperparameter optimisation with nested cross-validation, feature selection to reduce dimensionality, multi-task fusion (ReadText and SpontaneousDialogue combined), and additional acoustic features (wavelets, TQWT). Medium-term research should prioritise external validation on independent cohorts, longitudinal tracking of disease progression, and multi-class severity classification. Long-term, voice-based PD monitoring could integrate into smartphone applications alongside multi-modal biomarkers (voice, gait, tremor) and undergo prospective clinical validation.
 
 \section{Closing Remarks}
 
-This thesis demonstrates that \textbf{voice-based Parkinson's Disease classification is feasible} using classical machine learning with carefully engineered acoustic features, achieving ROC-AUC up to 0.857 on Dataset A with grouped cross-validation. The \textbf{task-dependent improvements from feature extension} (up to +23pp for ReadText) highlight the importance of capturing speech dynamics beyond simple statistical summaries.
-
-However, the field faces significant challenges:
-
-\begin{itemize}
-    \item Small datasets (n=37) produce high variance (std 0.13--0.43)
-    \item Subject identity must be tracked for valid evaluation
-    \item Task selection impacts performance (structured vs spontaneous speech)
-    \item Class weighting showed minimal benefit for moderate imbalance (1.3:1)
-    \item Clinical deployment requires extensive validation on independent cohorts
-\end{itemize}
-
-By prioritizing \textbf{methodological validity over performance optimization}, this work provides a foundation for future research that can build toward clinically useful applications. The transparent documentation of limitations, high variance, and task-specific effects ensures that results are interpreted appropriately and that subsequent studies can address identified gaps.
-
-\vspace{1cm}
-
-\begin{quote}
-\textit{``The goal of rigorous science is not to claim perfection, but to understand the boundaries of our knowledge.''}
-\end{quote}
+This thesis demonstrates that \textbf{voice-based Parkinson's Disease classification is feasible} using classical machine learning with carefully engineered acoustic features, achieving ROC-AUC up to 0.857 on Dataset A with grouped cross-validation. By prioritising \textbf{methodological validity over performance optimisation}---transparent subject-level splits, fixed parameters, and full variance reporting---this work provides a replicable foundation on which future studies can address the identified limitations of small sample size, absence of external validation, and binary task scope.

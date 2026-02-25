@@ -262,7 +262,7 @@ generate-plots: ## Generate all plots (confusion matrices + ROC curves)
 
 thesis: sync-figures
 	@echo "Building thesis PDF (using latexmk)..."
-	@cd thesis && latexmk -pdf -interaction=nonstopmode -quiet -f main.tex 2>/dev/null || latexmk -pdf -interaction=nonstopmode -quiet main.tex
+	@cd thesis && latexmk -xelatex -interaction=nonstopmode -quiet -f main.tex 2>/dev/null || latexmk -xelatex -interaction=nonstopmode -quiet main.tex
 	@echo "✓ Thesis PDF built successfully: thesis/main.pdf"
 	@cd thesis && pdfinfo main.pdf 2>/dev/null | grep "Pages:" | awk '{print "  Pages:", $$2}' || true
 	@cd thesis && pdftotext main.pdf - 2>/dev/null | wc -w | awk '{print "  Word count:", $$1}' || echo "  Word count: n/a"
@@ -270,7 +270,7 @@ thesis: sync-figures
 
 thesis-watch:
 	@echo "Building thesis PDF with auto-rebuild (Ctrl+C to stop)..."
-	cd thesis && latexmk -pdf -pvc -interaction=nonstopmode main.tex
+	cd thesis && latexmk -xelatex -pvc -interaction=nonstopmode main.tex
 
 thesis-clean:
 	@echo "Cleaning LaTeX build artifacts..."

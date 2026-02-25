@@ -3,12 +3,6 @@
 \chapter{Discussion}
 \label{ch:discussion}
 
-\section{Overview}
-
-This chapter interprets the experimental results, situates the findings within the broader literature on Parkinson's disease (PD) voice analysis, and discusses their methodological and practical implications.
-
-A research demonstration interface was implemented to visualize per-recording model outputs; however, these outputs were not used in the quantitative evaluation reported in this thesis (Appendix~\ref{ch:demo-app}).
-
 \section{Interpretation of Key Findings}
 
 \subsection{Feature Extension Impact}
@@ -96,8 +90,6 @@ Across all conditions, Random Forest consistently achieved the highest scores am
 \begin{equation*}
 \text{Random Forest} \geq \text{Gradient Boosting} \approx \text{XGBoost} > \text{Logistic Regression} \approx \text{SVM (RBF)}
 \end{equation*}
-
-% TODO: Update hierarchy after experiment re-run with actual boosting results
 
 Random Forest's advantages for this task include:
 
@@ -202,39 +194,7 @@ Task specification & Mixed/unstated & Separated + compared \\
 \label{tab:methodological-comparison}
 \end{table}
 
-\textbf{Impact of Grouped CV:}
-
-Our grouped CV approach provides \textbf{more conservative} but \textbf{more realistic} estimates of generalization performance. Studies using random splits likely report optimistically biased results:
-
-\begin{itemize}
-    \item \textbf{Data leakage:} Multiple recordings from same subject appear in train/test splits
-    \item \textbf{Inflated metrics:} Model learns subject-specific patterns rather than PD-general patterns
-    \item \textbf{Clinical invalidity:} New patient prediction (real-world scenario) is not evaluated
-\end{itemize}
-
-\textbf{Reporting Transparency:}
-
-This thesis reports:
-\begin{enumerate}
-    \item All experimental conditions (2 tasks $\times$ 2 feature sets $\times$ 2 weighting schemes)
-    \item Mean ± std for all metrics across all 5 CV folds
-    \item Negative results (class weighting, SVM failures)
-    \item Dataset limitations explicitly documented
-\end{enumerate}
-
-This level of transparency is uncommon in the PD voice classification literature, where selective reporting of best results is prevalent.
-
-\subsection{Validation Strategy: Cross-Validation over Train/Test Split}
-
-A deliberate methodological choice was to use five-fold cross-validation as the sole evaluation mechanism rather than a dedicated held-out test set. For datasets of this scale ($n \leq 37$ recording subjects with subject-level splits), a single train/test partition is problematic:
-
-\begin{itemize}
-    \item A 20\% hold-out retains only $\sim$7 subjects for final evaluation~--- a sample too small for stable metric computation (one misclassification shifts accuracy by $\sim$14\%).
-    \item A single split produces a point estimate with no associated variance, obscuring whether the result reflects genuine generalisation or the specific subjects in the test set.
-    \item Cross-validation exposes the high fold-to-fold variability inherent to small medical cohorts, providing more honest uncertainty characterisation (observed std $= 0.15$--$0.30$ in this study).
-\end{itemize}
-
-Crucially, because all hyperparameters were fixed before any data were examined, no separate validation set was needed for model selection. The CV folds serve one purpose: estimating generalisation performance on unseen subjects. Feature standardisation (\texttt{StandardScaler}) is performed strictly within each fold~--- fitted on the training partition and applied to the test partition~--- so that no information about the test fold influences any training or preprocessing step.
+Compared to typical literature practice, this thesis uses grouped stratified CV (all recordings per subject in the same fold), reports all experimental conditions with mean~$\pm$~std, and documents negative results. As justified in Section~\ref{sec:cv-rationale}, 5-fold CV without a separate held-out set is appropriate here: with $n=37$ subjects, a 20\% hold-out would yield approximately seven test subjects per fold---too few for stable metric estimation.
 
 \section{Feature Importance Analysis}
 
@@ -286,14 +246,7 @@ tqwt\_TKEO\_mean\_dec\_12 & 0.0096 & Teager energy \\
 \label{tab:datasetb-features}
 \end{table}
 
-\textbf{Key Observations:}
-
-\begin{enumerate}
-    \item Dataset B's top features require \textbf{specialized signal processing} (wavelet decomposition, Teager energy operators)
-    \item Dataset A's features are \textbf{clinically interpretable} (pitch, formants, perturbation)
-    \item Importance values are more \textbf{evenly distributed} in Dataset B (0.013 vs 0.052), suggesting ensemble of many weak signals
-    \item This complexity gap may partially explain Dataset B's superior performance (0.940 vs 0.857)
-\end{enumerate}
+Dataset B's top features rely on specialised signal processing (wavelet decomposition, Teager energy operators) unavailable in typical clinical settings; full feature rankings are provided in Appendix~\ref{app:feature-importance}.
 
 \section{Task-Dependent Performance Patterns}
 
@@ -337,67 +290,4 @@ For resource-constrained screening applications:
     \item ReadText requires extended feature engineering for acceptable discrimination
 \end{itemize}
 
-\section{Addressing Research Questions}
 
-\subsection{RQ1: ML Model Performance}
-
-\begin{quote}
-\textbf{How do classical ML models perform on PD voice classification?}
-\end{quote}
-
-Classical ML achieves ROC-AUC up to $0.857 \pm 0.171$ (Dataset A, Random Forest, Spontaneous/Extended), demonstrating feasibility of voice-based PD detection without deep learning. Model hierarchy:
-
-\begin{itemize}
-    \item \textbf{Random Forest:} Best overall ($0.786 \pm 0.235$ pooled across conditions)
-    \item \textbf{Gradient Boosting:} \textit{Pending experiment re-run}
-    \item \textbf{XGBoost:} \textit{Pending experiment re-run}
-    \item \textbf{Logistic Regression:} Stable baseline ($0.781 \pm 0.152$ pooled)
-    \item \textbf{SVM (RBF):} High variance, task-sensitive ($0.635 \pm 0.311$ pooled)
-\end{itemize}
-
-Random Forest's ensemble averaging provides robustness critical for small datasets.
-
-\subsection{RQ2: Feature Extension Impact}
-
-\begin{quote}
-\textbf{Does feature set extension improve classification performance?}
-\end{quote}
-
-\textbf{Yes, task-dependently.} Extending from 47 to 78 features improved ROC-AUC by:
-\begin{itemize}
-    \item ReadText: +23.2pp (RF), +22.0pp (SVM) --- \textbf{Critical improvement}
-    \item Spontaneous: +2.9pp (RF), +5.3pp (SVM) --- \textbf{Marginal improvement}
-    \item Logistic Regression: $-1.9$pp (ReadText) --- \textbf{Potential overfitting}
-\end{itemize}
-
-Extended features are essential for ReadText but optional for Spontaneous Dialogue.
-
-\subsection{RQ3: Class Weighting Impact}
-
-\begin{quote}
-\textbf{Does class weighting improve performance on imbalanced datasets?}
-\end{quote}
-
-\textbf{Minimal effect.} On Dataset A (1.3:1 HC:PD imbalance), class weighting effects:
-\begin{itemize}
-    \item Random Forest: +9.7pp (ReadText/Baseline), $-1.7$pp (ReadText/Extended)
-    \item Logistic Regression: 0.0pp (unchanged)
-    \item SVM (RBF): $-7.2$pp (ReadText/Baseline)
-\end{itemize}
-
-Class weighting becomes unnecessary when imbalance ratio $< 2:1$ and subject-grouped CV is used.
-
-\subsection{RQ4: Cross-Dataset Comparison}
-
-\begin{quote}
-\textbf{How do results compare between Dataset A and Dataset B?}
-\end{quote}
-
-Dataset B achieves higher absolute performance (ROC-AUC $0.940 \pm 0.013$ vs $0.857 \pm 0.171$), but this 8.3pp difference is confounded by:
-\begin{enumerate}
-    \item \textbf{Sample size:} 752 vs 37 subjects (20$\times$ larger)
-    \item \textbf{CV strategy:} Unknown subject handling vs explicit grouping
-    \item \textbf{Feature complexity:} Advanced signal processing vs clinical prosody
-\end{enumerate}
-
-Dataset A's grouped CV provides more conservative, realistic generalization estimates suitable for clinical validation studies.

@@ -4,11 +4,41 @@
 \addcontentsline{toc}{chapter}{Abstract}
 \thispagestyle{plain}
 
-Parkinson's Disease (PD) is a neurodegenerative disorder characterized by motor symptoms and pervasive speech impairments. This thesis investigates the feasibility of voice-based PD detection using classical machine learning, emphasizing rigorous methodology over maximal performance. Two complementary datasets are examined: Dataset~A, a clinical corpus of raw voice recordings (37 subjects) requiring acoustic feature extraction; and Dataset~B, a larger public dataset (756 samples) of pre-extracted features. A consistent pipeline is applied, extracting 47 baseline features (prosodic and perturbation measures) from Dataset~A, with an extended set of 78 features incorporating additional spectral descriptors. Three interpretable classifiers---Logistic Regression, Support Vector Machine (RBF kernel), and Random Forest---are evaluated under a 2$\times$2 factorial design: baseline vs.\ extended features, with vs.\ without class weighting to address class imbalance. Crucially, subject-grouped 5-fold cross-validation is employed for Dataset~A to prevent data leakage, while a standard stratified 5-fold CV (with caveats on subject overlap) is used for Dataset~B.
+Parkinson's disease (PD) is a progressive neurological disorder characterized by motor symptoms which are typically accompanied by speech difficulties.
 
-Results are reported as mean $\pm$ standard deviation. On Dataset~A, the best model (Random Forest, extended features) achieved ROC-AUC $\approx$ 0.87 $\pm$ 0.14, a +8.7 percentage point improvement over the baseline feature set. Extended features consistently improved accuracy and ROC-AUC, especially for the smaller Dataset~A (e.g., Random Forest AUC rose from 0.59 to 0.82 on one task). Class weighting had only modest effects (e.g., +3.5pp ROC-AUC for Random Forest with baseline features, but negligible or negative impact with extended features). Random Forest outperformed SVM and Logistic Regression across conditions, likely due to its ability to capture non-linear patterns and leverage feature importance for insight. Dataset~B yielded higher absolute performance (ROC-AUC $\approx$ 0.94 with Random Forest) but is interpreted with caution given potential subject overlaps and its high-dimensional feature set.
+In this paper we assess if Parkinson’s disease can be diagnosed through the voice based on classical machine learning approaches.
 
-In conclusion, classical ML models can detect PD from voice with competitive accuracy, but robust validation is paramount. This work highlights that methodological rigor---including proper cross-validation, careful feature engineering, and honest reporting of variance and limitations---is essential to produce reliable findings. The extended feature set notably enhances detection of PD voice signatures, and results underscore the importance of addressing data leakage and class imbalance. These contributions lay a reproducible groundwork for future research, prioritizing interpretability and validity in the development of non-invasive PD screening tools.
+We worked with two different datasets, each analyzed using an identical methodology, i.e., analysis and validation procedure.
+
+The first dataset, Mobile Device Voice Recordings at King’s College London, contained categorized audio files (WAV) recorded with advanced recording equipment in a controlled environment.
+
+These recordings were unprocessed, therefore we had to process the audio to extract the acoustic features to transform the data into a numeric format that would allow us to perform the analysis.
+
+The second dataset, PD speech signal features from Kaggle (UCI), contained pre-extracted acoustic features in csv format.
+
+Therefore, we did not need to process the audio since the pre-processed features were ready to be analyzed.
+
+Both datasets were processed to see if the models could distinguish between individuals with PD and healthy controls (HC) only through their voice.
+
+We compared five machine learning algorithms, i.e., Logistic Regression, Support Vector Machine (SVM), Random Forest, Gradient Boosting, and XGBoost.
+
+Furthermore, we investigated whether increasing the number of features in the training set enhances the model performance, and whether the application of class weighting enhances the model performance particularly for the PD group.
+
+To avoid data leakage, cross-validation was performed.
+
+The results indicate that Random Forest algorithm outperformed all other tested algorithms.
+
+An increase of the number of features in the training set positively affected the majority of the tested models.
+
+Class weighting had a limited positive impact especially on Random Forest, while the other algorithms either did not benefit from class weighting or were even negatively affected.
+
+In general, the study demonstrates that voice-based analysis combined with machine learning may support the diagnosis of Parkinson’s disease.
+
+Nevertheless, the results have to be viewed critically due to some limitations, e.g., potential multiple recordings of the same patient and the significant differences in terms of sample sizes between the two datasets.
+
+Regardless of these limitations, the study shows that adequate processing of the data, along with the appropriate application of machine learning algorithms can result in a potetial disease identification through voice, using regular microphones, available in everyday devices like smartphones.
+
+Early detection may lead to the initiation of therapy at an earlier time point and improve the quality of life of patients.
 
 \vspace{1cm}
 

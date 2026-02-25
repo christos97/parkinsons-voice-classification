@@ -6,42 +6,66 @@
 %% ============================================================================
 
 % Author information
-\newcommand{\myAuthor}{Marios Christos Syrmakezis}
+\newcommand{\myAuthor}{Μάριος Χρήστος Συρμακέζης}
 \newcommand{\myTitle}{Voice-Based Classification of Parkinson's Disease Using Classical Machine Learning}
-\newcommand{\myTitleLineBreak}{Voice-Based Classification of Parkinson's Disease\\Using Classical Machine Learning}
-\newcommand{\myTitleGR}{Ταξινόμηση Νόσου Parkinson Βάσει Φωνής με Χρήση Κλασικής Μηχανικής Μάθησης}
+\newcommand{\myTitleLineBreak}{Voice-Based Classification of Parkinson's Disease Using Classical Machine Learning}
+\newcommand{\myTitleGR}{Ταξινόμηση Νόσου Parkinson μέσω Φωνής με Χρήση Κλασικής Μηχανικής Μάθησης}
 
 % Supervisor information
-\newcommand{\mySupervisor}{Georgios Matsopoulos}
-\newcommand{\mySupervisorTitle}{Professor, School of ECE, NTUA}
+\newcommand{\mySupervisor}{Γεώργιος Ματσόπουλος}
+\newcommand{\mySupervisorTitle}{Καθηγητής ΗΜΜΥ Ε.Μ.Π.}
 
 % Committee members
-\newcommand{\myExaminerA}{Ourania Petropoulou}
-\newcommand{\myExaminerATitle}{[Examiner 1 Title]}
+\newcommand{\myExaminerA}{Ουρανία Πετροπούλου}
+\newcommand{\myExaminerATitle}{Επίκουρη Καθηγήτρια ΗΜΜΥ Ε.Μ.Π.}
 \newcommand{\myExaminerB}{[Examiner 2 Name]}
 \newcommand{\myExaminerBTitle}{[Examiner 2 Title]}
 
 % Date and location
-\newcommand{\myDate}{February 2026}
-\newcommand{\myLocation}{Athens}
-\newcommand{\myApprovalDate}{[DD Month YYYY]}
+\newcommand{\myDate}{Φεβρουάριος 2026}
+\newcommand{\myLocation}{Αθήνα}
+\newcommand{\myApprovalDate}{[26 Φεβρουαρίου 2026]}
 
 % Institution
-\newcommand{\myUniversity}{National Technical University of Athens}
-\newcommand{\mySchool}{School of Electrical and Computer Engineering}
-\newcommand{\myDivision}{Division of Computer Science}
+\newcommand{\myUniversity}{Εθνικό Μετσόβιο Πολυτεχνείο}
+\newcommand{\mySchool}{Σχολή Ηλεκτρολόγων Μηχανικών και Μηχανικών Η/Υ}
+\newcommand{\myDivision}{Συστημάτων Μετάδοσης Πληροφορίας \& Τεχνολογίας Υλικών}
 
 %% ============================================================================
 %% PACKAGES
 %% ============================================================================
 
-% Encoding and fonts
-\usepackage[utf8]{inputenc}
-\usepackage[LGR,T1]{fontenc}
-\usepackage{lmodern}
+% Encoding and fonts (XeLaTeX)
+\usepackage{fontspec}
+\setmainfont{FreeSerif}
+\setsansfont{FreeSans}
+\setmonofont{FreeMono}
 
 % Language
-\usepackage[greek,english]{babel}
+\usepackage{polyglossia}
+\setdefaultlanguage{greek}
+\setotherlanguage{english}
+
+% Greek captions for structural elements
+% NOTE: The class file (ntua-thesis.cls) loads babel with [greek,english],
+% making English the active language. We must override BOTH caption sets
+% to ensure Greek labels appear regardless of which language babel considers active.
+\addto\captionsgreek{%
+  \renewcommand{\contentsname}{Πίνακας Περιεχομένων}%
+  \renewcommand{\listfigurename}{Κατάλογος Σχημάτων}%
+  \renewcommand{\listtablename}{Κατάλογος Πινάκων}%
+  \renewcommand{\chaptername}{Κεφάλαιο}%
+  \renewcommand{\bibname}{Βιβλιογραφία}%
+  \renewcommand{\appendixname}{Παράρτημα}%
+}
+\addto\captionsenglish{%
+  \renewcommand{\contentsname}{Πίνακας Περιεχομένων}%
+  \renewcommand{\listfigurename}{Κατάλογος Σχημάτων}%
+  \renewcommand{\listtablename}{Κατάλογος Πινάκων}%
+  \renewcommand{\chaptername}{Κεφάλαιο}%
+  \renewcommand{\bibname}{Βιβλιογραφία}%
+  \renewcommand{\appendixname}{Παράρτημα}%
+}
 
 % Page layout (matches NTUA template)
 \usepackage[
@@ -87,7 +111,6 @@
     citecolor=blue,
     urlcolor=blue,
     bookmarksdepth=3,
-    pdfencoding=auto
 ]{hyperref}
 \usepackage{bookmark}
 

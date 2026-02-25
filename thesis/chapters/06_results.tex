@@ -3,17 +3,6 @@
 \chapter{Results}
 \label{ch:results}
 
-\section{Overview}
-
-This chapter presents the classification results across all experimental conditions. Results are organized by:
-
-\begin{enumerate}
-    \item \textbf{Condition-level summaries} (2$\times$2 factorial)
-    \item \textbf{Model comparisons} within each condition
-    \item \textbf{Feature ablation analysis} (baseline vs extended)
-    \item \textbf{Class weighting analysis}
-\end{enumerate}
-
 \section{Summary of Best Results}
 
 \subsection{Dataset A (MDVR-KCL) --- Best Performance}
@@ -32,15 +21,9 @@ Accuracy & $82.2\% \pm 16.6\%$ & Random Forest & ReadText & Extended / Unweighte
 \label{tab:best-results}
 \end{table}
 
-\subsection{Key Finding}
-
-\begin{quote}
-\textbf{Extended features (78) consistently improved performance} compared to baseline features (47). The highest ROC-AUC of \textbf{0.857} was achieved using the Extended feature set on the Spontaneous Dialogue task.
-\end{quote}
-
 \subsection{Dataset B (Benchmark Comparison)}
 
-\textbf{Performance Summary:} Dataset B achieved substantially higher metrics across all classifiers, as shown in Table~\ref{tab:datasetb-results}. These results should be interpreted cautiously given the unknown subject overlap across samples ($n=752$ recordings, subject IDs unavailable).
+\textbf{Performance Summary:} Dataset B achieved substantially higher metrics across all classifiers, as shown in Table~\ref{tab:datasetb-results}. Results should be interpreted cautiously due to unknown subject overlap (Section~\ref{cav:dataset-b-leakage}).
 
 \begin{table}[H]
 \centering
@@ -115,13 +98,6 @@ XGBoost & $0.723 \pm 0.197$ & $0.668 \pm 0.121$ & $0.470 \pm 0.323$ \\
 \label{tab:c1-spontaneous}
 \end{table}
 
-\subsection{Observations}
-
-\begin{itemize}
-    \item \textbf{Task Difference:} Spontaneous Dialogue yields significantly better separation than ReadText for Random Forest (0.828 vs 0.590) with baseline features.
-    \item \textbf{Model Stability:} Logistic Regression is relatively stable across tasks (0.717--0.760).
-    \item \textbf{Variance:} High standard deviations ($\pm$0.15--0.30) reflect the small sample size ($n < 40$).
-\end{itemize}
 
 \section{Condition 2: Extended Features + Unweighted}
 
@@ -179,13 +155,6 @@ XGBoost & $0.687 \pm 0.146$ & $0.693 \pm 0.123$ & $0.553 \pm 0.176$ \\
     \label{fig:imp-spontaneous-rf}
 \end{figure}
 
-\subsection{Observations}
-
-\begin{itemize}
-    \item \textbf{Extended Features Impact:} Massive improvement for ReadText task. Random Forest improved from 0.590 to 0.822 (+23pp), SVM from 0.614 to 0.834 (+22pp), Gradient Boosting from 0.500 to 0.724 (+22pp), and XGBoost from 0.628 to 0.794 (+17pp).
-    \item \textbf{Spontaneous Stability:} Spontaneous Dialogue performance improved slightly (0.828 $\rightarrow$ 0.857) but was already high.
-    \item \textbf{SVM Anomaly:} SVM performs excellently on ReadText (0.834) but poorly on Spontaneous Dialogue (0.460), suggesting task-specific feature distribution effects.
-\end{itemize}
 
 \section{Feature Ablation Analysis}
 
@@ -227,18 +196,6 @@ XGBoost & 0.723 & 0.687 & $-0.036$ \\
 \label{tab:ablation-spontaneous}
 \end{table}
 
-\textbf{Key Finding:} Feature extension was critical for the ReadText task, rescuing performance from near-chance levels (0.59) to competitive levels (0.82).
-
-\subsection{Analysis}
-
-The dramatic improvement for tree-based and kernel-based models on ReadText (+17--23pp) suggests that:
-\begin{enumerate}
-    \item Extended spectral features (MFCC delta-delta, spectral shape descriptors) capture task-specific patterns absent in baseline features.
-    \item Logistic Regression's slight degradation ($-1.9$pp) may reflect overfitting to the additional 31 dimensions given the small sample size.
-    \item XGBoost shows a more modest gain (+16.6pp) compared to Random Forest (+23.2pp) and SVM (+22.0pp), suggesting boosting benefits less from the additional dimensions at this sample size.
-    \item Spontaneous Dialogue was already well-represented by baseline features, showing diminishing returns from feature expansion.
-\end{enumerate}
-
 \section{Class Weighting Analysis}
 
 Class weighting (\texttt{class\_weight='balanced'}) was evaluated to address Dataset A's mild class imbalance (HC:PD $\approx$ 1.3:1). Results showed minimal improvement and occasional degradation.
@@ -264,13 +221,7 @@ XGBoost & \multicolumn{3}{c}{\textit{N/A (no native class\_weight)}} \\
 
 \subsection{Extended Features --- All Tasks}
 
-\textbf{Observation:} Class weighting provided negligible benefit when using extended features. The best-performing models (RF on Extended/Unweighted) achieved:
-\begin{itemize}
-    \item ReadText: $0.822 \pm 0.166$ (unweighted) vs $0.805 \pm 0.182$ (weighted) $\rightarrow$ $-1.7$pp
-    \item Spontaneous: $0.857 \pm 0.171$ (unweighted) vs $0.823 \pm 0.209$ (weighted) $\rightarrow$ $-3.4$pp
-\end{itemize}
-
-\textbf{Interpretation:} The mild imbalance ratio (1.3:1) did not require reweighting. Extended features and subject-grouped cross-validation provided sufficient robustness.
+With extended features, class weighting provided negligible or negative benefit: RF ReadText dropped $-1.7$pp ($0.822 \rightarrow 0.805$) and Spontaneous dropped $-3.4$pp ($0.857 \rightarrow 0.823$), confirming that the mild 1.3:1 imbalance did not require correction.
 
 \section{Precision-Recall Tradeoffs}
 
@@ -293,16 +244,6 @@ Spontaneous & $0.683 \pm 0.410$ & $0.600 \pm 0.435$ & $0.605 \pm 0.387$ \\
 \end{table}
 
 \textbf{Analysis:} ReadText achieved high precision (0.88) at the cost of recall (0.70), suggesting the model is conservative in predicting PD. This profile may be preferable for screening applications where false positives carry higher cost.
-
-\subsection{SVM (RBF Kernel)}
-
-SVM demonstrated high recall across both tasks:
-\begin{itemize}
-    \item ReadText: Recall $0.567 \pm 0.365$, Precision $0.733 \pm 0.435$
-    \item Spontaneous: Recall $0.400 \pm 0.279$, Precision $0.533 \pm 0.361$
-\end{itemize}
-
-The high variance reflects SVM's sensitivity to small sample cross-validation partitions.
 
 \section{Confusion Matrix Analysis}
 
@@ -339,33 +280,7 @@ Random Forest demonstrates improved PD detection on Spontaneous Dialogue compare
     \label{fig:confusion-datasetb}
 \end{figure}
 
-All five classifiers achieve markedly better separation on Dataset B, confirming the positive effect of sample size on model stability. Random Forest, the best-performing classifier on this dataset (ROC-AUC $0.940 \pm 0.013$), exhibits very few false negatives relative to true positives. These results should be interpreted cautiously given the unknown subject overlap across training and test folds.
+All five classifiers achieve markedly better separation on Dataset B, confirming the positive effect of sample size on model stability. Random Forest, the best-performing classifier on this dataset (ROC-AUC $0.940 \pm 0.013$), exhibits very few false negatives relative to true positives. These results should be interpreted cautiously due to unknown subject overlap (Section~\ref{cav:dataset-b-leakage}).
 
-\section{Summary of Findings}
 
-\begin{table}[H]
-\centering
-\begin{tabular}{@{}lcp{6cm}@{}}
-\toprule
-\textbf{Hypothesis} & \textbf{Result} & \textbf{Evidence} \\
-\midrule
-H1: Extended features improve ROC-AUC & \checkmark & +23pp on ReadText (RF) \\
-H2: Spontaneous Dialogue yields better detection & \checkmark & 0.857 (Spon) vs 0.822 (Read) max \\
-H3: Dataset B values are inflated & \checkmark & 0.940 (B) vs 0.857 (A) \\
-H4: RF outperforms LR and SVM & \checkmark & Consistent winner across tasks \\
-H5: Class weighting improves performance & $\times$ & Marginal or negative impact \\
-\bottomrule
-\end{tabular}
-\caption{Summary of hypothesis testing}
-\label{tab:hypothesis-summary}
-\end{table}
 
-\subsection{Key Takeaways}
-
-\begin{enumerate}
-    \item \textbf{Feature Engineering Matters:} Extended features rescued ReadText performance from near-chance to clinically relevant levels.
-    \item \textbf{Task-Dependent Performance:} Spontaneous speech provided better separation than structured read-aloud tasks.
-    \item \textbf{Sample Size Dominates:} Dataset B's 20$\times$ larger sample size (752 vs 37) yielded dramatically lower variance and higher metrics.
-    \item \textbf{Precision-Recall Tradeoffs:} ReadText models favored precision; clinical deployment must consider cost asymmetry of false positives vs false negatives.
-    \item \textbf{Class Weighting Unnecessary:} Mild imbalance (1.3:1) did not benefit from reweighting when using subject-grouped CV and extended features.
-\end{enumerate}

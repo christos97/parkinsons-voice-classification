@@ -21,14 +21,17 @@
 % Title page
 \IfFileExists{frontmatter/titlepage.tex}{\include{frontmatter/titlepage}}{\maketitle}
 
+% Ensure abstract starts on an odd (recto) page
+\cleardoublepage
+
 % Abstract (Greek — required first per NTUA rules)
 \IfFileExists{frontmatter/abstract_gr.tex}{\include{frontmatter/abstract_gr}}{}
 
 % Abstract (English)
 \IfFileExists{frontmatter/abstract.tex}{\include{frontmatter/abstract}}{}
 
-% Acknowledgments
-\IfFileExists{frontmatter/acknowledgments.tex}{\include{frontmatter/acknowledgments}}{}
+% Acknowledgments (omitted)
+% \IfFileExists{frontmatter/acknowledgments.tex}{\include{frontmatter/acknowledgments}}{}
 
 % Table of contents
 \tableofcontents
@@ -37,11 +40,11 @@
 
 % List of figures
 \listoffigures
-\addcontentsline{toc}{chapter}{List of Figures}
+\addcontentsline{toc}{chapter}{Κατάλογος Σχημάτων}
 
 % List of tables
 \listoftables
-\addcontentsline{toc}{chapter}{List of Tables}
+\addcontentsline{toc}{chapter}{Κατάλογος Πινάκων}
 
 %% ----------------------------------------------------------------------------
 %% MAIN MATTER

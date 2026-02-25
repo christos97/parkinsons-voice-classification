@@ -3,12 +3,6 @@
 \chapter{Methodology}
 \label{ch:methodology}
 
-\section{Overview}
-
-This chapter describes the feature extraction pipeline, machine learning models, and evaluation framework used in this thesis. The methodology emphasizes reproducibility and methodological rigor over raw performance optimization. All parameters were fixed a priori and locked in a central configuration file to ensure experimental validity. All parameters were fixed a priori and locked in a central configuration file to ensure experimental validity.
-
-To support qualitative inspection of the end-to-end inference workflow (without contributing to evaluation), a lightweight research demonstration interface was implemented and is described in Appendix~\ref{ch:demo-app}.
-
 \section{Feature Extraction Pipeline}
 
 \subsection{Pipeline Architecture}
@@ -265,48 +259,13 @@ The extended feature set was designed as a \textbf{controlled ablation study} to
 
 \subsection{Feature Extraction Reproducibility}
 
-All feature extraction parameters were defined in a central configuration module and fixed before experimentation:
-
-\begin{itemize}
-    \item Random seed: 42 (for any stochastic components)
-    \item Sample rate: 22,050 Hz
-    \item $F_0$ range: 75--500 Hz
-    \item MFCC parameters: 13 coefficients, 2048 FFT size, 512 hop length, 128 mel bands
-\end{itemize}
-
-Feature extraction was performed once per dataset and feature configuration, with results saved to CSV files for all downstream experiments.
+All parameters (random seed 42; 22\,050\,Hz sample rate; $F_0$ range 75--500\,Hz; 13 MFCCs with 2048-point FFT, 512-sample hop, 128 mel bands) were fixed in a central configuration module before experimentation, with results saved to CSV for all downstream experiments.
 
 \section{Machine Learning Models}
 
-\subsection{Model Selection Rationale}
-
-Five classical ML models were selected to provide diverse inductive biases while maintaining interpretability:
-
-\begin{itemize}
-    \item \textbf{Logistic Regression (LR):} Linear model with inherent interpretability via coefficient weights. Tests whether classes are linearly separable in feature space.
-    \item \textbf{Support Vector Machine with RBF kernel (SVM):} Nonlinear kernel-based model capable of learning complex decision boundaries. Tests whether nonlinear transformations improve separation.
-    \item \textbf{Random Forest (RF):} Ensemble of decision trees with built-in feature importance. Tests whether hierarchical feature interactions are informative.
-    \item \textbf{Gradient Boosting (GB):} Sequential ensemble that iteratively corrects prediction errors via gradient descent in function space. Tests whether adaptive boosting of weak learners improves discrimination.
-    \item \textbf{XGBoost (XGB):} Regularised gradient boosting framework with L1/L2 penalties and efficient tree construction~\cite{chen2016xgboost}. Tests whether explicit regularisation provides additional robustness on small datasets.
-\end{itemize}
-
-These models were chosen for:
-\begin{itemize}
-    \item \textbf{Interpretability} --- Critical for clinical applications where decisions must be explainable
-    \item \textbf{Robustness} --- Well-understood behavior on small datasets (n < 100)
-    \item \textbf{Diversity} --- Represent linear, kernel-based, bagging, and boosting approaches
-\end{itemize}
-
-Deep learning models (CNNs, RNNs) were explicitly excluded due to:
-\begin{itemize}
-    \item Insufficient training data (risk of severe overfitting)
-    \item Lack of interpretability
-    \item Computational requirements disproportionate to dataset size
-\end{itemize}
-
 \subsection{Model Specifications}
 
-All hyperparameters were fixed a priori without dataset-specific tuning:
+Five classical ML models were selected for diverse inductive biases: Logistic Regression (linear baseline with L2 regularisation), SVM with RBF kernel (nonlinear kernel method), Random Forest (ensemble averaging with built-in feature importance), Gradient Boosting~\cite{friedman2001greedy} (sequential residual correction), and XGBoost~\cite{chen2016xgboost} (regularised boosting). All hyperparameters were fixed \emph{a priori} without dataset-specific tuning:
 
 \begin{table}[H]
 \centering
@@ -428,22 +387,14 @@ pipeline = Pipeline([
 
 This ensures feature scaling is applied consistently and prevents data leakage.
 
-\subsection{Feature Standardization}
+\subsection{Feature Standardisation}
 
-All features are standardized to zero mean and unit variance:
-
-\begin{equation}
-z_{ij} = \frac{x_{ij} - \mu_j}{\sigma_j}
-\label{eq:standardization}
-\end{equation}
-
-where $\mu_j$ and $\sigma_j$ are computed from the training fold only. This prevents information leakage from test data.
-
-\textbf{Critical:} The scaler is fitted on training data and then applied to test data within each cross-validation fold. This ensures the test set remains completely unseen during standardization.
+Features are standardised to zero mean and unit variance (\texttt{StandardScaler}) fitted exclusively on the training fold within each CV split, preventing information leakage from the test data.
 
 \section{Evaluation Framework}
 
 \subsection{Cross-Validation Strategy}
+\label{sec:cv-rationale}
 
 In this thesis, \textbf{$K$-fold cross-validation serves as the primary validation strategy}: the model is trained on $K-1$ folds and evaluated on the remaining fold, which contains only samples that the model has never seen during training or feature standardisation~\citep{bishop2006pattern}. This procedure is repeated $K=5$ times, producing five independent estimates of generalisation performance. A separate held-out test set was not used because, with only $n=37$ subjects (Dataset A), reserving even 20\% for testing would yield approximately seven test subjects per fold under subject-level splitting~--- too few for stable metric computation. Cross-validation maximises data utility while still guaranteeing that each evaluation uses strictly unseen data.
 
@@ -482,6 +433,7 @@ This simulates realistic deployment where the model encounters entirely new spea
 For Dataset B (PD Speech Features), subject IDs are unavailable. Standard stratified 5-fold cross-validation was used with the caveat that results may be optimistic if the same subjects appear across samples.
 
 \subsection{Evaluation Metrics}
+\label{sec:eval-metrics}
 
 Five standard classification metrics were computed for each fold:
 
@@ -509,69 +461,5 @@ ROC-AUC & $\int_0^1 \text{TPR}(t) \, d\text{FPR}(t)$ & Threshold-independent dis
     \item Clinically interpretable (probability that a random PD patient scores higher than a random HC)
 \end{itemize}
 
-\subsection{Statistical Reporting}
 
-All metrics are reported as mean $\pm$ standard deviation across the 5 folds:
 
-\begin{equation}
-\text{Metric} = \mu \pm \sigma = \frac{1}{K}\sum_{k=1}^{K} m_k \pm \sqrt{\frac{1}{K-1}\sum_{k=1}^{K}(m_k - \mu)^2}
-\label{eq:metric-reporting}
-\end{equation}
-
-where $K=5$ folds and $m_k$ is the metric value for fold $k$. This provides insight into model stability and fold-to-fold variability.
-
-\section{Experimental Conditions}
-
-\subsection{\texorpdfstring{2$\times$2$\times$5 Factorial Design}{2x2x5 Factorial Design}}
-
-The complete experimental design is a factorial combination of:
-
-\begin{itemize}
-    \item \textbf{Feature Set:} Baseline (47) vs Extended (78)
-    \item \textbf{Class Weighting:} Unweighted vs Balanced
-    \item \textbf{Model:} Logistic Regression vs SVM vs Random Forest vs Gradient Boosting vs XGBoost
-\end{itemize}
-
-This yields 20 conditions per dataset/task combination:
-
-\begin{table}[H]
-\centering
-\begin{tabular}{@{}lcc@{}}
-\toprule
- & \textbf{Baseline (47)} & \textbf{Extended (78)} \\
-\midrule
-\textbf{Unweighted} & 5 models & 5 models \\
-\textbf{Weighted} & 5 models & 5 models \\
-\bottomrule
-\end{tabular}
-\caption{2$\times$2$\times$5 factorial design: 20 conditions total}
-\label{tab:factorial-design}
-\end{table}
-
-For Dataset A (MDVR-KCL), experiments were conducted separately for each speech task (ReadText and SpontaneousDialogue), yielding $20 \times 2 = 40$ experimental conditions. Dataset B (PD Speech Features) yielded 20 conditions.
-
-\subsection{Reproducibility}
-
-All experimental conditions use fixed random seeds:
-
-\begin{itemize}
-    \item Cross-validation splits: \texttt{random\_state=42}
-    \item Random Forest, Gradient Boosting, XGBoost: \texttt{random\_state=42}
-    \item Feature extraction: Deterministic (no randomness)
-\end{itemize}
-
-This ensures bit-exact reproducibility across multiple runs on the same hardware and software versions.
-
-\section{Summary}
-
-This methodology chapter established:
-
-\begin{enumerate}
-    \item A standardized feature extraction pipeline producing 47 (baseline) or 78 (extended) features from raw audio
-    \item Five classical ML models with fixed hyperparameters
-    \item Subject-aware cross-validation for Dataset A to prevent data leakage
-    \item A comprehensive evaluation framework using 5 metrics
-    \item A factorial experimental design enabling controlled comparisons
-\end{enumerate}
-
-The next chapter describes the specific experimental procedures applied to each dataset and speech task condition.
