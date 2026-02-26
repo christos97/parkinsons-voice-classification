@@ -1,14 +1,14 @@
 % Appendix A: Feature Importance Tables
 
-\chapter{Feature Importance Tables}
+\chapter{Πίνακες Σημαντικότητας Χαρακτηριστικών}
 \label{app:feature-importance}
 
-\section{Overview}
+\section{Επισκόπηση}
 
-This appendix presents the top-20 most important features for each experimental condition, as determined by model-native importance measures:
+Το παρόν παράρτημα παρουσιάζει τα 20 σημαντικότερα χαρακτηριστικά για κάθε πειραματική συνθήκη, όπως προκύπτουν από τις εγγενείς μετρικές σημαντικότητας των μοντέλων:
 
 \begin{itemize}
-    \item \textbf{Logistic Regression:} Absolute coefficient values
+    \item \textbf{Logistic Regression:} Απόλυτες τιμές coefficients
     \item \textbf{Random Forest:} Gini importance (mean decrease in impurity)
 \end{itemize}
 
@@ -34,7 +34,7 @@ This appendix presents the top-20 most important features for each experimental 
 10 & mfcc\_6\_mean & 0.030 & 0.024 \\
 \bottomrule
 \end{tabular}
-\caption{Random Forest feature importance --- ReadText (top 10)}
+\caption{Σημαντικότητα χαρακτηριστικών του Random Forest --- ReadText (top 10)}
 \label{tab:rf-readtext-importance}
 \end{table}
 
@@ -58,14 +58,14 @@ This appendix presents the top-20 most important features for each experimental 
 10 & mfcc\_11\_mean & 0.388 & 0.192 \\
 \bottomrule
 \end{tabular}
-\caption{Logistic Regression feature importance --- ReadText (top 10)}
+\caption{Σημαντικότητα χαρακτηριστικών του Logistic Regression --- ReadText (top 10)}
 \label{tab:lr-readtext-importance}
 \end{table}
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.8\textwidth]{figures/fig_imp_readtext_lr.png}
-    \caption{Logistic Regression coefficient magnitudes (ReadText)}
+    \caption{Μέγεθος συντελεστών του Logistic Regression (ReadText)}
     \label{fig:imp-readtext-lr}
 \end{figure}
 
@@ -89,14 +89,14 @@ This appendix presents the top-20 most important features for each experimental 
 10 & delta\_mfcc\_2\_mean & 0.041 & 0.083 \\
 \bottomrule
 \end{tabular}
-\caption{Gradient Boosting feature importance --- ReadText (top 10)}
+\caption{Σημαντικότητα χαρακτηριστικών του Gradient Boosting --- ReadText (top 10)}
 \label{tab:gb-readtext-importance}
 \end{table}
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.8\textwidth]{fig_imp_readtext_gb.png}
-    \caption{Gradient Boosting feature importances (ReadText). F0 max dominates strongly ($0.229 \pm 0.179$), consistent with pitch dysregulation in PD.}
+    \caption{Σημαντικότητα χαρακτηριστικών του Gradient Boosting (ReadText). Το F0 max εμφανίζει ισχυρή κυριαρχία ($0.229 \pm 0.179$), σε συμφωνία με διαταραχές στη ρύθμιση του pitch στην PD.}
     \label{fig:imp-readtext-gb}
 \end{figure}
 
@@ -120,14 +120,14 @@ This appendix presents the top-20 most important features for each experimental 
 10 & mfcc\_11\_mean & 0.031 & 0.040 \\
 \bottomrule
 \end{tabular}
-\caption{XGBoost feature importance --- ReadText (top 10)}
+\caption{Σημαντικότητα χαρακτηριστικών του XGBoost --- ReadText (top 10)}
 \label{tab:xgb-readtext-importance}
 \end{table}
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.8\textwidth]{fig_imp_readtext_xgb.png}
-    \caption{XGBoost feature importances (ReadText). Importance is more distributed than Gradient Boosting, with F0 and intensity features sharing dominance.}
+    \caption{Σημαντικότητα χαρακτηριστικών του XGBoost (ReadText). Η σημαντικότητα είναι πιο κατανεμημένη σε σχέση με το Gradient Boosting, με τα χαρακτηριστικά F0 και έντασης να μοιράζονται την κυριαρχία.}
     \label{fig:imp-readtext-xgb}
 \end{figure}
 
@@ -153,7 +153,7 @@ This appendix presents the top-20 most important features for each experimental 
 10 & f0\_mean & 0.031 & 0.013 \\
 \bottomrule
 \end{tabular}
-\caption{Random Forest feature importance --- SpontaneousDialogue (top 10)}
+\caption{Σημαντικότητα χαρακτηριστικών του Random Forest --- SpontaneousDialogue (top 10)}
 \label{tab:rf-spontaneous-importance}
 \end{table}
 
@@ -177,14 +177,14 @@ This appendix presents the top-20 most important features for each experimental 
 10 & delta\_mfcc\_1\_mean & 0.352 & 0.123 \\
 \bottomrule
 \end{tabular}
-\caption{Logistic Regression feature importance --- SpontaneousDialogue (top 10)}
+\caption{Σημαντικότητα χαρακτηριστικών του Logistic Regression --- SpontaneousDialogue (top 10)}
 \label{tab:lr-spontaneous-importance}
 \end{table}
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.8\textwidth]{figures/fig_imp_spontaneous_lr.png}
-    \caption{Logistic Regression coefficient magnitudes (Spontaneous Dialogue)}
+    \caption{Μέγεθος συντελεστών του Logistic Regression (Spontaneous Dialogue)}
     \label{fig:imp-spontaneous-lr}
 \end{figure}
 
@@ -208,14 +208,14 @@ This appendix presents the top-20 most important features for each experimental 
 10 & intensity\_max & 0.024 & 0.037 \\
 \bottomrule
 \end{tabular}
-\caption{Gradient Boosting feature importance --- SpontaneousDialogue (top 10)}
+\caption{Σημαντικότητα χαρακτηριστικών του Gradient Boosting --- SpontaneousDialogue (top 10)}
 \label{tab:gb-spontaneous-importance}
 \end{table}
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.8\textwidth]{fig_imp_spontaneous_gb.png}
-    \caption{Gradient Boosting feature importances (Spontaneous Dialogue). MFCC-5 ($0.342 \pm 0.204$) strongly dominates, reflecting spectral tilt changes in spontaneous PD speech.}
+    \caption{Σημαντικότητα χαρακτηριστικών του Gradient Boosting (Spontaneous Dialogue). Το MFCC-5 ($0.342 \pm 0.204$) κυριαρχεί, αντανακλώντας αλλαγές στο spectral tilt στην αυθόρμητη ομιλία PD.}
     \label{fig:imp-spontaneous-gb}
 \end{figure}
 
@@ -239,20 +239,20 @@ This appendix presents the top-20 most important features for each experimental 
 10 & intensity\_max & 0.030 & 0.030 \\
 \bottomrule
 \end{tabular}
-\caption{XGBoost feature importance --- SpontaneousDialogue (top 10)}
+\caption{Σημαντικότητα χαρακτηριστικών του XGBoost --- SpontaneousDialogue (top 10)}
 \label{tab:xgb-spontaneous-importance}
 \end{table}
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.8\textwidth]{fig_imp_spontaneous_xgb.png}
-    \caption{XGBoost feature importances (Spontaneous Dialogue). MFCC-5 and shimmer features dominate, consistent with RF and GB findings for this task.}
+    \caption{Σημαντικότητα χαρακτηριστικών του XGBoost (Spontaneous Dialogue). Τα MFCC-5 και τα shimmer χαρακτηριστικά κυριαρχούν, σε συμφωνία με τα ευρήματα των RF και GB για αυτό το task.}
     \label{fig:imp-spontaneous-xgb}
 \end{figure}
 
 \section{Dataset B --- PD Speech Features}
 
-Dataset B contains 752 pre-extracted features including TQWT (Tunable Q-factor Wavelet Transform) coefficients not present in Dataset A. Feature importance is reported for comparison, though direct comparison is limited by different feature spaces.
+Το Dataset B περιέχει 752 προεξαγμένα χαρακτηριστικά, συμπεριλαμβανομένων συντελεστών TQWT (Tunable Q-factor Wavelet Transform) που δεν υπάρχουν στο Dataset A. Η σημαντικότητα χαρακτηριστικών παρουσιάζεται για σκοπούς σύγκρισης, αν και η άμεση αντιπαραβολή παραμένει περιορισμένη λόγω διαφορετικών feature spaces.
 
 \subsection{Random Forest --- Top 10 Features}
 
@@ -274,11 +274,11 @@ Dataset B contains 752 pre-extracted features including TQWT (Tunable Q-factor W
 10 & tqwt\_energy\_dec\_12 & 0.007 & 0.003 \\
 \bottomrule
 \end{tabular}
-\caption{Random Forest feature importance --- Dataset B (top 10)}
+\caption{Σημαντικότητα χαρακτηριστικών του Random Forest --- Dataset B (top 10)}
 \label{tab:rf-datasetb-importance}
 \end{table}
 
-\textbf{Note:} Importance values are lower than Dataset A due to the larger feature space (752 vs 47 features), distributing importance more broadly.
+\textbf{Σημείωση:} Οι τιμές σημαντικότητας είναι χαμηλότερες από το Dataset A λόγω του μεγαλύτερου feature space (752 έναντι 47 features), που κατανέμει τη σημαντικότητα πιο ευρέως.
 
 \subsection{Logistic Regression --- Top 10 Features}
 
@@ -300,11 +300,11 @@ Dataset B contains 752 pre-extracted features including TQWT (Tunable Q-factor W
 10 & std\_9th\_delta & 0.526 & 0.103 \\
 \bottomrule
 \end{tabular}
-\caption{Logistic Regression feature importance --- Dataset B (top 10)}
+\caption{Σημαντικότητα χαρακτηριστικών του Logistic Regression --- Dataset B (top 10)}
 \label{tab:lr-datasetb-importance}
 \end{table}
 
-\textbf{Observation:} TQWT features dominate Dataset B importance, reflecting the sustained vowel /a/ phonation task where time-frequency decomposition captures subtle vocal tremor patterns.
+\textbf{Παρατήρηση:} Τα χαρακτηριστικά TQWT κυριαρχούν στη σημαντικότητα του Dataset B, αντανακλώντας το task παρατεταμένης φώνησης του /a/, όπου η χρονικο-συχνoτική αποσύνθεση συλλαμβάνει λεπτά πρότυπα φωνητικού τρόμου.
 
 \begin{figure}[H]
     \centering
@@ -319,7 +319,7 @@ Dataset B contains 752 pre-extracted features including TQWT (Tunable Q-factor W
         \caption{Logistic Regression}
         \label{fig:imp-datasetb-lr}
     \end{subfigure}
-    \caption{Feature importance for Dataset B (PD Speech Features) --- Random Forest and Logistic Regression.}
+    \caption{Σημαντικότητα χαρακτηριστικών για το Dataset B (PD Speech Features) --- Random Forest και Logistic Regression.}
     \label{fig:imp-datasetb}
 \end{figure}
 
@@ -343,7 +343,7 @@ Dataset B contains 752 pre-extracted features including TQWT (Tunable Q-factor W
 10 & tqwt\_TKEO\_std\_dec\_11 & 0.020 & 0.021 \\
 \bottomrule
 \end{tabular}
-\caption{Gradient Boosting feature importance --- Dataset B (top 10)}
+\caption{Σημαντικότητα χαρακτηριστικών του Gradient Boosting --- Dataset B (top 10)}
 \label{tab:gb-datasetb-importance}
 \end{table}
 
@@ -367,7 +367,7 @@ Dataset B contains 752 pre-extracted features including TQWT (Tunable Q-factor W
 10 & tqwt\_entropy\_shannon\_dec\_16 & 0.008 & 0.011 \\
 \bottomrule
 \end{tabular}
-\caption{XGBoost feature importance --- Dataset B (top 10)}
+\caption{Σημαντικότητα χαρακτηριστικών του XGBoost --- Dataset B (top 10)}
 \label{tab:xgb-datasetb-importance}
 \end{table}
 
@@ -384,13 +384,13 @@ Dataset B contains 752 pre-extracted features including TQWT (Tunable Q-factor W
         \caption{XGBoost}
         \label{fig:imp-datasetb-xgb}
     \end{subfigure}
-    \caption{Feature importance for Dataset B --- Gradient Boosting and XGBoost. TQWT energy/entropy features from high-frequency bands dominate across both models.}
+    \caption{Σημαντικότητα χαρακτηριστικών για το Dataset B --- Gradient Boosting και XGBoost. Τα χαρακτηριστικά ενέργειας/εντροπίας TQWT από ζώνες υψηλής συχνότητας κυριαρχούν και στα δύο μοντέλα.}
     \label{fig:imp-datasetb-gb-xgb}
 \end{figure}
 
-\section{Cross-Task Feature Stability}
+\section{Σταθερότητα Χαρακτηριστικών μεταξύ Tasks}
 
-Features that appear in top-10 for both tasks (Random Forest) indicate robust discriminative power across different speech contexts:
+Χαρακτηριστικά που εμφανίζονται στο top-10 και για τα δύο tasks (Random Forest) υποδεικνύουν ισχυρή διακριτική ικανότητα σε διαφορετικά speech contexts:
 
 \begin{table}[H]
 \centering
@@ -406,15 +406,15 @@ mfcc\_5\_mean & -- & 1 \\
 f0\_std & -- & 9 \\
 \bottomrule
 \end{tabular}
-\caption{Cross-task feature stability (Random Forest top-10)}
+\caption{Σταθερότητα χαρακτηριστικών μεταξύ tasks (Random Forest top-10)}
 \label{tab:cross-task-features}
 \end{table}
 
-\textbf{Interpretation:} Features consistently important across tasks (delta\_mfcc\_2\_mean, autocorr\_harmonicity, shimmer) likely capture \textbf{task-general} acoustic signatures of PD rather than task-specific artifacts. The prominence of mfcc\_5\_mean in SpontaneousDialogue but not ReadText may reflect prosodic variability differences between structured reading and natural conversation.
+\textbf{Ερμηνεία:} Χαρακτηριστικά που είναι σταθερά σημαντικά και στα δύο tasks (delta\_mfcc\_2\_mean, autocorr\_harmonicity, shimmer) πιθανότατα αποτυπώνουν \textbf{task-general} acoustic signatures της PD και όχι task-specific artifacts. Η έντονη παρουσία του mfcc\_5\_mean στο SpontaneousDialogue αλλά όχι στο ReadText μπορεί να αντανακλά διαφορές στην prosodic variability μεταξύ δομημένης ανάγνωσης και φυσικού διαλόγου.
 
-\section{Feature Category Analysis}
+\section{Ανάλυση Κατηγοριών Χαρακτηριστικών}
 
-Aggregating importance by feature category:
+Συγκεντρωτική παρουσίαση της σημαντικότητας ανά κατηγορία χαρακτηριστικών:
 
 \begin{table}[H]
 \centering
@@ -431,7 +431,7 @@ Harmonicity & 2 & 6.1 & 4.3 \\
 Other & 5 & 6.5 & 3.7 \\
 \bottomrule
 \end{tabular}
-\caption{Aggregated feature importance by category}
+\caption{Συγκεντρωτική σημαντικότητα χαρακτηριστικών ανά κατηγορία}
 \label{tab:category-importance}
 \end{table}
 
@@ -448,6 +448,6 @@ Other & 5 & 6.5 & 3.7 \\
         \caption{Spontaneous}
         \label{fig:imp-spontaneous-cats}
     \end{subfigure}
-    \caption{Feature importance aggregated by broad acoustic categories.}
+    \caption{Σημαντικότητα χαρακτηριστικών συγκεντρωμένη ανά ευρείες ακουστικές κατηγορίες.}
     \label{fig:imp-categories}
 \end{figure}
