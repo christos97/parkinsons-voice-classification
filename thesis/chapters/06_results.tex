@@ -3,284 +3,108 @@
 \chapter{Αποτελέσματα}
 \label{ch:results}
 
-\section{Σύνοψη των καλύτερων αποτελεσμάτων}
-
-\subsection{Σύνολο δεδομένων Α (MDVR-KCL) --- Καλύτερη απόδοση}
+\section{Σύνοψη κύριων αποτελεσμάτων}
 
 \begin{table}[H]
 \centering
-\begin{tabular}{@{}llllp{3.5cm}@{}}
+\begin{tabular}{@{}llll@{}}
 \toprule
-\textbf{Μέτρηση} & \textbf{Τιμή} & \textbf{Μοντέλο} & \textbf{Task} & \textbf{Συνθήκη} \\
+\textbf{Dataset} & \textbf{Καλύτερο ROC-AUC} & \textbf{Μοντέλο/Task} & \textbf{Συνθήκη} \\
 \midrule
-ROC-AUC & $0{,}857 \pm 0{,}171$ & Random Forest & Spontaneous & Εκτεταμένο / Μη σταθμισμένο \\
-Ακρίβεια & $82{,}2\% \pm 16{,}6\%$ & Random Forest & ReadText & Εκτεταμένο / Μη σταθμισμένο \\
+Dataset A & $0{,}857 \pm 0{,}171$ & Random Forest / SpontaneousDialogue & Extended (78), unweighted \\
+Dataset A (ReadText) & $0{,}834 \pm 0{,}153$ & SVM (RBF) / ReadText & Extended (78), unweighted \\
+Dataset B & $0{,}952 \pm 0{,}015$ & XGBoost & Baseline (47), unweighted \\
 \bottomrule
 \end{tabular}
-\caption{Καλύτερη απόδοση στο σύνολο δεδομένων Α}
-\label{tab:best-results}
+\caption{Κύρια αποτελέσματα ανά σύνολο δεδομένων}
+\label{tab:best-results-summary}
 \end{table}
 
-\subsection{Σύνολο δεδομένων Β (Σύγκριση αναφοράς)}
+Το Dataset B παρουσιάζει υψηλότερες τιμές και μικρότερη διακύμανση σε σχέση με το Dataset A. Ωστόσο, η σύγκριση πρέπει να ερμηνεύεται με προσοχή λόγω άγνωστης επικάλυψης υποκειμένων (Ενότητα~\ref{cav:dataset-b-leakage}).
 
-\textbf{Περίληψη απόδοσης:} Το σύνολο δεδομένων Β έδωσε σημαντικά υψηλότερες επιδόσεις σε όλα τα μοντέλα (βλ. Πίνακα~\ref{tab:datasetb-results}). Ωστόσο, τα αποτελέσματα πρέπει να εξεταστούν με προσοχή, καθώς δεν γνωρίζουμε αν τα ίδια άτομα εμφανίζονται τόσο στην εκπαίδευση όσο και στη δοκιμή.
+\section{Επίδραση χαρακτηριστικών και στάθμισης κλάσεων (Dataset A)}
+
+\subsection{Σύγκριση baseline έναντι extended χαρακτηριστικών}
 
 \begin{table}[H]
 \centering
-\begin{tabular}{@{}lcccc@{}}
+\begin{tabular}{@{}lcc@{}}
 \toprule
-\textbf{Μοντέλο} & \textbf{ROC-AUC} & \textbf{Ακρίβεια} & \textbf{F1} & \textbf{Ανάκληση} \\
+\textbf{Μοντέλο} & \textbf{$\Delta$ ROC-AUC ReadText} & \textbf{$\Delta$ ROC-AUC SpontaneousDialogue} \\
 \midrule
-Λογιστική παλινδρόμηση & $0{,}867 \pm 0{,}029$ & $0{,}828 \pm 0{,}008$ & $0{,}885 \pm 0{,}006$ & $0{,}890 \pm 0{,}016$ \\
-SVM (RBF) & $0{,}885 \pm 0{,}025$ & $0{,}851 \pm 0{,}024$ & $0{,}908 \pm 0{,}015$ & $0{,}986 \pm 0{,}019$ \\
-\textbf{Random Forest} & $\mathbf{0{,}940 \pm 0{,}013}$ & $\mathbf{0{,}882 \pm 0{,}019}$ & $\mathbf{0{,}925 \pm 0{,}012}$ & $\mathbf{0{,}980 \pm 0{,}015}$ \\
-Gradient Boosting & $0{,}937 \pm 0{,}019$ & $0{,}884 \pm 0{,}024$ & $0{,}926 \pm 0{,}015$ & $0{,}980 \pm 0{,}013$ \\
-XGBoost & $\mathbf{0{,}952 \pm 0{,}015}$ & $\mathbf{0{,}896 \pm 0{,}017}$ & $\mathbf{0{,}933 \pm 0{,}011}$ & $0{,}980 \pm 0{,}017$ \\
+Λογιστική παλινδρόμηση & $-0{,}019$ & $+0{,}023$ \\
+SVM (RBF) & $+0{,}220$ & $+0{,}053$ \\
+Random Forest & $+0{,}232$ & $+0{,}029$ \\
+Gradient Boosting & $+0{,}224$ & $+0{,}023$ \\
+XGBoost & $+0{,}166$ & $-0{,}036$ \\
 \bottomrule
 \end{tabular}
-\caption{Απόδοση του συνόλου δεδομένων Β χρησιμοποιώντας τη βασική (μη σταθμισμένη) διαμόρφωση. Σημειώστε τη σημαντικά χαμηλότερη διακύμανση σε σύγκριση με το σύνολο δεδομένων Α.}
-\label{tab:datasetb-results}
+\caption{Επίδραση feature extension (78 έναντι 47 χαρακτηριστικών) στο Dataset A}
+\label{tab:ablation-main}
 \end{table}
+
+Το feature extension συνδέεται με ουσιαστική βελτίωση στο ReadText, ενώ στο SpontaneousDialogue η μεταβολή είναι μικρότερη και model-dependent.
+
+\subsection{Σύνοψη επίδρασης class weighting}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{@{}lcc@{}}
+\toprule
+\textbf{Task} & \textbf{$\Delta$ ROC-AUC RF (baseline)} & \textbf{$\Delta$ ROC-AUC RF (extended)} \\
+\midrule
+ReadText & $+0{,}097$ & $-0{,}017$ \\
+SpontaneousDialogue & $-0{,}001$ & $-0{,}034$ \\
+\bottomrule
+\end{tabular}
+\caption{Επίδραση class weighting στο Random Forest (Dataset A)}
+\label{tab:weighting-main}
+\end{table}
+
+Η στάθμιση κλάσεων δεν παρείχε σταθερό όφελος στις παρούσες συνθήκες, ιδιαίτερα όταν χρησιμοποιήθηκαν extended χαρακτηριστικά.
+
+\section{Σταθερότητα και διακύμανση}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{@{}lcc@{}}
+\toprule
+\textbf{Μετρική} & \textbf{Dataset A} & \textbf{Dataset B} \\
+\midrule
+ROC-AUC std & $\pm 0{,}15$--$0{,}30$ & $\pm 0{,}01$--$0{,}03$ \\
+Accuracy std & $\pm 0{,}14$--$0{,}18$ & $\pm 0{,}008$--$0{,}024$ \\
+F1 std & $\pm 0{,}21$--$0{,}39$ & $\pm 0{,}006$--$0{,}015$ \\
+\bottomrule
+\end{tabular}
+\caption{Σύγκριση διακύμανσης μεταξύ Dataset A και Dataset B}
+\label{tab:variance-summary}
+\end{table}
+
+Η υψηλή διακύμανση στο Dataset A είναι συμβατή με το μικρό μέγεθος δείγματος ($n=37/36$) και απαιτεί συντηρητική ερμηνεία των διαφορών μεταξύ μοντέλων.
+
+\section{Οπτική επιβεβαίωση αποτελεσμάτων}
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.8\textwidth]{fig_imp_datasetb_rf.png}
-    \caption{Σημαντικότητα χαρακτηριστικών Random Forest (σύνολο δεδομένων Β). Τα κορυφαία χαρακτηριστικά κυριαρχούνται από προηγμένες μετρήσεις επεξεργασίας σήματος που συχνά δεν είναι διαθέσιμες σε τυπικά κλινικά περιβάλλοντα.}
-    \label{fig:datasetb-rf-main}
+    \includegraphics[width=\textwidth]{fig_roc_readtext.pdf}
+    \caption{ROC curves για ReadText (Dataset A, extended, grouped 5-fold CV).}
+    \label{fig:roc-readtext-main}
 \end{figure}
-
-\textbf{Βασικές διαφορές από το σύνολο δεδομένων Α:}
-\begin{itemize}
-    \item \textbf{Μέγεθος δείγματος:} Το Dataset B έχει πολύ περισσότερα δείγματα ($n=752$) σε σχέση με το Dataset A ($n=37$), κάτι που μειώνει σημαντικά τη διακύμανση των αποτελεσμάτων.
-    \item \textbf{Πιθανή αισιόδοξη εκτίμηση:} Η απόδοση μπορεί να φαίνεται υψηλότερη από την πραγματική, λόγω πιθανής επικάλυψης υποκειμένων.
-    \item \textbf{Διαφορετικά χαρακτηριστικά:} Περιλαμβάνει πιο σύνθετα χαρακτηριστικά που δεν υπάρχουν στο Dataset A.
-\end{itemize}
-
-\section{Συνθήκη 1: Βασικά χαρακτηριστικά + χωρίς στάθμιση}
-
-\textbf{Διαμόρφωση:} 47 χαρακτηριστικά, χωρίς στάθμιση κλάσης
-
-\subsection{Task: ReadText}
-
-\begin{table}[H]
-\centering
-\begin{tabular}{@{}lccc@{}}
-\toprule
-\textbf{Μοντέλο} & \textbf{ROC-AUC} & \textbf{Ακρίβεια} & \textbf{F1} \\
-\midrule
-Λογιστική παλινδρόμηση & $0{,}717 \pm 0{,}139$ & $0{,}621 \pm 0{,}058$ & $0{,}542 \pm 0{,}099$ \\
-SVM (RBF) & $0{,}614 \pm 0{,}312$ & $0{,}621 \pm 0{,}106$ & $0{,}333 \pm 0{,}333$ \\
-Random Forest & $0{,}590 \pm 0{,}302$ & $0{,}629 \pm 0{,}178$ & $0{,}351 \pm 0{,}363$ \\
-Gradient Boosting & $0{,}500 \pm 0{,}159$ & $0{,}464 \pm 0{,}134$ & $0{,}374 \pm 0{,}221$ \\
-XGBoost & $0{,}628 \pm 0{,}203$ & $0{,}518 \pm 0{,}132$ & $0{,}371 \pm 0{,}262$ \\
-\bottomrule
-\end{tabular}
-\caption{Συνθήκη 1 --- Αποτελέσματα ReadText}
-\label{tab:c1-readtext}
-\end{table}
-
-\subsection{Task: Spontaneous dialogue}
-
-\begin{table}[H]
-\centering
-\begin{tabular}{@{}lccc@{}}
-\toprule
-\textbf{Μοντέλο} & \textbf{ROC-AUC} & \textbf{Ακρίβεια} & \textbf{F1} \\
-\midrule
-Λογιστική παλινδρόμηση & $0{,}760 \pm 0{,}214$ & $0{,}639 \pm 0{,}160$ & $0{,}539 \pm 0{,}321$ \\
-SVM (RBF) & $0{,}407 \pm 0{,}309$ & $0{,}636 \pm 0{,}135$ & $0{,}400 \pm 0{,}253$ \\
-\textbf{Random Forest} & $\mathbf{0{,}828 \pm 0{,}148}$ & $\mathbf{0{,}721 \pm 0{,}176}$ & $\mathbf{0{,}567 \pm 0{,}365}$ \\
-Gradient Boosting & $0{,}615 \pm 0{,}078$ & $0{,}664 \pm 0{,}133$ & $0{,}583 \pm 0{,}118$ \\
-XGBoost & $0{,}723 \pm 0{,}197$ & $0{,}668 \pm 0{,}121$ & $0{,}470 \pm 0{,}323$ \\
-\bottomrule
-\end{tabular}
-\caption{Συνθήκη 1 --- Αποτελέσματα Spontaneous dialogue}
-\label{tab:c1-spontaneous}
-\end{table}
-
-
-\section{Συνθήκη 2: Εκτεταμένα χαρακτηριστικά + Χωρίς στάθμιση}
-
-\textbf{Διαμόρφωση:} 78 χαρακτηριστικά, χωρίς στάθμιση κλάσης
-
-\subsection{Task: ReadText}
-
-\begin{table}[H]
-\centering
-\begin{tabular}{@{}lccc@{}}
-\toprule
-\textbf{Μοντέλο} & \textbf{ROC-AUC} & \textbf{Ακρίβεια} & \textbf{F1} \\
-\midrule
-Λογιστική παλινδρόμηση & $0{,}698 \pm 0{,}132$ & $0{,}596 \pm 0{,}079$ & $0{,}475 \pm 0{,}106$ \\
-\textbf{SVM (RBF)} & $\mathbf{0{,}834 \pm 0{,}153}$ & $0{,}786 \pm 0{,}181$ & $0{,}634 \pm 0{,}386$ \\
-\textbf{Random Forest} & $\mathbf{0{,}822 \pm 0{,}166}$ & $0{,}818 \pm 0{,}140$ & $0{,}746 \pm 0{,}207$ \\
-Gradient Boosting & $0{,}724 \pm 0{,}214$ & $0{,}654 \pm 0{,}138$ & $0{,}605 \pm 0{,}184$ \\
-XGBoost & $0{,}794 \pm 0{,}186$ & $0{,}739 \pm 0{,}195$ & $0{,}691 \pm 0{,}252$ \\
-\bottomrule
-\end{tabular}
-\caption{Συνθήκη 2 --- Αποτελέσματα ReadText}
-\label{tab:c2-readtext}
-\end{table}
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.8\textwidth]{fig_imp_readtext_rf.png}
-    \caption{Σημασία χαρακτηριστικών Random Forest για το Task ReadText (εκτεταμένα χαρακτηριστικά). Οι στατιστικές της θεμελιώδους συχνότητας ($F_0$) φαίνονται ιδιαίτερα προγνωστικές.}
-    \label{fig:imp-readtext-rf}
+    \includegraphics[width=\textwidth]{fig_roc_spontaneous.pdf}
+    \caption{ROC curves για SpontaneousDialogue (Dataset A, extended, grouped 5-fold CV).}
+    \label{fig:roc-spontaneous-main}
 \end{figure}
-
-\subsection{Task: Spontaneous dialogue}
-
-\begin{table}[H]
-\centering
-\begin{tabular}{@{}lccc@{}}
-\toprule
-\textbf{Μοντέλο} & \textbf{ROC-AUC} & \textbf{Ακρίβεια} & \textbf{F1} \\
-\midrule
-Λογιστική παλινδρόμηση & $0{,}783 \pm 0{,}139$ & $0{,}671 \pm 0{,}199$ & $0{,}530 \pm 0{,}377$ \\
-SVM (RBF) & $0{,}460 \pm 0{,}294$ & $0{,}636 \pm 0{,}089$ & $0{,}428 \pm 0{,}258$ \\
-\textbf{Random Forest} & $\mathbf{0{,}857 \pm 0{,}171}$ & $0{,}779 \pm 0{,}161$ & $0{,}605 \pm 0{,}387$ \\
-Gradient Boosting & $0{,}638 \pm 0{,}146$ & $0{,}636 \pm 0{,}221$ & $0{,}547 \pm 0{,}222$ \\
-XGBoost & $0{,}687 \pm 0{,}146$ & $0{,}693 \pm 0{,}123$ & $0{,}553 \pm 0{,}176$ \\
-\bottomrule
-\end{tabular}
-\caption{Συνθήκη 2 --- Αποτελέσματα Spontaneous dialogue}
-\label{tab:c2-spontaneous}
-\end{table}
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.8\textwidth]{fig_imp_spontaneous_rf.png}
-    \caption{Σημασία χαρακτηριστικών Random Forest για το Task Spontaneous dialogue (εκτεταμένα χαρακτηριστικά). Τα χαρακτηριστικά MFCC παρουσιάζουν αυξημένη σημασία σε σύγκριση με το ReadText.}
-    \label{fig:imp-spontaneous-rf}
+    \includegraphics[width=\textwidth]{fig_roc_dataset_b.pdf}
+    \caption{ROC curves για Dataset B (stratified 5-fold CV). Τα αποτελέσματα ενδέχεται να είναι αισιόδοξα λόγω άγνωστης επικάλυψης υποκειμένων μεταξύ folds.}
+    \label{fig:roc-datasetb-main}
 \end{figure}
 
+\section{Παραπομπή σε πλήρη αποτελέσματα}
 
-\section{Ανάλυση αφαίρεσης χαρακτηριστικών}
-
-\subsection{Βελτίωση ROC-AUC από την επέκταση χαρακτηριστικών (ReadText)}
-
-\begin{table}[H]
-\centering
-\begin{tabular}{@{}lccc@{}}
-\toprule
-\textbf{Μοντέλο} & \textbf{Βασική γραμμή (47)} & \textbf{Εκτεταμένη (78)} & \textbf{$\Delta$ ROC-AUC} \\
-\midrule
-Λογιστική παλινδρόμηση & $0{,}717$ & $0{,}698$ & $-0{,}019$ \\
-SVM (RBF) & $0{,}614$ & $0{,}834$ & $\mathbf{+0{,}220}$ \\
-Random Forest & $0{,}590$ & $0{,}822$ & $\mathbf{+0{,}232}$ \\
-Gradient Boosting & $0{,}500$ & $0{,}724$ & $\mathbf{+0{,}224}$ \\
-XGBoost & $0{,}628$ & $0{,}794$ & $+0{,}166$ \\
-\bottomrule
-\end{tabular}
-\caption{Αφαίρεση χαρακτηριστικών --- ReadText}
-\label{tab:ablation-readtext}
-\end{table}
-
-\subsection{Βελτίωση ROC-AUC από την επέκταση χαρακτηριστικών (Spontaneous)}
-
-\begin{table}[H]
-\centering
-\begin{tabular}{@{}lccc@{}}
-\toprule
-\textbf{Μοντέλο} & \textbf{Βασική γραμμή (47)} & \textbf{Επέκταση (78)} & \textbf{$\Delta$ ROC-AUC} \\
-\midrule
-Λογιστική παλινδρόμηση & $0{,}760$ & $0{,}783$ & $+0{,}023$ \\
-SVM (RBF) & $0{,}407$ & $0{,}460$ & $+0{,}053$ \\
-Random Forest & $0{,}828$ & $0{,}857$ & $+0{,}029$ \\
-Gradient Boosting & $0{,}615$ & $0{,}638$ & $+0{,}023$ \\
-XGBoost & $0{,}723$ & $0{,}687$ & $-0{,}036$ \\
-\bottomrule
-\end{tabular}
-\caption{Αφαίρεση χαρακτηριστικών --- Spontaneous dialogue}
-\label{tab:ablation-spontaneous}
-\end{table}
-
-\section{Ανάλυση στάθμισης κλάσεων}
-
-Η στάθμιση κλάσης (\texttt{class\_weight='balanced'}) αξιολογήθηκε για την αντιμετώπιση της ήπιας ανισορροπίας κλάσεων του συνόλου δεδομένων Α (HC:PD $\approx$ 1{,}3:1). Τα αποτελέσματα έδειξαν ελάχιστη βελτίωση και περιστασιακή υποβάθμιση.
-
-\subsection{Task ReadText --- Βασικά χαρακτηριστικά}
-
-\begin{table}[H]
-\centering
-\begin{tabular}{@{}lccc@{}}
-\toprule
-\textbf{Μοντέλο} & \textbf{Χωρίς στάθμιση} & \textbf{Με στάθμιση} & \textbf{$\Delta$ ROC-AUC} \\
-\midrule
-Λογιστική παλινδρόμηση & $0{,}717 \pm 0{,}139$ & $0{,}717 \pm 0{,}139$ & $0{,}000$ \\
-Random Forest & $0{,}590 \pm 0{,}302$ & $0{,}687 \pm 0{,}258$ & $\mathbf{+0{,}097}$ \\
-SVM (RBF) & $0{,}614 \pm 0{,}312$ & $0{,}542 \pm 0{,}312$ & $-0{,}072$ \\
-Gradient Boosting & \multicolumn{3}{c}{\textit{N/A (no native class\_weight)}} \\
-XGBoost & \multicolumn{3}{c}{\textit{N/A (no native class\_weight)}} \\
-\bottomrule
-\end{tabular}
-\caption{Επίδραση της στάθμισης κλάσης στο ReadText (βασικά χαρακτηριστικά). Το Random Forest έδειξε μέτρια βελτίωση.}
-\label{tab:weighting-readtext-baseline}
-\end{table}
-
-\subsection{Εκτεταμένα χαρακτηριστικά --- Όλες οι εργασίες}
-
-Με τα εκτεταμένα χαρακτηριστικά, η στάθμιση κλάσης παρείχε αμελητέο ή αρνητικό όφελος: το RF ReadText έπεσε κατά $-1{,}7$pp ($0{,}822 \rightarrow 0{,}805$) και το Spontaneous έπεσε κατά $-3{,}4$pp ($0{,}857 \rightarrow 0{,}823$), επιβεβαιώνοντας ότι η ήπια ανισορροπία 1{,}3:1 δεν απαιτούσε διόρθωση.
-
-\section{Συμβιβασμοί ακρίβειας-ανάκλησης}
-
-Οι ταξινομητές παρουσίασαν διακριτά προφίλ ακρίβειας-ανάκλησης, κρίσιμα για την κατανόηση των σεναρίων κλινικής ανάπτυξης.
-
-\subsection{Random Forest (εκτεταμένα χαρακτηριστικά)}
-
-\begin{table}[H]
-\centering
-\begin{tabular}{@{}lccc@{}}
-\toprule
-\textbf{Task} & \textbf{Precision} & \textbf{Recall} & \textbf{F1 Score} \\
-\midrule
-ReadText & $0{,}883 \pm 0{,}162$ & $0{,}700 \pm 0{,}298$ & $0{,}746 \pm 0{,}207$ \\
-Spontaneous & $0{,}683 \pm 0{,}410$ & $0{,}600 \pm 0{,}435$ & $0{,}605 \pm 0{,}387$ \\
-\bottomrule
-\end{tabular}
-\caption{Προφίλ ακρίβειας-ανάκλησης Random Forest. Η διαμόρφωση ReadText ευνοεί την ακρίβεια (λιγότερα ψευδώς θετικά αποτελέσματα).}
-\label{tab:precision-recall-rf}
-\end{table}
-
-\textbf{Ανάλυση:} Στο ReadText, το μοντέλο πέτυχε υψηλή ακρίβεια ($0{,}88$) αλλά χαμηλότερη ανάκληση ($0{,}70$). Αυτό σημαίνει ότι είναι πιο «συντηρητικό» στις προβλέψεις PD. Ένα τέτοιο προφίλ μπορεί να είναι χρήσιμο σε σενάρια διαλογής, όπου τα ψευδώς θετικά έχουν υψηλό κόστος.
-
-\section{Ανάλυση πίνακα σύγχυσης}
-
-Οι πίνακες σύγχυσης που ακολουθούν συγκεντρώνουν τις προβλέψεις εκτός fold από τη διαμόρφωση του εκτεταμένου συνόλου χαρακτηριστικών (78 χαρακτηριστικά, χωρίς στάθμιση) και στα πέντε folds διασταυρούμενης επικύρωσης. Κάθε πίνακας εμφανίζει τον συνολικό αριθμό των σωστά και λανθασμένα ταξινομημένων υποκειμένων σε όλα τα folds, παρέχοντας μια οπτική συμπλήρωση των συγκεντρωτικών μετρήσεων που αναφέρονται στις προηγούμενες ενότητες. Οι πραγματικές ετικέτες εμφανίζονται στις σειρές, ενώ οι προβλεπόμενες ετικέτες στις στήλες.
-
-\subsection{Σύνολο δεδομένων Α --- ReadText}
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=\textwidth]{fig_confusion_readtext.pdf}
-    \caption{Συγκεντρωτικοί πίνακες σύγχυσης για το Task ReadText (εκτεταμένα χαρακτηριστικά, ομαδοποιημένη 5-Fold CV, $n=37$ υποκείμενα). Κάθε κελί αναφέρει τον συνολικό αριθμό εκτός fold και το ποσοστό του σε όλες τις προβλέψεις. Αυτά τα αποτελέσματα πρέπει να ερμηνευθούν με προσοχή, δεδομένου του μικρού μεγέθους του δείγματος.}
-    \label{fig:confusion-readtext}
-\end{figure}
-
-Και τα πέντε μοντέλα αποδίδουν καλύτερα από το τυχαίο στο ReadText. Το Random Forest και το SVM (RBF) έχουν τα καλύτερα ποσοστά ανίχνευσης PD. Η Λογιστική Παλινδρόμηση είναι πιο συντηρητική: κάνει λιγότερα ψευδώς θετικά, αλλά χάνει περισσότερες περιπτώσεις PD. Το μικρό μέγεθος δείγματος ($n=37$) αυξάνει τη μεταβλητότητα μεταξύ των folds.
-
-\subsection{Σύνολο δεδομένων Α --- Spontaneous dialogue}
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=\textwidth]{fig_confusion_spontaneous.pdf}
-    \caption{Συγκεντρωτικοί πίνακες σύγχυσης για το Task Spontaneous dialogue (εκτεταμένα χαρακτηριστικά, ομαδοποιημένη 5-Fold CV, $n=36$ υποκείμενα). Αυτό το Task απέδωσε το υψηλότερο συνολικό ROC-AUC στη μελέτη ($0{,}857 \pm 0{,}171$, Random Forest).}
-    \label{fig:confusion-spontaneous}
-\end{figure}
-
-Στο Spontaneous dialogue, το Random Forest εμφανίζει καλύτερη ανίχνευση PD σε σχέση με το ReadText. Το SVM παρουσιάζει μεγαλύτερη αστάθεια: σε ορισμένα folds αποδίδει πολύ καλά, ενώ σε άλλα σχεδόν τυχαία. Και εδώ, το μικρό δείγμα ($n=36$) απαιτεί προσεκτική ερμηνεία.
-
-\subsection{Σύνολο δεδομένων Β}
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=\textwidth]{fig_confusion_dataset_b.pdf}
-    \caption{Συγκεντρωτικοί πίνακες σύγχυσης για το σύνολο δεδομένων Β (στρωματοποιημένη 5-Fold CV, $n=756$ εγγραφές). Το σημαντικά μεγαλύτερο μέγεθος του δείγματος αποδίδει καλά διαχωρισμένα μοτίβα σύγχυσης με χαμηλή διακύμανση. Τα αποτελέσματα μπορεί να είναι αισιόδοξα λόγω της άγνωστης επικάλυψης των θεμάτων μεταξύ των πτυχών.}
-    \label{fig:confusion-datasetb}
-\end{figure}
-
-Στο Dataset B όλα τα μοντέλα παρουσιάζουν πολύ καθαρό διαχωρισμό μεταξύ των κλάσεων, κάτι που οφείλεται κυρίως στο μεγάλο μέγεθος δείγματος. Το Random Forest, με ROC-AUC $0{,}940 \pm 0{,}013$, εμφανίζει ελάχιστα ψευδώς αρνητικά. Ωστόσο, τα αποτελέσματα μπορεί να είναι αισιόδοξα λόγω πιθανής επικάλυψης υποκειμένων (Ενότητα~\ref{cav:dataset-b-leakage}).
-
-
-
+Οι αναλυτικοί πίνακες για όλες τις συνθήκες (Condition 1--4, ανά task και ανά μοντέλο) παρατίθενται στο Παράρτημα~\ref{app:detailed-results}. Η πλήρης κατάταξη σημαντικότητας χαρακτηριστικών παρατίθεται στο Παράρτημα~\ref{app:feature-importance}.

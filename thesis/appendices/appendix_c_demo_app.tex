@@ -1,161 +1,100 @@
-% Παράρτημα C: Research Demonstration Application
+% Παράρτημα C: Εφαρμογή Ερευνητικής Επίδειξης
 
-\chapter{Research Demonstration Application}
+\chapter{Εφαρμογή Ερευνητικής Επίδειξης}
 \label{ch:demo-app}
 
-\section{Σκοπός και Εύρος}
+\section{Σκοπός και όρια}
 
-Το παρόν παράρτημα περιγράφει μια web-based research demonstration application που αναπτύχθηκε για να απεικονίσει το end-to-end inference workflow, από το audio upload έως το classification output. Η εφαρμογή σχεδιάστηκε αποκλειστικά για εκπαιδευτικούς και επιδεικτικούς σκοπούς στο πλαίσιο της παρούσας MSc thesis.
+Το παρόν παράρτημα περιγράφει τη διαδικτυακή εφαρμογή επίδειξης που αναπτύχθηκε για την παρουσίαση της ροής \textit{inference} από φωνητικό δείγμα έως πρόβλεψη. Η εφαρμογή έχει αποκλειστικά ερευνητικό και εκπαιδευτικό χαρακτήρα.
 
-\textbf{Κρίσιμο Disclaimer:}
-
+\textbf{Κρίσιμη διευκρίνιση:}
 \begin{itemize}
-    \item Η εφαρμογή αυτή \textbf{δεν προορίζεται για clinical use, medical diagnosis ή patient screening}
-    \item Τα outputs αντιπροσωπεύουν model confidence scores και όχι clinical diagnoses
-    \item Η εφαρμογή \textbf{δεν χρησιμοποιήθηκε για quantitative evaluation} που αναφέρεται στην παρούσα thesis
-    \item Όλα τα evaluation metrics (Chapters 5--6) υπολογίστηκαν μέσω cross-validation σε held-out test folds, ανεξάρτητα από το συγκεκριμένο interface
-    \item Τα αποτελέσματα πρέπει να ερμηνεύονται \textbf{μόνο ως research outputs} και απαιτούν επικύρωση από κατάλληλα καταρτισμένους medical professionals
+    \item Δεν αποτελεί κλινικό εργαλείο και δεν χρησιμοποιείται για διάγνωση.
+    \item Οι πιθανότητες εξόδου είναι δείκτες εμπιστοσύνης του μοντέλου, όχι ιατρική απόφαση.
+    \item Δεν χρησιμοποιήθηκε για τον υπολογισμό των μετρικών των Κεφαλαίων~5--6.
 \end{itemize}
 
-Η εφαρμογή καταδεικνύει τη feasibility ενσωμάτωσης των trained models σε user-facing interface, διατηρώντας σαφή όρια μεταξύ research exploration και clinical deployment.
+\section{Αρχιτεκτονική}
 
-\section{Αρχιτεκτονική Συστήματος}
-
-Η demonstration application ακολουθεί modular architecture με διαχωρισμό ευθυνών μεταξύ web interface, inference orchestration και core machine learning pipeline:
+Η εφαρμογή ακολουθεί απλή αρθρωτή αρχιτεκτονική:
 
 \begin{verbatim}
-+------------------+       +--------------------+       +------------------+
-|   Flask Web      | --->  | Inference Adapter  | --->  | Core ML Pipeline |
-|   Application    |       |                    |       |                  |
-| (upload/display) |       | - Audio normalize  |       | - Feature extract|
-|                  |       | - Feature format   |       | - Model predict  |
-|                  |       | - Display enrich   |       | - Load artifacts |
-+------------------+       +--------------------+       +------------------+
+Flask διεπαφή -> Inference Adapter -> Πυρήνας ML
 \end{verbatim}
 
-\textbf{Βασικά Components:}
-
-\begin{enumerate}
-    \item \textbf{Flask Web Server (\texttt{app.py}):} Διαχειρίζεται HTTP routes, file uploads και template rendering. Κάνει αυστηρά import μόνο το adapter module, εξασφαλίζοντας zero coupling με εσωτερικές λεπτομέρειες υλοποίησης του ML pipeline.
-    
-    \item \textbf{Inference Adapter (\texttt{inference\_adapter.py}):} Παρέχει σταθερό interface που περιβάλλει το core inference API. Εκτελεί audio normalization (any format $\rightarrow$ mono 22,050 Hz WAV), εμπλουτίζει τα prediction outputs με display metadata και εξασφαλίζει ότι το model switching δεν απαιτεί αλλαγές σε Flask code.
-    
-    \item \textbf{Core ML Pipeline:} Επαναχρησιμοποιεί τα ίδια feature extraction και inference modules που χρησιμοποιήθηκαν στα experiments (\texttt{parkinsons\_voice\_classification.inference}), εξασφαλίζοντας consistency μεταξύ evaluation και demonstration.
-    
-    \item \textbf{Audio Processing (\texttt{audio\_utils.py}):} Κανονικοποιεί τα uploaded audio files (WAV, MP3, WebM, Opus, FLAC) σε standardized mono 22,050 Hz PCM-16 WAV format πριν από το feature extraction.
-\end{enumerate}
-
-\textbf{Design Invariants:}
-
 \begin{itemize}
-    \item Το model switching (RandomForest $\leftrightarrow$ Logistic Regression $\leftrightarrow$ SVM) ελέγχεται μόνο μέσω configuration file· δεν απαιτούνται template/route changes
-    \item Η feature set selection (baseline 47 vs.\ extended 78) είναι configuration-driven
-    \item Η task selection (ReadText vs.\ SpontaneousDialogue) φορτώνει το αντίστοιχο trained model artifact
+    \item \textbf{Flask (\texttt{app.py}):} διαχείριση διαδρομών, μεταφόρτωσης/καταγραφής ήχου και προβολής αποτελεσμάτων.
+    \item \textbf{Adapter (\texttt{inference\_adapter.py}):} ενιαίο σημείο ελέγχου για προεπεξεργασία ήχου, κλήση μοντέλου και μορφοποίηση εξόδου.
+    \item \textbf{Πυρήνας μοντέλου:} χρήση των ίδιων modules εξαγωγής χαρακτηριστικών και πρόβλεψης με τα πειράματα.
+    \item \textbf{Κανονικοποίηση ήχου (\texttt{audio\_utils.py}):} μετατροπή κάθε εισόδου σε mono 22{,}050 Hz PCM-16 WAV.
 \end{itemize}
 
-Η αρχιτεκτονική αυτή διασφαλίζει ότι το demonstration παραμένει ευθυγραμμισμένο με το experimental pipeline, παρέχοντας ταυτόχρονα ελεγχόμενο interface για external users.
+\textbf{Αμετάβλητες αρχές:}
+\begin{itemize}
+    \item Αλλαγή μοντέλου/feature set μέσω ρυθμίσεων, χωρίς τροποποίηση των Flask routes.
+    \item Κοινή βάση κώδικα με το πειραματικό pipeline για συνέπεια αποτελεσμάτων.
+\end{itemize}
 
-\section{Ροή Αλληλεπίδρασης Χρήστη}
+\section{Ροή χρήσης}
 
-Η εφαρμογή υποστηρίζει δύο τρόπους εισόδου:
-
-\subsection{Audio Upload Workflow}
+Υποστηρίζονται δύο τρόποι εισόδου: μεταφόρτωση αρχείου και άμεση καταγραφή από μικρόφωνο.
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.85\textwidth]{fig_demo_upload_audio.png}
-    \caption{Upload interface για audio file analysis. Οι χρήστες επιλέγουν recording του ReadText task σε common formats (WAV, MP3, WebM). Το interface εμφανίζει το τρέχον model configuration (RandomForest, baseline features, 37 training samples).}
+    \caption{Διεπαφή μεταφόρτωσης ηχητικού αρχείου.}
     \label{fig:demo-upload}
 \end{figure}
-
-Η Figure~\ref{fig:demo-upload} παρουσιάζει το file upload interface, όπου οι χρήστες μπορούν να επιλέξουν pre-recorded audio files για analysis. Το interface δηλώνει με σαφήνεια τον research-only σκοπό και εμφανίζει το active model configuration.
-
-\subsection{Direct Audio Recording}
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.85\textwidth]{fig_demo_record_audio.png}
-    \caption{In-browser audio recording interface. Οι χρήστες διαβάζουν δυνατά το εμφανιζόμενο ReadText prompt και καταγράφουν απευθείας μέσω του device microphone. Το recorded audio επεξεργάζεται με το ίδιο normalization και feature extraction pipeline που χρησιμοποιείται και για τα uploaded files.}
+    \caption{Διεπαφή άμεσης καταγραφής ήχου μέσω φυλλομετρητή.}
     \label{fig:demo-record}
 \end{figure}
 
-Η Figure~\ref{fig:demo-record} παρουσιάζει τη δυνατότητα in-browser recording, υλοποιημένη με χρήση Web Audio API και JavaScript. Οι χρήστες ακολουθούν το on-screen ReadText prompt ώστε να παραχθεί standardized speech sample. Τα recordings συλλαμβάνονται στο native sample rate του browser και κανονικοποιούνται server-side πριν από το inference.
-
-\subsection{Processing Steps}
-
-Ανεξάρτητα από τον τρόπο εισόδου, εκτελούνται τα ακόλουθα βήματα:
-
+Για κάθε είσοδο εκτελούνται τα ίδια βήματα:
 \begin{enumerate}
-    \item \textbf{Audio normalization:} Μετατροπή σε mono 22,050 Hz PCM-16 WAV
-    \item \textbf{Feature extraction:} Εξαγωγή 47 acoustic features (baseline) ή 78 features (extended) με το ίδιο pipeline των experiments
-    \item \textbf{Model inference:} Φόρτωση trained model artifact (π.χ. \texttt{RandomForest\_ReadText\_baseline.joblib}) και πρόβλεψη class probabilities
-    \item \textbf{Result display:} Παρουσίαση prediction, probabilities, extracted feature values και global feature importance
+    \item Κανονικοποίηση ήχου.
+    \item Εξαγωγή χαρακτηριστικών (47 ή 78).
+    \item Φόρτωση εκπαιδευμένου μοντέλου και πρόβλεψη.
+    \item Προβολή ετικέτας, πιθανοτήτων και μεταδεδομένων ανάλυσης.
 \end{enumerate}
 
-\section{Ερμηνεία Output και Περιορισμοί}
-
-\subsection{Displayed Information}
-
-Η Figure~\ref{fig:demo-result} παρουσιάζει αντιπροσωπευτική οθόνη αποτελεσμάτων μετά την analysis:
+\section{Ερμηνεία αποτελέσματος}
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.95\textwidth]{fig_demo_analysis_result.png}
-    \caption{Παράδειγμα output από το research demonstration interface. Το prediction (``PD'' με 81\% confidence) εμφανίζεται εμφανώς με ρητό disclaimer ότι δεν αποτελεί medical diagnosis. Το interface δείχνει extracted acoustic features, analysis metadata (file name, model, task, feature count) και top global feature importances για interpretability.}
+    \caption{Παράδειγμα οθόνης αποτελέσματος της εφαρμογής επίδειξης.}
     \label{fig:demo-result}
 \end{figure}
 
-Το output περιλαμβάνει:
-
-\begin{enumerate}
-    \item \textbf{Class Prediction:} Binary label (PD ή HC) με την υψηλότερη probability
-    \item \textbf{Class Probabilities:} Model confidence scores για κάθε class (άθροισμα 100\%)
-    \item \textbf{Extracted Features:} Βασικές acoustic μετρήσεις (π.χ., $F_0$, jitter, MFCC coefficients) με τιμές και περιγραφές
-    \item \textbf{Analysis Metadata:} File name, model type, task, feature count
-    \item \textbf{Top Feature Importances:} Global feature rankings από το trained RandomForest model (μέσω Gini importance)
-\end{enumerate}
-
-\subsection{Κρίσιμοι Περιορισμοί (Τι ΔΕΝ Σημαίνει το Output)}
-
-Οι users και evaluators πρέπει να λαμβάνουν υπόψη τους ακόλουθους περιορισμούς:
-
+Η οθόνη αποτελέσματος εμφανίζει:
 \begin{itemize}
-    \item \textbf{Probabilities $\neq$ Diagnosis:} Το 81\% confidence στη Figure~\ref{fig:demo-result} αντανακλά το uncertainty estimate του model με βάση την training data distribution. \textbf{Δεν} υποδεικνύει 81\% πιθανότητα ότι το άτομο έχει Parkinson's Disease.
-    
-    \item \textbf{Training Distribution Dependency:} Τα model outputs είναι έγκυρα μόνο για speech samples παρόμοια με το MDVR-KCL training set (smartphone recordings, ReadText task, χωρίς σοβαρά recording artifacts). Η generalization σε διαφορετικές recording conditions, γλώσσες ή πληθυσμούς είναι άγνωστη.
-    
-    \item \textbf{No Clinical Validation:} Το model εκπαιδεύτηκε σε μικρό dataset ($n=37$ subjects) και δεν έχει υποβληθεί σε clinical validation, regulatory approval ή external cohort testing.
-    
-    \item \textbf{Evaluation Exclusion:} Τα outputs από αυτό το interface \textbf{δεν χρησιμοποιήθηκαν} για τον υπολογισμό των performance metrics που αναφέρονται στο Chapter~6. Όλα τα quantitative results προκύπτουν από grouped cross-validation σε independent test folds.
-    
-    \item \textbf{Feature Importance Caveats:} Τα displayed importances αντανακλούν \textit{global} model behavior (σε όλα τα training samples), όχι \textit{per-sample} contributions. Η υψηλή σημαντικότητα δεν συνεπάγεται ότι το feature ήταν decisive για το συγκεκριμένο uploaded recording.
+    \item δυαδική πρόβλεψη (PD/HC),
+    \item πιθανότητες ανά κλάση,
+    \item βασικά χαρακτηριστικά και μεταδεδομένα,
+    \item συνολική σημαντικότητα χαρακτηριστικών του μοντέλου.
 \end{itemize}
 
-\section{Reproducibility και Συνέπεια}
+\textbf{Περιορισμοί ερμηνείας:}
+\begin{itemize}
+    \item Πιθανότητα μοντέλου δεν ισοδυναμεί με πιθανότητα νόσου.
+    \item Η συμπεριφορά αναφέρεται σε δεδομένα παρόμοια με το training distribution.
+    \item Δεν υπάρχει κλινική επικύρωση ή κανονιστική έγκριση.
+\end{itemize}
 
-Το demonstration interface εξασφαλίζει alignment με το experimental pipeline μέσω των εξής:
+\section{Αναπαραγωγιμότητα και συνέπεια}
 
+Η συνέπεια με τα πειράματα διασφαλίζεται από:
 \begin{enumerate}
-    \item \textbf{Shared Codebase:} Χρησιμοποιεί τα ίδια feature extraction modules (\texttt{features/prosodic.py}, \texttt{features/spectral.py}) με τα CLI-based experiments
-    
-    \item \textbf{Deterministic Inference:} Φορτώνει τα ίδια serialized model artifacts (\texttt{.joblib} files) που παρήχθησαν κατά το training
-    
-    \item \textbf{Configuration-Driven:} Όλες οι παράμετροι (feature set, model choice, task) ελέγχονται μέσω \texttt{config.py}, εξασφαλίζοντας συνέπεια σε CLI και web interfaces
-    
-    \item \textbf{Fixed Random Seeds:} Αν και το inference είναι deterministic (χωρίς stochastic components), τα loaded models εκπαιδεύτηκαν με fixed random seeds (seed = 42) για reproducibility
+    \item κοινά modules εξαγωγής χαρακτηριστικών,
+    \item φόρτωση των ίδιων \texttt{.joblib} artifacts,
+    \item ρυθμίσεις μέσω \texttt{config.py},
+    \item μοντέλα εκπαιδευμένα με σταθερό random seed.
 \end{enumerate}
-
-Ο σχεδιασμός αυτός διασφαλίζει ότι τα demonstration outputs αντανακλούν την πραγματική συμπεριφορά των evaluated models και όχι ξεχωριστή reimplementation.
 
 \section{Σύνοψη}
 
-Η research demonstration application παρέχει μια απτή απεικόνιση του voice-based PD classification pipeline, γεφυρώνοντας το χάσμα μεταξύ algorithmic research και πιθανής real-world interaction. Ωστόσο, πρέπει να ερμηνεύεται αυστηρά εντός του intended scope της:
-
-\begin{itemize}
-    \item \textbf{Educational tool} για thesis defense και research communication
-    \item \textbf{Not a diagnostic system} και ακατάλληλο για clinical decision-making
-    \item \textbf{Validation artifact} που επιβεβαιώνει τη λειτουργικότητα του inference pipeline
-    \item \textbf{Not used for evaluation} --- όλα τα metrics προήλθαν από cross-validation
-\end{itemize}
-
-Μελλοντική εργασία προς clinical deployment θα απαιτούσε: (1) validation σε independent cohorts ($n > 500$), (2) regulatory approval (π.χ., FDA clearance, CE marking), (3) prospective clinical trials, (4) integration με clinical workflows και (5) continuous monitoring για performance drift. Το παρόν demonstration αποτελεί early feasibility prototype και όχι production-ready system.
+Η εφαρμογή λειτουργεί ως εργαλείο παρουσίασης της ερευνητικής ροής και της λειτουργικότητας του \textit{inference} pipeline. Δεν αποτελεί διαγνωστικό σύστημα και δεν πρέπει να χρησιμοποιείται για κλινικές αποφάσεις.
