@@ -7,7 +7,8 @@
 
 \begin{table}[H]
 \centering
-\begin{tabular}{@{}llll@{}}
+\small
+\begin{tabular}{@{}p{2.5cm}p{2.6cm}p{3.2cm}p{3.3cm}@{}}
 \toprule
 \textbf{Dataset} & \textbf{Καλύτερο ROC-AUC} & \textbf{Μοντέλο/Task} & \textbf{Συνθήκη} \\
 \midrule
@@ -21,6 +22,25 @@ Dataset B & $0{,}952 \pm 0{,}015$ & XGBoost & Baseline (47), unweighted \\
 \end{table}
 
 Το Dataset B παρουσιάζει υψηλότερες τιμές και μικρότερη διακύμανση σε σχέση με το Dataset A. Ωστόσο, η σύγκριση πρέπει να ερμηνεύεται με προσοχή λόγω άγνωστης επικάλυψης υποκειμένων (Ενότητα~\ref{cav:dataset-b-leakage}).
+
+\begin{table}[H]
+\centering
+\caption{Random Forest ROC-AUC ανά task και πειραματική συνθήκη (Dataset A, mean $\pm$ std, 5-fold CV).}
+\label{tab:rf-rocauc-main}
+\begin{tabular}{@{}llcc@{}}
+\toprule
+\textbf{Task} & & \textbf{Baseline (47 χαρ.)} & \textbf{Extended (78 χαρ.)} \\
+\midrule
+\multirow{2}{*}{ReadText}
+& Unweighted & $0{,}590 \pm 0{,}302$ & $\mathbf{0{,}822 \pm 0{,}166}$ \\
+& Weighted & $0{,}687 \pm 0{,}258$ & $0{,}805 \pm 0{,}182$ \\
+\midrule
+\multirow{2}{*}{SpontaneousDialogue}
+& Unweighted & $0{,}828 \pm 0{,}148$ & $\mathbf{0{,}857 \pm 0{,}171}$ \\
+& Weighted & $0{,}827 \pm 0{,}133$ & $0{,}823 \pm 0{,}209$ \\
+\bottomrule
+\end{tabular}
+\end{table}
 
 \section{Επίδραση χαρακτηριστικών και στάθμισης κλάσεων (Dataset A)}
 
@@ -82,29 +102,86 @@ F1 std & $\pm 0{,}21$--$0{,}39$ & $\pm 0{,}006$--$0{,}015$ \\
 
 Η υψηλή διακύμανση στο Dataset A είναι συμβατή με το μικρό μέγεθος δείγματος ($n=37/36$) και απαιτεί συντηρητική ερμηνεία των διαφορών μεταξύ μοντέλων.
 
+\section{Συγκριτικός πίνακας Random Forest ανά συνθήκη}
+
+Ο Random Forest επιλέχθηκε ως αντιπροσωπευτικό μοντέλο για τη συνολική σύγκριση, λόγω της σταθερής του συμπεριφοράς σε όλες τις ρυθμίσεις. Ο Πίνακας~\ref{tab:rf-rocauc-main} έχει παρουσιαστεί νωρίτερα για συνοπτική ανάγνωση, ενώ ο Πίνακας~\ref{tab:rf-accuracy-main} παραθέτει την Accuracy σε κάθε συνδυασμό feature set και class weighting. Αναλυτικά αποτελέσματα για όλα τα μοντέλα δίνονται στο Παράρτημα~\ref{app:detailed-results}.
+
+\begin{table}[H]
+\centering
+\caption{Random Forest Accuracy ανά task και πειραματική συνθήκη (Dataset A, mean $\pm$ std, 5-fold CV).}
+\label{tab:rf-accuracy-main}
+\begin{tabular}{@{}llcc@{}}
+\toprule
+\textbf{Task} & & \textbf{Baseline (47 χαρ.)} & \textbf{Extended (78 χαρ.)} \\
+\midrule
+\multirow{2}{*}{ReadText}
+& Unweighted & $62{,}9\% \pm 17{,}8\%$ & $\mathbf{81{,}8\% \pm 14{,}0\%}$ \\
+& Weighted & $65{,}0\% \pm 14{,}8\%$ & $81{,}8\% \pm 14{,}0\%$ \\
+\midrule
+\multirow{2}{*}{SpontaneousDialogue}
+& Unweighted & $72{,}1\% \pm 17{,}6\%$ & $\mathbf{77{,}9\% \pm 16{,}1\%}$ \\
+& Weighted & $69{,}3\% \pm 12{,}3\%$ & $72{,}1\% \pm 20{,}3\%$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Τα δεδομένα υποδηλώνουν ότι το extended feature set παρέχει σταθερά υψηλότερη απόδοση στο ReadText ($+23{,}2$ pp ROC-AUC, unweighted), ενώ στο SpontaneousDialogue η βελτίωση είναι πιο περιορισμένη. Η προσθήκη class weighting δεν οδηγεί σε σταθερό όφελος και εμφανίζει task-εξαρτώμενη συμπεριφορά.
+
 \section{Οπτική επιβεβαίωση αποτελεσμάτων}
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=\textwidth]{fig_roc_readtext.pdf}
-    \caption{ROC curves για ReadText (Dataset A, extended, grouped 5-fold CV).}
-    \label{fig:roc-readtext-main}
+    \begin{subfigure}[t]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{fig_roc_readtext.pdf}
+        \caption{ReadText (Dataset A, extended, grouped 5-fold CV).}
+        \label{fig:roc-readtext-main}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[t]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{fig_roc_spontaneous.pdf}
+        \caption{SpontaneousDialogue (Dataset A, extended, grouped 5-fold CV).}
+        \label{fig:roc-spontaneous-main}
+    \end{subfigure}
+
+    \vspace{0.6em}
+
+    \begin{subfigure}[t]{0.60\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{fig_roc_dataset_b.pdf}
+        \caption{Dataset B (stratified 5-fold CV).}
+        \label{fig:roc-datasetb-main}
+    \end{subfigure}
+    \caption{ROC curves για τα βασικά πειράματα. Για το Dataset B, τα αποτελέσματα ενδέχεται να είναι αισιόδοξα λόγω άγνωστης επικάλυψης υποκειμένων μεταξύ folds.}
+    \label{fig:roc-grid-main}
+\end{figure}
+
+\subsection{Confusion matrices}
+
+Οι confusion matrices παρουσιάζουν τις ταξινομήσεις του καλύτερου μοντέλου ανά dataset, επιτρέποντας την αξιολόγηση των σφαλμάτων τύπου I (false positive) και τύπου II (false negative) ξεχωριστά.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{fig_confusion_readtext.pdf}
+    \caption{Confusion matrix για το ReadText task (Dataset A, Random Forest, extended features, unweighted). HC~=~Healthy Control, PD~=~Parkinson's Disease.}
+    \label{fig:confusion-readtext}
 \end{figure}
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=\textwidth]{fig_roc_spontaneous.pdf}
-    \caption{ROC curves για SpontaneousDialogue (Dataset A, extended, grouped 5-fold CV).}
-    \label{fig:roc-spontaneous-main}
+    \includegraphics[width=0.7\textwidth]{fig_confusion_spontaneous.pdf}
+    \caption{Confusion matrix για το SpontaneousDialogue task (Dataset A, Random Forest, extended features, unweighted).}
+    \label{fig:confusion-spontaneous}
 \end{figure}
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=\textwidth]{fig_roc_dataset_b.pdf}
-    \caption{ROC curves για Dataset B (stratified 5-fold CV). Τα αποτελέσματα ενδέχεται να είναι αισιόδοξα λόγω άγνωστης επικάλυψης υποκειμένων μεταξύ folds.}
-    \label{fig:roc-datasetb-main}
+    \includegraphics[width=0.7\textwidth]{fig_confusion_dataset_b.pdf}
+    \caption{Confusion matrix για το Dataset B (XGBoost, baseline features, unweighted). Σημείωση: λόγω άγνωστης επικάλυψης υποκειμένων μεταξύ folds, τα αποτελέσματα ενδέχεται να είναι αισιόδοξα.}
+    \label{fig:confusion-datasetb}
 \end{figure}
 
 \section{Παραπομπή σε πλήρη αποτελέσματα}
 
-Οι αναλυτικοί πίνακες για όλες τις συνθήκες (Condition 1--4, ανά task και ανά μοντέλο) παρατίθενται στο Παράρτημα~\ref{app:detailed-results}. Η πλήρης κατάταξη σημαντικότητας χαρακτηριστικών παρατίθεται στο Παράρτημα~\ref{app:feature-importance}.
+Οι αναλυτικοί πίνακες για όλες τις πειραματικές συνθήκες (C1--C4, ανά task και μοντέλο) παρατίθενται στο Παράρτημα~\ref{app:detailed-results} και περιλαμβάνουν Accuracy, Precision, Recall, F1 και ROC-AUC για όλα τα μοντέλα. Η πλήρης κατάταξη σημαντικότητας χαρακτηριστικών ανά μοντέλο παρατίθεται στο Παράρτημα~\ref{app:feature-importance}. Οι θερμικοί χάρτες σημαντικότητας χαρακτηριστικών για ReadText και SpontaneousDialogue παρατίθενται συγκριτικά στο Παράρτημα~\ref{app:detailed-results} (Σχήματα~\ref{fig:heatmap-readtext-appendix} και~\ref{fig:heatmap-spontaneous-appendix}) για συνοπτικότερη παρουσίαση στο κύριο κείμενο.

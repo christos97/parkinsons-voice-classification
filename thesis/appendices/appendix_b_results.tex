@@ -1,272 +1,227 @@
 % Παράρτημα B: Αναλυτικοί Πίνακες Αποτελεσμάτων
 
-\chapter{Αναλυτικοί Πίνακες Αποτελεσμάτων}
+\chapter[Παράρτημα: Αναλυτικοί Πίνακες Αποτελεσμάτων]{Αναλυτικοί Πίνακες Αποτελεσμάτων}
 \label{app:detailed-results}
 
 \section{Επισκόπηση}
 
-Το παρόν παράρτημα παρουσιάζει πλήρη αριθμητικά αποτελέσματα για όλες τις πειραματικές συνθήκες, συμπεριλαμβανομένων συνοπτικών στατιστικών και συγκρίσεων μεταξύ συνθηκών.
+Το παρόν παράρτημα συγκεντρώνει τα αναλυτικά αποτελέσματα για όλες τις πειραματικές συνθήκες (C1--C4), για όλα τα μοντέλα και για όλα τα υποχρεωτικά metrics. Η χαρτογράφηση των συνθηκών είναι:
 
-\section{Συνθήκη 1: Baseline Features (47) + Unweighted}
-% Τα αποτελέσματα παράχθηκαν από το experimental pipeline (βλ. Chapter~\ref{ch:experimental-design})
+\begin{itemize}
+    \item C1: baseline χαρακτηριστικά (47), χωρίς στάθμιση κλάσεων
+    \item C2: baseline χαρακτηριστικά (47), με στάθμιση κλάσεων
+    \item C3: extended χαρακτηριστικά (78), χωρίς στάθμιση κλάσεων
+    \item C4: extended χαρακτηριστικά (78), με στάθμιση κλάσεων
+\end{itemize}
 
-\subsection{Dataset A: MDVR-KCL Σύνοψη}
+Τα αποτελέσματα προέρχονται από το experimental pipeline (Κεφάλαιο~\ref{ch:experimental-design}) και αναφέρονται ως mean $\pm$ std.
 
-\begin{table}[H]
-\centering
-\small
-\begin{tabular}{@{}llccccc@{}}
-\toprule
-\textbf{Task} & \textbf{Model} & \textbf{Accuracy} & \textbf{Precision} & \textbf{Recall} & \textbf{F1} & \textbf{ROC-AUC} \\
-\midrule
-\multirow{3}{*}{ReadText} 
-& LR & $0.621 \pm 0.058$ & $0.620 \pm 0.217$ & $0.550 \pm 0.201$ & $0.542 \pm 0.099$ & $0.717 \pm 0.139$ \\
-& SVM & $0.621 \pm 0.106$ & $0.367 \pm 0.342$ & $0.317 \pm 0.335$ & $0.333 \pm 0.333$ & $0.614 \pm 0.312$ \\
-& RF & $0.629 \pm 0.178$ & $0.450 \pm 0.447$ & $0.333 \pm 0.408$ & $0.351 \pm 0.363$ & $0.590 \pm 0.302$ \\
-\midrule
-\multirow{3}{*}{Spontaneous}
-& LR & $0.639 \pm 0.160$ & $0.469 \pm 0.292$ & $0.667 \pm 0.408$ & $0.539 \pm 0.321$ & $0.760 \pm 0.214$ \\
-& SVM & $0.636 \pm 0.135$ & $0.600 \pm 0.435$ & $0.333 \pm 0.236$ & $0.400 \pm 0.253$ & $0.407 \pm 0.309$ \\
-& RF & $0.721 \pm 0.176$ & $0.633 \pm 0.415$ & $0.600 \pm 0.435$ & $0.567 \pm 0.365$ & $\mathbf{0.828 \pm 0.148}$ \\
-\bottomrule
-\end{tabular}
-\caption{Αποτελέσματα Condition 1 ανά task (Dataset A, baseline features, χωρίς weighting)}
-\label{tab:c1-summary}
-\end{table}
+\begingroup
+\setlength{\tabcolsep}{2.5pt}
+\renewcommand{\arraystretch}{0.95}
 
-\subsection{Dataset B: PD Speech Features Σύνοψη}
+\section{Συνθήκη C1: Baseline (47) + Unweighted}
 
 \begin{table}[H]
-\centering
-\small
-\begin{tabular}{@{}lccccc@{}}
-\toprule
-\textbf{Model} & \textbf{Accuracy} & \textbf{Precision} & \textbf{Recall} & \textbf{F1} & \textbf{ROC-AUC} \\
-\midrule
-LogisticRegression & $0.828 \pm 0.008$ & $0.881 \pm 0.010$ & $0.890 \pm 0.016$ & $0.885 \pm 0.006$ & $0.867 \pm 0.029$ \\
-SVM\_RBF & $0.851 \pm 0.024$ & $0.841 \pm 0.015$ & $0.986 \pm 0.019$ & $0.908 \pm 0.015$ & $0.885 \pm 0.025$ \\
-RandomForest & $0.882 \pm 0.019$ & $0.876 \pm 0.012$ & $0.980 \pm 0.015$ & $0.925 \pm 0.012$ & $\mathbf{0.940 \pm 0.013}$ \\
-\bottomrule
-\end{tabular}
-\caption{Αποτελέσματα Condition 1 (Dataset B, baseline features, χωρίς weighting)}
-\label{tab:c1-datasetb}
+    \centering
+    \caption{Dataset A (C1: baseline χαρακτηριστικά + χωρίς στάθμιση κλάσεων).}
+    \label{tab:appendix-c1-dataset-a}
+    \scriptsize
+    \begin{tabular}{@{}llccccc@{}}
+        \toprule
+        Task & Model & Accuracy & Precision & Recall & F1 & ROC-AUC \\
+        \midrule
+        ReadText & LogisticRegression & $0.621 \pm 0.058$ & $0.620 \pm 0.217$ & $0.550 \pm 0.201$ & $0.542 \pm 0.099$ & $0.717 \pm 0.139$ \\
+        ReadText & SVM\_RBF & $0.621 \pm 0.106$ & $0.367 \pm 0.342$ & $0.317 \pm 0.335$ & $0.333 \pm 0.333$ & $0.614 \pm 0.312$ \\
+        ReadText & RandomForest & $0.629 \pm 0.178$ & $0.450 \pm 0.447$ & $0.333 \pm 0.408$ & $0.351 \pm 0.363$ & $0.590 \pm 0.302$ \\
+        ReadText & GradientBoosting & $0.464 \pm 0.134$ & $0.347 \pm 0.206$ & $0.433 \pm 0.279$ & $0.374 \pm 0.221$ & $0.500 \pm 0.159$ \\
+        ReadText & XGBoost & $0.518 \pm 0.132$ & $0.367 \pm 0.247$ & $0.383 \pm 0.286$ & $0.371 \pm 0.262$ & $0.628 \pm 0.203$ \\
+        \midrule
+        SpontaneousDialogue & LogisticRegression & $0.639 \pm 0.160$ & $0.469 \pm 0.292$ & $0.667 \pm 0.408$ & $0.539 \pm 0.321$ & $0.760 \pm 0.214$ \\
+        SpontaneousDialogue & SVM\_RBF & $0.636 \pm 0.135$ & $0.600 \pm 0.435$ & $0.333 \pm 0.236$ & $0.400 \pm 0.253$ & $0.407 \pm 0.309$ \\
+        SpontaneousDialogue & RandomForest & $0.721 \pm 0.176$ & $0.633 \pm 0.415$ & $0.600 \pm 0.435$ & $0.567 \pm 0.365$ & $0.828 \pm 0.148$ \\
+        SpontaneousDialogue & GradientBoosting & $0.664 \pm 0.133$ & $0.733 \pm 0.262$ & $0.600 \pm 0.279$ & $0.583 \pm 0.118$ & $0.615 \pm 0.078$ \\
+        SpontaneousDialogue & XGBoost & $0.668 \pm 0.121$ & $0.520 \pm 0.356$ & $0.467 \pm 0.380$ & $0.470 \pm 0.323$ & $0.723 \pm 0.197$ \\
+        \bottomrule
+    \end{tabular}
 \end{table}
-
-\textbf{Σημείωση:} Το Dataset B εμφανίζει ουσιαστικά υψηλότερη απόδοση και χαμηλότερη διακύμανση από το Dataset A, εύρημα συμβατό με πιθανό optimistic bias λόγω άγνωστης επικάλυψης subjects.
-
-\section{Συνθήκη 2: Extended Features (78) + Unweighted}
-% Τα αποτελέσματα παράχθηκαν από το experimental pipeline (βλ. Chapter~\ref{ch:experimental-design})
-
-\subsection{Dataset A: MDVR-KCL Σύνοψη}
 
 \begin{table}[H]
-\centering
-\small
-\begin{tabular}{@{}llccccc@{}}
-\toprule
-\textbf{Task} & \textbf{Model} & \textbf{Accuracy} & \textbf{Precision} & \textbf{Recall} & \textbf{F1} & \textbf{ROC-AUC} \\
-\midrule
-\multirow{3}{*}{ReadText} 
-& LR & $0.596 \pm 0.079$ & $0.600 \pm 0.253$ & $0.433 \pm 0.149$ & $0.475 \pm 0.106$ & $0.698 \pm 0.132$ \\
-& SVM & $0.786 \pm 0.181$ & $0.733 \pm 0.435$ & $0.567 \pm 0.365$ & $0.634 \pm 0.386$ & $0.834 \pm 0.153$ \\
-& RF & $0.818 \pm 0.140$ & $0.883 \pm 0.162$ & $0.700 \pm 0.298$ & $0.746 \pm 0.207$ & $\mathbf{0.822 \pm 0.166}$ \\
-\midrule
-\multirow{3}{*}{Spontaneous}
-& LR & $0.671 \pm 0.199$ & $0.500 \pm 0.361$ & $0.600 \pm 0.435$ & $0.530 \pm 0.377$ & $0.783 \pm 0.139$ \\
-& SVM & $0.636 \pm 0.089$ & $0.533 \pm 0.361$ & $0.400 \pm 0.279$ & $0.428 \pm 0.258$ & $0.460 \pm 0.294$ \\
-& RF & $0.779 \pm 0.161$ & $0.683 \pm 0.410$ & $0.600 \pm 0.435$ & $0.605 \pm 0.387$ & $\mathbf{0.857 \pm 0.171}$ \\
-\bottomrule
-\end{tabular}
-\caption{Αποτελέσματα Condition 2 ανά task (Dataset A, extended features, χωρίς weighting)}
-\label{tab:c2-summary}
+    \centering
+    \caption{Dataset B (C1: baseline χαρακτηριστικά + χωρίς στάθμιση κλάσεων).}
+    \label{tab:appendix-c1-dataset-b}
+    \scriptsize
+    \begin{tabular}{@{}lccccc@{}}
+        \toprule
+        Model & Accuracy & Precision & Recall & F1 & ROC-AUC \\
+        \midrule
+        LogisticRegression & $0.828 \pm 0.008$ & $0.881 \pm 0.010$ & $0.890 \pm 0.016$ & $0.885 \pm 0.006$ & $0.867 \pm 0.029$ \\
+        SVM\_RBF & $0.851 \pm 0.024$ & $0.841 \pm 0.015$ & $0.986 \pm 0.019$ & $0.908 \pm 0.015$ & $0.885 \pm 0.025$ \\
+        RandomForest & $0.882 \pm 0.019$ & $0.876 \pm 0.012$ & $0.980 \pm 0.015$ & $0.925 \pm 0.012$ & $0.940 \pm 0.013$ \\
+        GradientBoosting & $0.884 \pm 0.024$ & $0.878 \pm 0.020$ & $0.980 \pm 0.013$ & $0.926 \pm 0.015$ & $0.937 \pm 0.019$ \\
+        XGBoost & $0.896 \pm 0.017$ & $0.891 \pm 0.013$ & $0.980 \pm 0.017$ & $0.933 \pm 0.011$ & $0.952 \pm 0.015$ \\
+        \bottomrule
+    \end{tabular}
 \end{table}
 
-\subsection{Βελτίωση έναντι Baseline (Random Forest, Dataset A)}
+\section{Συνθήκη C2: Baseline (47) + Weighted}
 
 \begin{table}[H]
-\centering
-\begin{tabular}{@{}lccc@{}}
-\toprule
-\textbf{Task} & \textbf{$\Delta$ Accuracy} & \textbf{$\Delta$ ROC-AUC} & \textbf{$\Delta$ Variance} \\
-\midrule
-ReadText & +18.9pp & \textbf{+23.2pp} & Reduced (0.302 $\rightarrow$ 0.166) \\
-SpontaneousDialogue & +5.8pp & +2.9pp & Increased (0.148 $\rightarrow$ 0.171) \\
-\bottomrule
-\end{tabular}
-\caption{Βελτίωση Condition 2 έναντι Condition 1 (Random Forest)}
-\label{tab:c2-improvement}
+    \centering
+    \caption{Dataset A (C2: baseline χαρακτηριστικά + με στάθμιση κλάσεων).}
+    \label{tab:appendix-c2-dataset-a}
+    \scriptsize
+    \begin{tabular}{@{}llccccc@{}}
+        \toprule
+        Task & Model & Accuracy & Precision & Recall & F1 & ROC-AUC \\
+        \midrule
+        ReadText & LogisticRegression & $0.596 \pm 0.079$ & $0.600 \pm 0.235$ & $0.550 \pm 0.201$ & $0.528 \pm 0.099$ & $0.717 \pm 0.139$ \\
+        ReadText & SVM\_RBF & $0.704 \pm 0.111$ & $0.617 \pm 0.371$ & $0.500 \pm 0.373$ & $0.519 \pm 0.320$ & $0.542 \pm 0.312$ \\
+        ReadText & RandomForest & $0.650 \pm 0.148$ & $0.550 \pm 0.371$ & $0.400 \pm 0.365$ & $0.431 \pm 0.306$ & $0.687 \pm 0.258$ \\
+        ReadText & GradientBoosting & $0.464 \pm 0.134$ & $0.347 \pm 0.206$ & $0.433 \pm 0.279$ & $0.374 \pm 0.221$ & $0.500 \pm 0.159$ \\
+        ReadText & XGBoost & $0.518 \pm 0.132$ & $0.367 \pm 0.247$ & $0.383 \pm 0.286$ & $0.371 \pm 0.262$ & $0.628 \pm 0.203$ \\
+        \midrule
+        SpontaneousDialogue & LogisticRegression & $0.639 \pm 0.160$ & $0.469 \pm 0.292$ & $0.667 \pm 0.408$ & $0.539 \pm 0.321$ & $0.760 \pm 0.214$ \\
+        SpontaneousDialogue & SVM\_RBF & $0.693 \pm 0.123$ & $0.567 \pm 0.365$ & $0.600 \pm 0.365$ & $0.560 \pm 0.318$ & $0.423 \pm 0.312$ \\
+        SpontaneousDialogue & RandomForest & $0.693 \pm 0.123$ & $0.583 \pm 0.373$ & $0.600 \pm 0.435$ & $0.538 \pm 0.326$ & $0.827 \pm 0.133$ \\
+        SpontaneousDialogue & GradientBoosting & $0.664 \pm 0.133$ & $0.733 \pm 0.262$ & $0.600 \pm 0.279$ & $0.583 \pm 0.118$ & $0.615 \pm 0.078$ \\
+        SpontaneousDialogue & XGBoost & $0.668 \pm 0.121$ & $0.520 \pm 0.356$ & $0.467 \pm 0.380$ & $0.470 \pm 0.323$ & $0.723 \pm 0.197$ \\
+        \bottomrule
+    \end{tabular}
 \end{table}
-
-\textbf{Παρατήρηση:} Το feature extension βελτίωσε αισθητά την απόδοση στο ReadText (+23.2pp ROC-AUC), ενώ στο SpontaneousDialogue παρατηρήθηκαν πιο περιορισμένα gains (+2.9pp). Αυτό υποδηλώνει ότι τα extended features αποτυπώνουν αποτελεσματικότερα τις δυναμικές της δομημένης ομιλίας σε σύγκριση με την αυθόρμητη ομιλία.
-
-\section{Συνθήκη 3: Baseline Features (47) + Weighted}
-% Τα αποτελέσματα παράχθηκαν από το experimental pipeline (βλ. Chapter~\ref{ch:experimental-design})
-
-\subsection{Dataset A: MDVR-KCL Σύνοψη}
 
 \begin{table}[H]
-\centering
-\small
-\begin{tabular}{@{}llccccc@{}}
-\toprule
-\textbf{Task} & \textbf{Model} & \textbf{Accuracy} & \textbf{Precision} & \textbf{Recall} & \textbf{F1} & \textbf{ROC-AUC} \\
-\midrule
-\multirow{3}{*}{ReadText} 
-& LR & $0.596 \pm 0.079$ & $0.600 \pm 0.235$ & $0.550 \pm 0.201$ & $0.528 \pm 0.099$ & $0.717 \pm 0.139$ \\
-& SVM & $0.704 \pm 0.111$ & $0.617 \pm 0.371$ & $0.500 \pm 0.373$ & $0.519 \pm 0.320$ & $0.542 \pm 0.312$ \\
-& RF & $0.650 \pm 0.148$ & $0.550 \pm 0.371$ & $0.400 \pm 0.365$ & $0.431 \pm 0.306$ & $0.687 \pm 0.258$ \\
-\midrule
-\multirow{3}{*}{Spontaneous}
-& LR & $0.639 \pm 0.160$ & $0.469 \pm 0.292$ & $0.667 \pm 0.408$ & $0.539 \pm 0.321$ & $0.760 \pm 0.214$ \\
-& SVM & $0.693 \pm 0.123$ & $0.567 \pm 0.365$ & $0.600 \pm 0.365$ & $0.560 \pm 0.318$ & $0.423 \pm 0.312$ \\
-& RF & $0.693 \pm 0.123$ & $0.583 \pm 0.373$ & $0.600 \pm 0.435$ & $0.538 \pm 0.326$ & $\mathbf{0.827 \pm 0.133}$ \\
-\bottomrule
-\end{tabular}
-\caption{Αποτελέσματα Condition 3 ανά task (Dataset A, baseline features, με weighting)}
-\label{tab:c3-summary}
+    \centering
+    \caption{Dataset B (C2: baseline χαρακτηριστικά + με στάθμιση κλάσεων).}
+    \label{tab:appendix-c2-dataset-b}
+    \scriptsize
+    \begin{tabular}{@{}lccccc@{}}
+        \toprule
+        Model & Accuracy & Precision & Recall & F1 & ROC-AUC \\
+        \midrule
+        LogisticRegression & $0.825 \pm 0.017$ & $0.892 \pm 0.021$ & $0.872 \pm 0.012$ & $0.882 \pm 0.011$ & $0.867 \pm 0.029$ \\
+        SVM\_RBF & $0.847 \pm 0.024$ & $0.887 \pm 0.028$ & $0.911 \pm 0.014$ & $0.899 \pm 0.015$ & $0.900 \pm 0.023$ \\
+        RandomForest & $0.865 \pm 0.017$ & $0.859 \pm 0.012$ & $0.980 \pm 0.012$ & $0.916 \pm 0.010$ & $0.949 \pm 0.012$ \\
+        GradientBoosting & $0.884 \pm 0.024$ & $0.878 \pm 0.020$ & $0.980 \pm 0.013$ & $0.926 \pm 0.015$ & $0.937 \pm 0.019$ \\
+        XGBoost & $0.896 \pm 0.017$ & $0.891 \pm 0.013$ & $0.980 \pm 0.017$ & $0.933 \pm 0.011$ & $0.952 \pm 0.015$ \\
+        \bottomrule
+    \end{tabular}
 \end{table}
 
-\subsection{Επίδραση του Weighting (vs Condition 1, Random Forest)}
+\section{Συνθήκη C3: Extended (78) + Unweighted}
 
 \begin{table}[H]
-\centering
-\begin{tabular}{@{}lccc@{}}
-\toprule
-\textbf{Task} & \textbf{$\Delta$ Accuracy} & \textbf{$\Delta$ ROC-AUC} & \textbf{Effect} \\
-\midrule
-ReadText & +2.1pp & +9.7pp & Improved \\
-SpontaneousDialogue & $-2.8$pp & $-0.1$pp & Negligible \\
-\bottomrule
-\end{tabular}
-\caption{Επίδραση του weighting στο Condition 3 έναντι Condition 1 (RF)}
-\label{tab:c3-weighting}
+    \centering
+    \caption{Dataset A (C3: extended χαρακτηριστικά + χωρίς στάθμιση κλάσεων).}
+    \label{tab:appendix-c3-dataset-a}
+    \scriptsize
+    \begin{tabular}{@{}llccccc@{}}
+        \toprule
+        Task & Model & Accuracy & Precision & Recall & F1 & ROC-AUC \\
+        \midrule
+        ReadText & LogisticRegression & $0.596 \pm 0.079$ & $0.600 \pm 0.253$ & $0.433 \pm 0.149$ & $0.475 \pm 0.106$ & $0.698 \pm 0.132$ \\
+        ReadText & SVM\_RBF & $0.786 \pm 0.181$ & $0.733 \pm 0.435$ & $0.567 \pm 0.365$ & $0.634 \pm 0.386$ & $0.834 \pm 0.153$ \\
+        ReadText & RandomForest & $0.818 \pm 0.140$ & $0.883 \pm 0.162$ & $0.700 \pm 0.298$ & $0.746 \pm 0.207$ & $0.822 \pm 0.166$ \\
+        ReadText & GradientBoosting & $0.654 \pm 0.138$ & $0.620 \pm 0.247$ & $0.633 \pm 0.247$ & $0.605 \pm 0.184$ & $0.724 \pm 0.214$ \\
+        ReadText & XGBoost & $0.739 \pm 0.195$ & $0.720 \pm 0.284$ & $0.700 \pm 0.298$ & $0.691 \pm 0.252$ & $0.794 \pm 0.186$ \\
+        \midrule
+        SpontaneousDialogue & LogisticRegression & $0.671 \pm 0.199$ & $0.500 \pm 0.361$ & $0.600 \pm 0.435$ & $0.530 \pm 0.377$ & $0.783 \pm 0.139$ \\
+        SpontaneousDialogue & SVM\_RBF & $0.636 \pm 0.089$ & $0.533 \pm 0.361$ & $0.400 \pm 0.279$ & $0.428 \pm 0.258$ & $0.460 \pm 0.294$ \\
+        SpontaneousDialogue & RandomForest & $0.779 \pm 0.161$ & $0.683 \pm 0.410$ & $0.600 \pm 0.435$ & $0.605 \pm 0.387$ & $0.857 \pm 0.171$ \\
+        SpontaneousDialogue & GradientBoosting & $0.636 \pm 0.221$ & $0.670 \pm 0.327$ & $0.533 \pm 0.298$ & $0.547 \pm 0.222$ & $0.638 \pm 0.146$ \\
+        SpontaneousDialogue & XGBoost & $0.693 \pm 0.123$ & $0.733 \pm 0.253$ & $0.467 \pm 0.183$ & $0.553 \pm 0.176$ & $0.687 \pm 0.146$ \\
+        \bottomrule
+    \end{tabular}
 \end{table}
-
-\textbf{Παρατήρηση:} Το class weighting βελτίωσε την απόδοση στο ReadText, αλλά είχε αμελητέα επίδραση στο SpontaneousDialogue, γεγονός που υποδηλώνει task-dependent ευαισθησία στον χειρισμό του class imbalance.
-
-\section{Συνθήκη 4: Extended Features (78) + Weighted}
-% Τα αποτελέσματα παράχθηκαν από το experimental pipeline (βλ. Chapter~\ref{ch:experimental-design})
-
-\subsection{Dataset A: MDVR-KCL Σύνοψη}
 
 \begin{table}[H]
-\centering
-\small
-\begin{tabular}{@{}llccccc@{}}
-\toprule
-\textbf{Task} & \textbf{Model} & \textbf{Accuracy} & \textbf{Precision} & \textbf{Recall} & \textbf{F1} & \textbf{ROC-AUC} \\
-\midrule
-\multirow{3}{*}{ReadText} 
-& LR & $0.650 \pm 0.108$ & $0.650 \pm 0.253$ & $0.550 \pm 0.201$ & $0.564 \pm 0.160$ & $0.698 \pm 0.132$ \\
-& SVM & $0.761 \pm 0.214$ & $0.700 \pm 0.447$ & $0.567 \pm 0.365$ & $0.620 \pm 0.390$ & $0.834 \pm 0.153$ \\
-& RF & $0.818 \pm 0.140$ & $0.883 \pm 0.162$ & $0.700 \pm 0.298$ & $0.746 \pm 0.207$ & $0.805 \pm 0.182$ \\
-\midrule
-\multirow{3}{*}{Spontaneous}
-& LR & $0.696 \pm 0.179$ & $0.520 \pm 0.356$ & $0.667 \pm 0.471$ & $0.563 \pm 0.381$ & $0.783 \pm 0.139$ \\
-& SVM & $0.664 \pm 0.167$ & $0.567 \pm 0.365$ & $0.600 \pm 0.365$ & $0.560 \pm 0.318$ & $0.403 \pm 0.347$ \\
-& RF & $0.721 \pm 0.203$ & $0.653 \pm 0.409$ & $0.600 \pm 0.435$ & $0.583 \pm 0.373$ & $\mathbf{0.823 \pm 0.209}$ \\
-\bottomrule
-\end{tabular}
-\caption{Αποτελέσματα Condition 4 ανά task (Dataset A, extended features, με weighting)}
-\label{tab:c4-summary}
+    \centering
+    \caption{Dataset B (C3: extended χαρακτηριστικά + χωρίς στάθμιση κλάσεων).}
+    \label{tab:appendix-c3-dataset-b}
+    \scriptsize
+    \begin{tabular}{@{}lccccc@{}}
+        \toprule
+        Model & Accuracy & Precision & Recall & F1 & ROC-AUC \\
+        \midrule
+        LogisticRegression & $0.828 \pm 0.008$ & $0.881 \pm 0.010$ & $0.890 \pm 0.016$ & $0.885 \pm 0.006$ & $0.867 \pm 0.029$ \\
+        SVM\_RBF & $0.851 \pm 0.024$ & $0.841 \pm 0.015$ & $0.986 \pm 0.019$ & $0.908 \pm 0.015$ & $0.885 \pm 0.025$ \\
+        RandomForest & $0.882 \pm 0.019$ & $0.876 \pm 0.012$ & $0.980 \pm 0.015$ & $0.925 \pm 0.012$ & $0.940 \pm 0.013$ \\
+        GradientBoosting & $0.884 \pm 0.024$ & $0.878 \pm 0.020$ & $0.980 \pm 0.013$ & $0.926 \pm 0.015$ & $0.937 \pm 0.019$ \\
+        XGBoost & $0.896 \pm 0.017$ & $0.891 \pm 0.013$ & $0.980 \pm 0.017$ & $0.933 \pm 0.011$ & $0.952 \pm 0.015$ \\
+        \bottomrule
+    \end{tabular}
 \end{table}
 
-\subsection{Επίδραση του Weighting (vs Condition 2, Random Forest)}
+\section{Συνθήκη C4: Extended (78) + Weighted}
 
 \begin{table}[H]
-\centering
-\begin{tabular}{@{}lccc@{}}
-\toprule
-\textbf{Task} & \textbf{$\Delta$ Accuracy} & \textbf{$\Delta$ ROC-AUC} & \textbf{Effect} \\
-\midrule
-ReadText & 0.0pp & $-1.7$pp & Slight decrease \\
-SpontaneousDialogue & $-5.8$pp & $-3.4$pp & Decreased \\
-\bottomrule
-\end{tabular}
-\caption{Επίδραση του weighting στο Condition 4 έναντι Condition 2 (RF)}
-\label{tab:c4-weighting}
+    \centering
+    \caption{Dataset A (C4: extended χαρακτηριστικά + με στάθμιση κλάσεων).}
+    \label{tab:appendix-c4-dataset-a}
+    \scriptsize
+    \begin{tabular}{@{}llccccc@{}}
+        \toprule
+        Task & Model & Accuracy & Precision & Recall & F1 & ROC-AUC \\
+        \midrule
+        ReadText & LogisticRegression & $0.650 \pm 0.108$ & $0.650 \pm 0.253$ & $0.550 \pm 0.201$ & $0.564 \pm 0.160$ & $0.698 \pm 0.132$ \\
+        ReadText & SVM\_RBF & $0.761 \pm 0.214$ & $0.700 \pm 0.447$ & $0.567 \pm 0.365$ & $0.620 \pm 0.390$ & $0.834 \pm 0.153$ \\
+        ReadText & RandomForest & $0.818 \pm 0.140$ & $0.883 \pm 0.162$ & $0.700 \pm 0.298$ & $0.746 \pm 0.207$ & $0.805 \pm 0.182$ \\
+        ReadText & GradientBoosting & $0.654 \pm 0.138$ & $0.620 \pm 0.247$ & $0.633 \pm 0.247$ & $0.605 \pm 0.184$ & $0.724 \pm 0.214$ \\
+        ReadText & XGBoost & $0.739 \pm 0.195$ & $0.720 \pm 0.284$ & $0.700 \pm 0.298$ & $0.691 \pm 0.252$ & $0.794 \pm 0.186$ \\
+        \midrule
+        SpontaneousDialogue & LogisticRegression & $0.696 \pm 0.179$ & $0.520 \pm 0.356$ & $0.667 \pm 0.471$ & $0.563 \pm 0.381$ & $0.783 \pm 0.139$ \\
+        SpontaneousDialogue & SVM\_RBF & $0.664 \pm 0.167$ & $0.567 \pm 0.365$ & $0.600 \pm 0.365$ & $0.560 \pm 0.318$ & $0.403 \pm 0.347$ \\
+        SpontaneousDialogue & RandomForest & $0.721 \pm 0.203$ & $0.653 \pm 0.409$ & $0.600 \pm 0.435$ & $0.583 \pm 0.373$ & $0.823 \pm 0.209$ \\
+        SpontaneousDialogue & GradientBoosting & $0.636 \pm 0.221$ & $0.670 \pm 0.327$ & $0.533 \pm 0.298$ & $0.547 \pm 0.222$ & $0.638 \pm 0.146$ \\
+        SpontaneousDialogue & XGBoost & $0.693 \pm 0.123$ & $0.733 \pm 0.253$ & $0.467 \pm 0.183$ & $0.553 \pm 0.176$ & $0.687 \pm 0.146$ \\
+        \bottomrule
+    \end{tabular}
 \end{table}
-
-\textbf{Παρατήρηση:} Ο συνδυασμός extended features με class weighting δεν βελτίωσε την απόδοση σε σχέση με τη χρήση extended features μόνο. Αυτό υποδηλώνει ότι feature extension και class weighting αντιμετωπίζουν παρόμοιες πτυχές του classification problem, με diminishing returns όταν εφαρμόζονται από κοινού.
-
-\section{Matrix Σύγκρισης μεταξύ Conditions}
-
-\subsection{Random Forest ROC-AUC ανά Task}
 
 \begin{table}[H]
-\centering
-\begin{tabular}{@{}llcc@{}}
-\toprule
-\textbf{Task} & & \textbf{Baseline (47)} & \textbf{Extended (78)} \\
-\midrule
-\multirow{2}{*}{ReadText}
-& Unweighted & $0.590 \pm 0.302$ & $\mathbf{0.822 \pm 0.166}$ \\
-& Weighted & $0.687 \pm 0.258$ & $0.805 \pm 0.182$ \\
-\midrule
-\multirow{2}{*}{Spontaneous}
-& Unweighted & $0.828 \pm 0.148$ & $\mathbf{0.857 \pm 0.171}$ \\
-& Weighted & $0.827 \pm 0.133$ & $0.823 \pm 0.209$ \\
-\bottomrule
-\end{tabular}
-\caption{Πίνακας σύγκρισης Random Forest ROC-AUC (Dataset A)}
-\label{tab:rf-rocauc-matrix}
+    \centering
+    \caption{Dataset B (C4: extended χαρακτηριστικά + με στάθμιση κλάσεων).}
+    \label{tab:appendix-c4-dataset-b}
+    \scriptsize
+    \begin{tabular}{@{}lccccc@{}}
+        \toprule
+        Model & Accuracy & Precision & Recall & F1 & ROC-AUC \\
+        \midrule
+        LogisticRegression & $0.825 \pm 0.017$ & $0.892 \pm 0.021$ & $0.872 \pm 0.012$ & $0.882 \pm 0.011$ & $0.867 \pm 0.029$ \\
+        SVM\_RBF & $0.847 \pm 0.024$ & $0.887 \pm 0.028$ & $0.911 \pm 0.014$ & $0.899 \pm 0.015$ & $0.900 \pm 0.023$ \\
+        RandomForest & $0.865 \pm 0.017$ & $0.859 \pm 0.012$ & $0.980 \pm 0.012$ & $0.916 \pm 0.010$ & $0.949 \pm 0.012$ \\
+        GradientBoosting & $0.884 \pm 0.024$ & $0.878 \pm 0.020$ & $0.980 \pm 0.013$ & $0.926 \pm 0.015$ & $0.937 \pm 0.019$ \\
+        XGBoost & $0.896 \pm 0.017$ & $0.891 \pm 0.013$ & $0.980 \pm 0.017$ & $0.933 \pm 0.011$ & $0.952 \pm 0.015$ \\
+        \bottomrule
+    \end{tabular}
 \end{table}
 
-\subsection{Random Forest Accuracy ανά Task}
+\endgroup
 
-\begin{table}[H]
-\centering
-\begin{tabular}{@{}llcc@{}}
-\toprule
-\textbf{Task} & & \textbf{Baseline (47)} & \textbf{Extended (78)} \\
-\midrule
-\multirow{2}{*}{ReadText}
-& Unweighted & $62.9\% \pm 17.8\%$ & $\mathbf{81.8\% \pm 14.0\%}$ \\
-& Weighted & $65.0\% \pm 14.8\%$ & $81.8\% \pm 14.0\%$ \\
-\midrule
-\multirow{2}{*}{Spontaneous}
-& Unweighted & $72.1\% \pm 17.6\%$ & $\mathbf{77.9\% \pm 16.1\%}$ \\
-& Weighted & $69.3\% \pm 12.3\%$ & $72.1\% \pm 20.3\%$ \\
-\bottomrule
-\end{tabular}
-\caption{Πίνακας σύγκρισης Random Forest Accuracy (Dataset A)}
-\label{tab:rf-accuracy-matrix}
-\end{table}
+\section{Θερμικοί χάρτες σημαντικότητας χαρακτηριστικών}
 
-\subsection{Κύριες Παρατηρήσεις}
-
-\begin{enumerate}
-    \item \textbf{Το feature extension βελτιώνει σταθερά το ReadText:} +23.2pp ROC-AUC (χωρίς weighting)
-    \item \textbf{Το SpontaneousDialogue έχει υψηλότερο baseline:} 0.828 vs 0.590 ROC-AUC με baseline features
-    \item \textbf{Το class weighting εμφανίζει μικτά αποτελέσματα:} βελτιώνει τη baseline επίδοση στο ReadText αλλά μειώνει την επίδοση με extended features
-    \item \textbf{Υψηλή διακύμανση σε όλα τα settings:} τα standard deviations συχνά υπερβαίνουν το 0.15, αντανακλώντας το μικρό sample size ($n=37$)
-\end{enumerate}
-
-\section{Σημειώσεις για τη Statistical Significance}
-
-Λόγω υψηλών standard deviations (συχνά $> 0.15$), τα confidence intervals επικαλύπτονται σε πολλές συγκρίσεις. Αυτό περιορίζει τη δυνατότητα για ισχυρούς στατιστικούς ισχυρισμούς σχετικά με τις διαφορές μεταξύ conditions. Τα αποτελέσματα θα πρέπει να ερμηνεύονται ως \textbf{trends} και όχι ως οριστικές κατατάξεις.
-
-\section{Καμπύλες ROC}
-
-Παρουσιάζονται καμπύλες Receiver Operating Characteristic (ROC) για όλους τους πέντε classifiers σε κάθε experimental condition. Οι αχνές καμπύλες αντιστοιχούν σε μεμονωμένα cross-validation folds, ενώ η έντονη καμπύλη αντιστοιχεί στον μέσο όρο των folds με shaded band $\pm 1$ standard deviation. Όλες οι καμπύλες δημιουργήθηκαν με χρήση του extended feature set.
+Οι θερμικοί χάρτες συνοψίζουν την κανονικοποιημένη σημαντικότητα χαρακτηριστικών ανά μοντέλο και task, ως οπτικό οδηγό για γρήγορο εντοπισμό τάσεων ερμηνευσιμότητας.
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=\textwidth]{fig_roc_readtext.pdf}
-    \caption{ROC curves για όλους τους πέντε classifiers στο ReadText task (Dataset A, extended features). Τα shaded bands υποδεικνύουν $\pm 1$ standard deviation στα πέντε cross-validation folds.}
-    \label{fig:roc-readtext}
+    \begin{subfigure}[t]{0.495\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{fig_heatmap_readtext.png}
+        \caption{ReadText (Dataset A).}
+        \label{fig:heatmap-readtext-appendix}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[t]{0.495\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{fig_heatmap_spontaneous.png}
+        \caption{SpontaneousDialogue (Dataset A).}
+        \label{fig:heatmap-spontaneous-appendix}
+    \end{subfigure}
+    \caption{Σύγκριση θερμικών χαρτών σημαντικότητας χαρακτηριστικών για τα δύο tasks του Dataset A.}
 \end{figure}
 
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=\textwidth]{fig_roc_spontaneous.pdf}
-    \caption{ROC curves για όλους τους πέντε classifiers στο SpontaneousDialogue task (Dataset A, extended features).}
-    \label{fig:roc-spontaneous}
-\end{figure}
+Στο ReadText (Σχήμα~\ref{fig:heatmap-readtext-appendix}) το \texttt{f0\_max} εμφανίζεται σταθερά με πολύ υψηλή σχετική συμβολή σε όλα τα μοντέλα, ενώ χαρακτηριστικά όπως \texttt{hnr\_mean} και \texttt{delta\_mfcc\_2\_mean} παρουσιάζουν αυξημένη βαρύτητα κυρίως σε Logistic Regression και Random Forest. Στο SpontaneousDialogue (Σχήμα~\ref{fig:heatmap-spontaneous-appendix}) παρατηρείται μεγαλύτερη έμφαση σε \texttt{mfcc\_5\_mean} και \texttt{shimmer\_apq11}, με αντίστοιχη μετατόπιση της σχετικής βαρύτητας σε φασματικά και μικροδιαταρακτικά χαρακτηριστικά. Επιπλέον, το Gradient Boosting εμφανίζει πιο αραιή κατανομή σημαντικότητας (πολλά χαμηλά/μηδενικά βάρη), κάτι που υποδηλώνει πιο επιλεκτική αξιοποίηση χαρακτηριστικών. Τα ευρήματα αυτά περιγράφουν τάσεις ερμηνευσιμότητας και δεν συνεπάγονται από μόνα τους υπεροχή συγκεκριμένου μοντέλου.
 
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=\textwidth]{fig_roc_dataset_b.pdf}
-    \caption{ROC curves για όλους τους πέντε classifiers στο Dataset B (PD Speech Features). Σημειώνεται ότι subject-level deduplication δεν είναι εφικτό για αυτό το dataset· τα αποτελέσματα ενδέχεται να είναι optimistic λόγω πιθανής επικάλυψης subjects μεταξύ folds.}
-    \label{fig:roc-datasetb}
-\end{figure}
+\section{Σημείωση ερμηνείας}
+
+Η αυξημένη διακύμανση σε ορισμένες συνθήκες του Dataset A (ιδίως σε ROC-AUC/F1) υποδεικνύει ότι οι συγκρίσεις μεταξύ μοντέλων και συνθηκών πρέπει να διαβάζονται ως τάσεις. Για το Dataset B, τα αποτελέσματα ενδέχεται να είναι αισιόδοξα λόγω άγνωστης επικάλυψης υποκειμένων μεταξύ folds (Ενότητα~\ref{cav:dataset-b-leakage}).

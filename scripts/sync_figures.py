@@ -23,6 +23,7 @@ FIGURE_MAPPING = {
     # Feature Analysis - Heatmaps
     "heatmap_readtext.png": "fig_heatmap_readtext.png",
     "heatmap_spontaneous.png": "fig_heatmap_spontaneous.png",
+    "pipeline_overview_thesis.png": "fig_pipeline_overview_thesis.png",
 
     # Feature Importance - Main Body (RF)
     "importance_readtext_randomforest.png": "fig_imp_readtext_rf.png",

@@ -1,7 +1,7 @@
 % Parkinson's Disease Voice Classification - MSc Thesis
 % Main document file
 
-\documentclass[12pt,a4paper,twoside]{report}
+\documentclass[11pt,a4paper,oneside,openany]{report}
 
 % All packages, configuration, and custom commands
 \input{Preamble}
@@ -21,11 +21,18 @@
 % Title page
 \IfFileExists{frontmatter/titlepage.tex}{\include{frontmatter/titlepage}}{\maketitle}
 
+% Approval page (inner title page with committee signatures)
+\IfFileExists{frontmatter/approval.tex}{\input{frontmatter/approval}}{}
+
+% Copyright / Declaration page
+\IfFileExists{frontmatter/copyright.tex}{\input{frontmatter/copyright}}{}
+
 % Ensure abstract starts on an odd (recto) page
 \cleardoublepage
 
 % Abstract (Greek — required first per NTUA rules)
 \IfFileExists{frontmatter/abstract_gr.tex}{\include{frontmatter/abstract_gr}}{}
+
 
 % Abstract (English)
 \IfFileExists{frontmatter/abstract.tex}{\include{frontmatter/abstract}}{}
@@ -35,8 +42,6 @@
 
 % Table of contents
 \tableofcontents
-\thispagestyle{empty}
-\blankpage
 
 % List of figures
 \listoffigures
@@ -67,14 +72,22 @@
 %% BACK MATTER
 %% ----------------------------------------------------------------------------
 
-% Appendices
-\appendix
-\IfFileExists{appendices/appendix_a_features.tex}{\include{appendices/appendix_a_features}}{}
-\IfFileExists{appendices/appendix_b_results.tex}{\include{appendices/appendix_b_results}}{}
-\IfFileExists{appendices/appendix_c_demo_app.tex}{\include{appendices/appendix_c_demo_app}}{}
-
 % Bibliography
+\cleardoublepage
+\phantomsection
+\addcontentsline{toc}{chapter}{Βιβλιογραφία}
 \bibliographystyle{IEEEtranN}
 \bibliography{references/references}
+
+% Appendices
+\appendix
+\renewcommand{\thechapter}{\ifcase\value{chapter}\or Α\or Β\or Γ\else\Alph{chapter}\fi}
+\titleformat{\chapter}[display]
+	{\normalfont\huge\bfseries\raggedright}
+	{Παράρτημα~\thechapter}
+	{12pt}
+	{\Huge\raggedright}
+\IfFileExists{appendices/appendix_a_features.tex}{\include{appendices/appendix_a_features}}{}
+\IfFileExists{appendices/appendix_b_results.tex}{\include{appendices/appendix_b_results}}{}
 
 \end{document}

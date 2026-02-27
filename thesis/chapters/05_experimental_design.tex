@@ -17,13 +17,13 @@
 
 \section{Πειραματικός πίνακας}
 
-\subsection{\texorpdfstring{$2 \times 2 \times 5$ Παραγοντικός σχεδιασμός}{2x2x5 Παραγοντικός σχεδιασμός}}
+\subsection{\texorpdfstring{Σχεδιασμός πειραμάτων}{Σχεδιασμός πειραμάτων}}
 
 Ο σχεδιασμός περιλαμβάνει τρεις παράγοντες:
 
 \begin{enumerate}
     \item \textbf{Σύνολο χαρακτηριστικών:} 47 (baseline) ή 78 (extended)
-    \item \textbf{Στάθμιση κλάσεων:} χωρίς ή με ισορροπημένη στάθμιση
+    \item \textbf{Στάθμιση κλάσεων:} χωρίς ή με ισορροπημένη στάθμιση (weighted) για LR, SVM και RF
     \item \textbf{Μοντέλο:} LR, SVM (RBF), RF, Gradient Boosting, XGBoost
 \end{enumerate}
 
@@ -31,13 +31,14 @@
 
 \begin{table}[H]
 \centering
-\begin{tabular}{@{}llllp{3cm}@{}}
+\small
+\begin{tabular}{@{}lp{1.8cm}p{2.2cm}p{3.1cm}p{3.1cm}@{}}
 \toprule
 \textbf{ID} & \textbf{Χαρακτηριστικά} & \textbf{Στάθμιση} & \textbf{Μοντέλα} & \textbf{Έξοδος} \\
 \midrule
 C1 & 47 & Καμία & LR, SVM, RF, GB, XGB & \texttt{baseline/baseline/} \\
-C2 & 78 & Καμία & LR, SVM, RF, GB, XGB & \texttt{baseline/extended/} \\
-C3 & 47 & Ισορροπημένη & LR, SVM, RF, GB, XGB & \texttt{weighted/baseline/} \\
+C2 & 47 & Ισορροπημένη & LR, SVM, RF, GB, XGB & \texttt{weighted/baseline/} \\
+C3 & 78 & Καμία & LR, SVM, RF, GB, XGB & \texttt{baseline/extended/} \\
 C4 & 78 & Ισορροπημένη & LR, SVM, RF, GB, XGB & \texttt{weighted/extended/} \\
 \bottomrule
 \end{tabular}
@@ -64,10 +65,55 @@ Dataset B - PD Speech & 4 & 5 & 5 & 100 \\
 \label{tab:total-runs}
 \end{table}
 
+\begin{table}[H]
+\centering
+\caption{Σύνθεση συνόλων χαρακτηριστικών ανά ακουστική κατηγορία.}
+\label{tab:feature-composition}
+\begin{tabular}{@{}lccc@{}}
+\toprule
+\textbf{Κατηγορία} & \textbf{Baseline (47)} & \textbf{Extended (78)} & \textbf{Κατηγορία} \\
+\midrule
+MFCC (means) & 13 & 13 & Φασματικά \\
+Delta-MFCC (1st order) & 13 & 13 & Φασματικά/Χρονικά \\
+Pitch ($F_0$: mean, std, min, max) & 4 & 4 & Προσωδικά \\
+Shimmer (local, apq3, apq5, apq11, dda) & 5 & 5 & Προσωδικά \\
+Jitter (local, rap, ppq5) & 3 & 3 & Προσωδικά \\
+Formants ($F_1$--$F_3$: mean, std, bandwidth) & 6 & 6 & Φασματικά \\
+Harmonicity (HNR, autocorr) & 2 & 2 & Φωνητικότητα \\
+Intensity (mean, std, min, max) + ZCR & 5 & 5 & Ενέργεια \\
+\midrule
+MFCC std & -- & 13 & Φασματικά \\
+Delta-Delta MFCC (means) & -- & 13 & Χρονικά \\
+Spectral shape (centroid, rolloff, contrast, flux) & -- & 5 & Φασματικά \\
+\midrule
+\textbf{Σύνολο} & \textbf{47} & \textbf{78} & \\
+\bottomrule
+\end{tabular}
+\end{table}
+
 \section{Πειραματικά πρωτόκολλα και αναπαραγωγιμότητα}
 
 Χρησιμοποιήθηκε 5-fold cross-validation (σε επίπεδο υποκειμένου για το Dataset A και στρωματοποιημένο για το Dataset B).
 Όλα τα πειράματα εκτελέστηκαν με \texttt{random\_state=42} για αναπαραγωγιμότητα.
+
+Ο Πίνακας~\ref{tab:cv-strategy} συνοψίζει τη στρατηγική cross-validation για κάθε dataset, συμπεριλαμβανομένης της αιτιολογίας για τις αντίστοιχες επιλογές.
+
+\begin{table}[H]
+\centering
+\caption{Στρατηγική cross-validation ανά dataset και αιτιολόγηση.}
+\label{tab:cv-strategy}
+\small
+\begin{tabular}{@{}p{2.7cm}p{2.7cm}p{2.4cm}p{4.5cm}@{}}
+\toprule
+\textbf{Dataset} & \textbf{CV Τύπος} & \textbf{Μονάδα διαχωρισμού} & \textbf{Αιτιολόγηση} \\
+\midrule
+Dataset A (MDVR-KCL) & Grouped Stratified 5-Fold & Υποκείμενο & Πολλαπλές ηχογραφήσεις ανά υποκείμενο: απαιγορεύεται data leakage \\
+Dataset B (PD Speech) & Stratified 5-Fold & Δείγμα (rows) & Αγνωστοί IDs υποκειμένων$^*$ \\
+\bottomrule
+\end{tabular}
+\vspace{2pt}
+{\small $^*$Η αγνωσία IDs υποκειμένων δεν επιτρέπει grouped CV· τα αποτελέσματα ενδέχεται να είναι αισιόδοξα (\S~\ref{cav:dataset-b-leakage}).}
+\end{table}
 
 Τα αποτελέσματα του Dataset B πρέπει να εξετάζονται με προσοχή λόγω της έλλειψης αναγνωριστικών υποκειμένων (βλ.\ ενότητα~\ref{cav:dataset-b-leakage}).
 Οι περιορισμοί παρουσιάζονται στο κεφάλαιο~\ref{ch:limitations}.

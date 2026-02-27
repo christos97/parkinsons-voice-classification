@@ -1,0 +1,86 @@
+% Approval Page (inner title page with committee signatures)
+% Top half is identical to titlepage.tex; bottom half adds committee block.
+
+\blankpage
+
+\begingroup
+\thispagestyle{empty}
+
+\centering
+
+\vspace*{-1.5cm}
+
+% ── Top half: identical to title page ──
+
+\begin{flushleft}
+\begin{minipage}[t]{0.15\textwidth}
+    \flushleft
+    \includegraphics[width=2.4cm]{figures/ntua-logo.png}
+\end{minipage}\hspace{0.012\textwidth}%
+\begin{minipage}[t]{0.81\textwidth}
+    \flushleft
+    {\large\linespread{1.05}\selectfont
+    \setlength{\parskip}{0pt}
+    \myUniversity\par
+    \mySchool\par
+    \myDivision\par}
+\end{minipage}
+\end{flushleft}
+
+\vspace*{1.0cm}
+
+{\LARGE \textbf{\parbox[c]{0.88\textwidth}{\centering\myTitleGR}}}
+
+\vspace{0.6cm}
+
+{\Large \textbf{\parbox[c]{0.88\textwidth}{\centering\myTitleLineBreak}}}
+
+\vspace{0.8cm}
+
+{\LARGE ΔΙΠΛΩΜΑΤΙΚΗ ΕΡΓΑΣΙΑ}
+
+\vspace{0.7cm}
+
+{\Large \myAuthor}
+
+\vspace{0.7cm}
+
+\begin{flushleft}
+\hspace*{0.22\textwidth}%
+{\large
+\begin{tabular}{l l}
+\textbf{Επιβλέπων:} & \mySupervisor\\
+                     & \mySupervisorTitle\\[0.35cm]
+\textbf{Συνεπιβλέπουσα:} & \myCoSupervisor\\
+                          & \myCoSupervisorTitle\\
+\end{tabular}
+}
+\end{flushleft}
+
+% ── Bottom half: committee approval block (compact) ──
+
+\vfill
+
+{\small
+\noindent Εγκρίθηκε από την τριμελή εξεταστική επιτροπή την \myApprovalDate.
+}
+
+\vspace{0.4cm}
+
+\begin{center}
+\begin{tabular}{p{0.28\textwidth} p{0.28\textwidth} p{0.28\textwidth}}
+    \centering \textit{(Υπογραφή)} & \centering \textit{(Υπογραφή)} & \centering \textit{(Υπογραφή)} \tabularnewline[0.6cm]
+    \centering .............................. & \centering .............................. & \centering .............................. \tabularnewline[0.15cm]
+    \centering \myCommitteeA & \centering \myCommitteeB & \centering \myCommitteeC \tabularnewline[0.05cm]
+    \centering {\small \myCommitteeATitle} & \centering {\small \myCommitteeBTitle} & \centering {\small \myCommitteeCTitle} \tabularnewline
+\end{tabular}
+\end{center}
+
+\vfill
+
+{\Large \myLocation, \myDate}
+
+\vspace{-0.3cm}
+
+\endgroup
+\newpage

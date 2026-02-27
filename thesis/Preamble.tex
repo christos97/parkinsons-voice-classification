@@ -13,43 +13,51 @@
 
 % Supervisor information
 \newcommand{\mySupervisor}{Γεώργιος Ματσόπουλος}
-\newcommand{\mySupervisorTitle}{Καθηγητής ΗΜΜΥ Ε.Μ.Π.}
+\newcommand{\mySupervisorTitle}{Καθηγητής, Ε.Μ.Π.}
+\newcommand{\myCoSupervisor}{Δρ. Ουρανία Πετροπούλου}
+\newcommand{\myCoSupervisorTitle}{ΕΔΙΠ, Ε.Μ.Π.}
 
-% Committee members
-\newcommand{\myExaminerA}{Ουρανία Πετροπούλου}
-\newcommand{\myExaminerATitle}{Επίκουρη Καθηγήτρια ΗΜΜΥ Ε.Μ.Π.}
-\newcommand{\myExaminerB}{[Examiner 2 Name]}
-\newcommand{\myExaminerBTitle}{[Examiner 2 Title]}
+% Committee members (three-member examination committee)
+\newcommand{\myCommitteeA}{Γεώργιος Ματσόπουλος}
+\newcommand{\myCommitteeATitle}{Καθηγητής, Ε.Μ.Π.}
+\newcommand{\myCommitteeB}{Παναγιώτης Τσανάκας}
+\newcommand{\myCommitteeBTitle}{Καθηγητής, Ε.Μ.Π.}
+\newcommand{\myCommitteeC}{Αθανάσιος Δ. Παναγόπουλος}
+\newcommand{\myCommitteeCTitle}{Καθηγητής, Ε.Μ.Π.}
 
 % Date and location
 \newcommand{\myDate}{Φεβρουάριος 2026}
 \newcommand{\myLocation}{Αθήνα}
-\newcommand{\myApprovalDate}{[26 Φεβρουαρίου 2026]}
+\newcommand{\myApprovalDate}{26η Φεβρουαρίου 2026}
+\newcommand{\myCopyrightYear}{2026}
+\newcommand{\myDeclarationDate}{26 Φεβρουαρίου 2026}
 
 % Institution
-\newcommand{\myUniversity}{Εθνικό Μετσόβιο Πολυτεχνείο}
-\newcommand{\mySchool}{Σχολή Ηλεκτρολόγων Μηχανικών και Μηχανικών Η/Υ}
-\newcommand{\myDivision}{Συστημάτων Μετάδοσης Πληροφορίας \& Τεχνολογίας Υλικών}
+\newcommand{\myUniversity}{ΕΘΝΙΚΟ ΜΕΤΣΟΒΙΟ ΠΟΛΥΤΕΧΝΕΙΟ}
+\newcommand{\mySchool}{ΣΧΟΛΗ ΗΛΕΚΤΡΟΛΟΓΩΝ ΜΗΧΑΝΙΚΩΝ\\ΚΑΙ ΜΗΧΑΝΙΚΩΝ ΥΠΟΛΟΓΙΣΤΩΝ}
+\newcommand{\myDivision}{ΤΟΜΕΑΣ ΣΥΣΤΗΜΑΤΩΝ ΜΕΤΑΔΟΣΗΣ ΠΛΗΡΟΦΟΡΙΑΣ\\ΚΑΙ ΤΕΧΝΟΛΟΓΙΑΣ ΥΛΙΚΩΝ}
 
 %% ============================================================================
 %% PACKAGES
 %% ============================================================================
 
-% Encoding and fonts (XeLaTeX)
+% Encoding, fonts and language (XeLaTeX)
 \usepackage{fontspec}
 \setmainfont{FreeSerif}
 \setsansfont{FreeSans}
 \setmonofont{FreeMono}
 
-% Language
 \usepackage{polyglossia}
 \setdefaultlanguage{greek}
 \setotherlanguage{english}
 
+% shortcuts aligned with ntua-thesis.cls semantics
+\newcommand{\tl}[1]{\textenglish{#1}}
+\newcommand{\tg}[1]{\textgreek{#1}}
+\newcommand{\en}[1]{\textenglish{#1}}
+
 % Greek captions for structural elements
-% NOTE: The class file (ntua-thesis.cls) loads babel with [greek,english],
-% making English the active language. We must override BOTH caption sets
-% to ensure Greek labels appear regardless of which language babel considers active.
+% Override both caption sets to keep Greek labels consistently.
 \addto\captionsgreek{%
   \renewcommand{\contentsname}{Πίνακας Περιεχομένων}%
   \renewcommand{\listfigurename}{Κατάλογος Σχημάτων}%
@@ -77,7 +85,6 @@
     bottom=3cm,
     left=2.5cm,
     right=2.5cm,
-    bindingoffset=0.5cm,
     headheight=15pt
 ]{geometry}
 
@@ -124,7 +131,9 @@
 % Miscellaneous
 \usepackage{enumitem}
 \usepackage{parskip}
+\usepackage{ragged2e}
 \usepackage{setspace}
+\usepackage{emptypage}
 
 % Chapter heading style
 \usepackage{titlesec}
@@ -148,6 +157,7 @@
 
 % Line spacing
 \onehalfspacing
+\AtBeginDocument{\justifying}
 
 % Code listing colors
 \definecolor{codegreen}{rgb}{0,0.6,0}
@@ -201,12 +211,23 @@
 \fancyhead[LO]{\nouppercase{\rightmark}}
 \renewcommand{\headrulewidth}{0.4pt}
 
+% Keep chapter-opening (plain) pages visually consistent with the rest
+\fancypagestyle{plain}{%
+  \fancyhf{}
+  \fancyhead[LE,RO]{\thepage}
+  \fancyhead[RE]{\nouppercase{\leftmark}}
+  \fancyhead[LO]{\nouppercase{\rightmark}}
+  \renewcommand{\headrulewidth}{0.4pt}
+}
+
 % Chapter heading style
 \titleformat{\chapter}[display]
-    {\normalfont\huge\bfseries}
+  {\normalfont\huge\bfseries\raggedright}
     {\chaptertitlename\ \thechapter}
-    {20pt}
-    {\Huge}
+  {12pt}
+  {\Huge\raggedright}
+
+\titlespacing*{\chapter}{0pt}{-8pt}{22pt}
 
 % Graphics path
 \graphicspath{{figures/}{../outputs/plots/}{../assets/images/}}
