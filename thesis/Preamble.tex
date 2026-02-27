@@ -1,10 +1,3 @@
-% Parkinson's Disease Voice Classification - MSc Thesis
-% Preamble: All packages, configuration, and custom commands
-
-%% ============================================================================
-%% DOCUMENT METADATA
-%% ============================================================================
-
 % Author information
 \newcommand{\myAuthor}{Μάριος Χρήστος Συρμακέζης}
 \newcommand{\myTitle}{Voice-Based Classification of Parkinson's Disease Using Classical Machine Learning}
@@ -51,7 +44,7 @@
 \setdefaultlanguage{greek}
 \setotherlanguage{english}
 
-% shortcuts aligned with ntua-thesis.cls semantics
+% shortcuts for inline language switching
 \newcommand{\tl}[1]{\textenglish{#1}}
 \newcommand{\tg}[1]{\textgreek{#1}}
 \newcommand{\en}[1]{\textenglish{#1}}
@@ -149,6 +142,82 @@
       \null%
       \clearpage}
 
+% Reusable title block for cover and approval pages
+\newcommand{\NTUATitleTopBlock}{%
+  \begin{flushleft}
+  \noindent
+  \begin{minipage}[t]{0.14\textwidth}
+    \vspace{0pt}
+    \includegraphics[width=2.4cm]{figures/ntua-logo.png}
+  \end{minipage}
+  \hspace{0.03\textwidth}
+  \begin{minipage}[t]{0.75\textwidth}
+    \vspace{0pt}
+    \raggedright
+    {\large
+    \linespread{1.05}\selectfont
+    \myUniversity\par
+    \mySchool\par
+    \myDivision}
+  \end{minipage}
+  \end{flushleft}
+
+  \vspace{1.2cm}
+
+  {\LARGE \textbf{\parbox{0.88\textwidth}{\centering \myTitleGR}}}
+
+  \vspace{0.6cm}
+
+  {\Large \textbf{\parbox{0.88\textwidth}{\centering \myTitleLineBreak}}}
+
+  \vspace{0.9cm}
+
+  {\LARGE ΔΙΠΛΩΜΑΤΙΚΗ ΕΡΓΑΣΙΑ}
+
+  \vspace{0.8cm}
+
+  {\Large \myAuthor}
+
+  \vspace{0.9cm}
+
+  \begin{flushleft}
+  \hspace*{0.22\textwidth}
+  {\large
+  \begin{tabular}{@{}l l@{}}
+    \textbf{Επιβλέπων:}        & \mySupervisor\\
+                  & \mySupervisorTitle\\[0.5cm]
+    \textbf{Συνεπιβλέπουσα:}  & \myCoSupervisor\\
+                  & \myCoSupervisorTitle
+  \end{tabular}}
+  \end{flushleft}
+}
+
+% Reusable committee approval/signature block for inner title pages
+\newcommand{\NTUAApprovalBottomBlock}{%
+  \vfill
+
+  {\small
+  \noindent Εγκρίθηκε από την τριμελή εξεταστική επιτροπή την \myApprovalDate.
+  }
+
+  \vspace{0.4cm}
+
+  \begin{center}
+  \begin{tabular}{p{0.28\textwidth} p{0.28\textwidth} p{0.28\textwidth}}
+      \centering \textit{(Υπογραφή)} & \centering \textit{(Υπογραφή)} & \centering \textit{(Υπογραφή)} \tabularnewline[0.6cm]
+      \centering .............................. & \centering .............................. & \centering .............................. \tabularnewline[0.15cm]
+      \centering \myCommitteeA & \centering \myCommitteeB & \centering \myCommitteeC \tabularnewline[0.05cm]
+      \centering {\small \myCommitteeATitle} & \centering {\small \myCommitteeBTitle} & \centering {\small \myCommitteeCTitle} \tabularnewline
+  \end{tabular}
+  \end{center}
+
+  \vfill
+
+  {\Large \myLocation, \myDate}
+
+  \vspace{-0.3cm}
+}
+
 \raggedbottom
 
 %% ============================================================================
@@ -229,5 +298,6 @@
 
 \titlespacing*{\chapter}{0pt}{-8pt}{22pt}
 
-% Graphics path
+% Graphics path configuration (relative to main .tex file)
+% You can add additional paths here as needed for figures, plots, and images in different directories
 \graphicspath{{figures/}{../outputs/plots/}{../assets/images/}}
