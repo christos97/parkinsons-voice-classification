@@ -3,38 +3,36 @@
 \chapter*{Abstract}
 \addcontentsline{toc}{chapter}{Abstract}
 
-Parkinson's disease (PD) is a progressive neurological disorder characterized by motor symptoms which are typically accompanied by speech difficulties.
+Parkinson's Disease (PD) is a progressive neurological disorder characterized primarily by motor symptoms and secondary by speech impairment.
 
-In this paper we investigate if PD can be diagnosed through voice recordings, using classical machine learning algorithms.
+This paper examines the possibility of diagnosing PD through voice recordings by utilizing only classical machine learning methods.
 
-We worked with two different datasets, each analyzed using an identical methodology, i.e., analysis and validation procedure.
+We used two different datasets and applied the same method of analysis and verification.
 
-The first dataset, Mobile Device Voice Recordings at King’s College London, contained categorized audio files (WAV) recorded with advanced recording equipment in a controlled environment.
+The first dataset, Mobile Device Voice Recordings at King’s College London, included some audio files (WAV), 
+that were already split in two groups, i.e., PD and healthy controls (HC), and were recorded with low cost microphones, available in everyday devices like smartphones.
 
-These recordings were unprocessed, therefore we had to process the audio to extract the acoustic features to transform the data into a numeric format that would allow us to perform the analysis.
+Since the recordings were raw we had to process them to extract the acoustic features related to PD, and then convert the data to a numeric format.
 
-The second dataset, PD speech signal features from Kaggle (UCI), contained pre-extracted acoustic features in csv format, so we did not need to process the audio since the pre-processed features were ready to be analyzed.
-
-Both datasets were processed to see if the models could distinguish between individuals with PD and healthy controls (HC) only through their voice.
+The second dataset, PD speech signal features from Kaggle (UCI), contained pre-extracted acoustic features already in csv format, so we did not need to process the audio ourselves.
 
 We compared five machine learning algorithms, i.e., Logistic Regression, Support Vector Machine (SVM), Random Forest, Gradient Boosting, and XGBoost.
 
-We also examined if adding more features and applying class weighting to balance the PD and HC groups would improve the performance of the models and to prevent data leakage, cross-validation was applied to all of the models.
+We also determined if additional features in the training set resulted in improved performance, and if class weighting enhanced model performance (particularly for the PD group).
 
-The results indicate that Random Forest algorithm outperformed all other tested algorithms.
+Cross-validation was utilized in each case to prevent data leakage.
 
-The addition of more features during the training phase resulted in improvements in the performance of most of the models.
+The results show that Random Forest algorithm outperformed all other tested algorithms, in almost all cases and that increasing the number of features in the training set positively affected the majority of the tested models.
 
-Class weighting had a limited positive impact especially on Random Forest, while the other algorithms either did not benefit from class weighting or were even negatively affected.
+Class weighting had a small positive impact primarily on Random Forest, while the other four algorithms either did not benefit from class weighting or were even negatively affected.
 
 In general, the study demonstrates that voice-based analysis combined with machine learning may support the diagnosis of Parkinson’s disease.
 
-However, the findings should be interpreted cautiously due to several limitations such as the possibility of collecting multiple recordings from the same patient and the considerable difference in sample size between the two datasets.
+However, the results have to be viewed critically due to some limitations, e.g., potential multiple recordings of the same patient and the significant differences in terms of sample sizes between the two datasets.
 
-Regardless of these limitations, the study has shown that when adequate processing of the data is done along with the proper application of machine learning algorithms, there is a reasonable expectation for the use of common microphones found in devices such as smartphones for identifying diseases through voice.
+Despite the limitations, the study illustrates that proper processing of the data, and the correct application of machine learning algorithms, can lead to the potential of identifying diseases based on voice.
 
-Additionally, early detection could potentially initiate treatment sooner and enhance the quality of life of patients.
-
+Early detection can allow treatment to begin earlier and thereby improve the quality of a patient's life.
 \vspace{1cm}
 
 \textbf{Keywords:} Parkinson's Disease; Dysarthria; Voice Biomarkers; Acoustic Features; Machine Learning; Feature Extraction; Cross-Validation; Reproducibility; Speech Classification;
