@@ -23,6 +23,8 @@ FIGURE_MAPPING = {
     # Feature Analysis - Heatmaps
     "heatmap_readtext.png": "fig_heatmap_readtext.png",
     "heatmap_spontaneous.png": "fig_heatmap_spontaneous.png",
+    "heatmap_readtext_permutation.png": "fig_heatmap_readtext_permutation.png",
+    "heatmap_spontaneous_permutation.png": "fig_heatmap_spontaneous_permutation.png",
     "pipeline_overview_thesis.png": "fig_pipeline_overview_thesis.png",
 
     # Feature Importance - Main Body (RF)
@@ -50,10 +52,20 @@ FIGURE_MAPPING = {
 }
 
 # =============================================================================
+# EXTERNAL FIGURE MAPPING (THESIS-MANAGED ASSETS)
+# Format: "Source Filename (in thesis/figures/)" : "Destination Filename (in thesis/figures/)"
+# =============================================================================
+
+EXTERNAL_FIGURE_MAPPING = {
+    "speech_signal_hc_vs_pd.png": "speech_signal_hc_vs_pd.png",
+}
+
+# =============================================================================
 # SYNC LOGIC (DO NOT EDIT USUALLY)
 # =============================================================================
 
 SOURCE_ROOT = Path("outputs")
+EXTERNAL_SOURCE_ROOT = Path("thesis/figures")
 DEST_ROOT = Path("thesis/figures")
 
 def find_file(filename, search_path):
@@ -90,6 +102,28 @@ def main():
                 print(f"❌ Error copying {src_name}: {e}")
         else:
             print(f"⚠️  Missing: {src_name} (expected in outputs/)")
+            missing_count += 1
+
+    if EXTERNAL_FIGURE_MAPPING:
+        print("🔄 Registering thesis-hosted external figures...")
+
+    for src_name, dest_name in EXTERNAL_FIGURE_MAPPING.items():
+        src_path = find_file(src_name, EXTERNAL_SOURCE_ROOT)
+        dest_path = DEST_ROOT / dest_name
+
+        if src_path:
+            try:
+                if src_path.resolve() == dest_path.resolve():
+                    print(f"✅ Registered external figure: {src_name}")
+                    synced_count += 1
+                else:
+                    shutil.copy2(src_path, dest_path)
+                    print(f"✅ Synced external: {src_name} -> {dest_name}")
+                    synced_count += 1
+            except Exception as e:
+                print(f"❌ Error handling external figure {src_name}: {e}")
+        else:
+            print(f"⚠️  Missing external: {src_name} (expected in thesis/figures/)")
             missing_count += 1
             
     print("-" * 40)

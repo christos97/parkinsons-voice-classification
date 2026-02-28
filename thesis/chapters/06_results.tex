@@ -104,7 +104,7 @@ F1 std & $\pm 0{,}21$--$0{,}39$ & $\pm 0{,}006$--$0{,}015$ \\
 
 \section{Συγκριτικός πίνακας Random Forest ανά συνθήκη}
 
-Ο Random Forest επιλέχθηκε ως αντιπροσωπευτικό μοντέλο για τη συνολική σύγκριση, λόγω της σταθερής του συμπεριφοράς σε όλες τις ρυθμίσεις. Ο Πίνακας~\ref{tab:rf-rocauc-main} έχει παρουσιαστεί νωρίτερα για συνοπτική ανάγνωση, ενώ ο Πίνακας~\ref{tab:rf-accuracy-main} παραθέτει την Accuracy σε κάθε συνδυασμό feature set και class weighting. Αναλυτικά αποτελέσματα για όλα τα μοντέλα δίνονται στο Παράρτημα~\ref{app:detailed-results}.
+Ο Random Forest επιλέχθηκε ως αντιπροσωπευτικό μοντέλο για τη συνολική σύγκριση, λόγω της σταθερής του συμπεριφοράς σε όλες τις ρυθμίσεις. Ο Πίνακας~\ref{tab:rf-rocauc-main} έχει παρουσιαστεί νωρίτερα για συνοπτική ανάγνωση, ενώ ο Πίνακας~\ref{tab:rf-accuracy-main} παραθέτει την Accuracy σε κάθε συνδυασμό feature set και class weighting. Συμπληρωματικά αναλυτικά αποτελέσματα για τις συνθήκες C1--C3 δίνονται στο Παράρτημα~\ref{app:detailed-results}.
 
 \begin{table}[H]
 \centering
@@ -184,4 +184,46 @@ F1 std & $\pm 0{,}21$--$0{,}39$ & $\pm 0{,}006$--$0{,}015$ \\
 
 \section{Παραπομπή σε πλήρη αποτελέσματα}
 
-Οι αναλυτικοί πίνακες για όλες τις πειραματικές συνθήκες (C1--C4, ανά task και μοντέλο) παρατίθενται στο Παράρτημα~\ref{app:detailed-results} και περιλαμβάνουν Accuracy, Precision, Recall, F1 και ROC-AUC για όλα τα μοντέλα. Η πλήρης κατάταξη σημαντικότητας χαρακτηριστικών ανά μοντέλο παρατίθεται στο Παράρτημα~\ref{app:feature-importance}. Οι θερμικοί χάρτες σημαντικότητας χαρακτηριστικών για ReadText και SpontaneousDialogue παρατίθενται συγκριτικά στο Παράρτημα~\ref{app:detailed-results} (Σχήματα~\ref{fig:heatmap-readtext-appendix} και~\ref{fig:heatmap-spontaneous-appendix}) για συνοπτικότερη παρουσίαση στο κύριο κείμενο.
+Για να διατηρηθεί η ερμηνεία των κύριων ευρημάτων στο σώμα της διατριβής, οι αναλυτικοί πίνακες της συνθήκης C4 (extended χαρακτηριστικά + στάθμιση κλάσεων) ενσωματώνονται παρακάτω. Οι υπόλοιπες αναλυτικές συνθήκες (C1--C3) παρατίθενται στο Παράρτημα~\ref{app:detailed-results}, ενώ η πλήρης κατάταξη σημαντικότητας χαρακτηριστικών ανά μοντέλο παρατίθεται στο Παράρτημα~\ref{app:feature-importance}. Οι θερμικοί χάρτες σημαντικότητας permutation παρουσιάζονται στο Κεφάλαιο~\ref{ch:discussion} (Σχήματα~\ref{fig:heatmap-readtext-permutation-main} και~\ref{fig:heatmap-spontaneous-permutation-main}).
+
+\begin{table}[H]
+    \centering
+    \caption{Dataset A (C4: extended χαρακτηριστικά + με στάθμιση κλάσεων).}
+    \label{tab:results-c4-dataset-a}
+    \scriptsize
+    \begin{tabular}{@{}llccccc@{}}
+        \toprule
+        Task & Model & Accuracy & Precision & Recall & F1 & ROC-AUC \\
+        \midrule
+        ReadText & LogisticRegression & $0.650 \pm 0.108$ & $0.650 \pm 0.253$ & $0.550 \pm 0.201$ & $0.564 \pm 0.160$ & $0.698 \pm 0.132$ \\
+        ReadText & SVM\_RBF & $0.761 \pm 0.214$ & $0.700 \pm 0.447$ & $0.567 \pm 0.365$ & $0.620 \pm 0.390$ & $0.834 \pm 0.153$ \\
+        ReadText & RandomForest & $0.818 \pm 0.140$ & $0.883 \pm 0.162$ & $0.700 \pm 0.298$ & $0.746 \pm 0.207$ & $0.805 \pm 0.182$ \\
+        ReadText & GradientBoosting & $0.654 \pm 0.138$ & $0.620 \pm 0.247$ & $0.633 \pm 0.247$ & $0.605 \pm 0.184$ & $0.724 \pm 0.214$ \\
+        ReadText & XGBoost & $0.739 \pm 0.195$ & $0.720 \pm 0.284$ & $0.700 \pm 0.298$ & $0.691 \pm 0.252$ & $0.794 \pm 0.186$ \\
+        \midrule
+        SpontaneousDialogue & LogisticRegression & $0.696 \pm 0.179$ & $0.520 \pm 0.356$ & $0.667 \pm 0.471$ & $0.563 \pm 0.381$ & $0.783 \pm 0.139$ \\
+        SpontaneousDialogue & SVM\_RBF & $0.664 \pm 0.167$ & $0.567 \pm 0.365$ & $0.600 \pm 0.365$ & $0.560 \pm 0.318$ & $0.403 \pm 0.347$ \\
+        SpontaneousDialogue & RandomForest & $0.721 \pm 0.203$ & $0.653 \pm 0.409$ & $0.600 \pm 0.435$ & $0.583 \pm 0.373$ & $0.823 \pm 0.209$ \\
+        SpontaneousDialogue & GradientBoosting & $0.636 \pm 0.221$ & $0.670 \pm 0.327$ & $0.533 \pm 0.298$ & $0.547 \pm 0.222$ & $0.638 \pm 0.146$ \\
+        SpontaneousDialogue & XGBoost & $0.693 \pm 0.123$ & $0.733 \pm 0.253$ & $0.467 \pm 0.183$ & $0.553 \pm 0.176$ & $0.687 \pm 0.146$ \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+\begin{table}[H]
+    \centering
+    \caption{Dataset B (C4: extended χαρακτηριστικά + με στάθμιση κλάσεων).}
+    \label{tab:results-c4-dataset-b}
+    \scriptsize
+    \begin{tabular}{@{}lccccc@{}}
+        \toprule
+        Model & Accuracy & Precision & Recall & F1 & ROC-AUC \\
+        \midrule
+        LogisticRegression & $0.825 \pm 0.017$ & $0.892 \pm 0.021$ & $0.872 \pm 0.012$ & $0.882 \pm 0.011$ & $0.867 \pm 0.029$ \\
+        SVM\_RBF & $0.847 \pm 0.024$ & $0.887 \pm 0.028$ & $0.911 \pm 0.014$ & $0.899 \pm 0.015$ & $0.900 \pm 0.023$ \\
+        RandomForest & $0.865 \pm 0.017$ & $0.859 \pm 0.012$ & $0.980 \pm 0.012$ & $0.916 \pm 0.010$ & $0.949 \pm 0.012$ \\
+        GradientBoosting & $0.884 \pm 0.024$ & $0.878 \pm 0.020$ & $0.980 \pm 0.013$ & $0.926 \pm 0.015$ & $0.937 \pm 0.019$ \\
+        XGBoost & $0.896 \pm 0.017$ & $0.891 \pm 0.013$ & $0.980 \pm 0.017$ & $0.933 \pm 0.011$ & $0.952 \pm 0.015$ \\
+        \bottomrule
+    \end{tabular}
+\end{table}

@@ -250,6 +250,23 @@ def main():
                 save_path=plots_dir / "heatmap_readtext.png",
             )
             plt.close(fig)
+
+            if args.permutation:
+                fig = plot_top_features_heatmap(
+                    readtext_df,
+                    models=[
+                        "LogisticRegression",
+                        "SVM_RBF",
+                        "RandomForest",
+                        "GradientBoosting",
+                        "XGBoost",
+                    ],
+                    method="permutation",
+                    top_n=15,
+                    title="Feature Importance Heatmap (Permutation) - ReadText",
+                    save_path=plots_dir / "heatmap_readtext_permutation.png",
+                )
+                plt.close(fig)
     except Exception as e:
         print(f"  ⚠ Heatmap (ReadText) failed: {e}")
 
@@ -267,6 +284,23 @@ def main():
                 save_path=plots_dir / "heatmap_spontaneous.png",
             )
             plt.close(fig)
+
+            if args.permutation:
+                fig = plot_top_features_heatmap(
+                    spont_df,
+                    models=[
+                        "LogisticRegression",
+                        "SVM_RBF",
+                        "RandomForest",
+                        "GradientBoosting",
+                        "XGBoost",
+                    ],
+                    method="permutation",
+                    top_n=15,
+                    title="Feature Importance Heatmap (Permutation) - Spontaneous",
+                    save_path=plots_dir / "heatmap_spontaneous_permutation.png",
+                )
+                plt.close(fig)
     except Exception as e:
         print(f"  ⚠ Heatmap (Spontaneous) failed: {e}")
 

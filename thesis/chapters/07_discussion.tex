@@ -17,7 +17,7 @@
 
 \subsection{Ιεραρχία μοντέλων και σταθερότητα}
 
-Το Random Forest εμφάνισε τη πιο σταθερή συμπεριφορά στις περισσότερες ρυθμίσεις, ενώ τα γραμμικά ή περισσότερο ευαίσθητα μοντέλα εμφάνισαν μεγαλύτερη αστάθεια σε μικρά folds. Συνεπώς, οι διαφορές πρέπει να διαβάζονται ως τάσεις και όχι ως οριστικές κατατάξεις, ειδικά όταν τα διαστήματα αβεβαιότητας επικαλύπτονται. Η αναλυτική εικόνα για όλες τις συνθήκες C1--C4 και όλα τα μοντέλα δίνεται στο Παράρτημα~\ref{app:detailed-results}.
+Το Random Forest εμφάνισε τη πιο σταθερή συμπεριφορά στις περισσότερες ρυθμίσεις, ενώ τα γραμμικά ή περισσότερο ευαίσθητα μοντέλα εμφάνισαν μεγαλύτερη αστάθεια σε μικρά folds. Συνεπώς, οι διαφορές πρέπει να διαβάζονται ως τάσεις και όχι ως οριστικές κατατάξεις, ειδικά όταν τα διαστήματα αβεβαιότητας επικαλύπτονται. Η αναλυτική εικόνα για τις συνθήκες C1--C3 και όλα τα μοντέλα δίνεται στο Παράρτημα~\ref{app:detailed-results}, ενώ οι πλήρεις πίνακες C4 παρατίθενται στο Κεφάλαιο~\ref{ch:results}.
 
 \section{Σύγκριση με προηγούμενη βιβλιογραφία}
 
@@ -35,6 +35,27 @@
     \item Στο SpontaneousDialogue, αυξήθηκε η συνεισφορά MFCC και μέτρων perturbation, υποδηλώνοντας εντονότερη πληροφορία φασματικής μεταβλητότητας.
     \item Στο Dataset B, τα κυρίαρχα χαρακτηριστικά περιλαμβάνουν εξειδικευμένες αναπαραστάσεις σήματος, γεγονός που δυσκολεύει την άμεση αντιστοίχιση με πιο απλά κλινικά pipelines.
 \end{itemize}
+
+\begin{figure}[H]
+    \centering
+    \begin{subfigure}[t]{0.495\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{fig_heatmap_readtext_permutation.png}
+        \caption{ReadText (Dataset A, permutation).}
+        \label{fig:heatmap-readtext-permutation-main}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[t]{0.495\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{fig_heatmap_spontaneous_permutation.png}
+        \caption{SpontaneousDialogue (Dataset A, permutation).}
+        \label{fig:heatmap-spontaneous-permutation-main}
+    \end{subfigure}
+    \caption{Θερμικοί χάρτες permutation importance για τα δύο tasks του Dataset A, με συμπερίληψη του SVM\_RBF.}
+    \label{fig:heatmap-comparison-permutation-main}
+\end{figure}
+
+Στο ReadText (Σχήμα~\ref{fig:heatmap-readtext-permutation-main}) το \texttt{f0\_max} εμφανίζεται σταθερά με πολύ υψηλή σχετική συμβολή σε όλα τα μοντέλα, ενώ χαρακτηριστικά όπως \texttt{hnr\_mean} και \texttt{delta\_mfcc\_2\_mean} παρουσιάζουν αυξημένη βαρύτητα κυρίως σε Logistic Regression και Random Forest. Στο SpontaneousDialogue (Σχήμα~\ref{fig:heatmap-spontaneous-permutation-main}) παρατηρείται μεγαλύτερη έμφαση σε \texttt{mfcc\_5\_mean} και \texttt{shimmer\_apq11}, με αντίστοιχη μετατόπιση της σχετικής βαρύτητας σε φασματικά και μικροδιαταρακτικά χαρακτηριστικά. Επιπλέον, το Gradient Boosting εμφανίζει πιο αραιή κατανομή σημαντικότητας (πολλά χαμηλά/μηδενικά βάρη), κάτι που υποδηλώνει πιο επιλεκτική αξιοποίηση χαρακτηριστικών. Επειδή οι χάρτες βασίζονται σε permutation importance, αποτυπώνουν model-agnostic σημαντικότητα και επιτρέπουν άμεση σύγκριση και του SVM\_RBF στο ίδιο πλαίσιο. Τα ευρήματα αυτά περιγράφουν τάσεις ερμηνευσιμότητας και δεν συνεπάγονται από μόνα τους υπεροχή συγκεκριμένου μοντέλου.
 
 Για μια ευρύτερη εποπτεία, ο Πίνακας~\ref{tab:category-importance-main} συνοψίζει τη σχετική σημαντικότητα ανά ακουστική κατηγορία, αποκαλύπτοντας ότι τα MFCC και Delta-MFCC κυριαρχούν και στα δύο tasks, ενώ η σχετική βαρύτητα Pitch και Shimmer διαφέρει.
 

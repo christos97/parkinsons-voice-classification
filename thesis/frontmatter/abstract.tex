@@ -5,7 +5,7 @@
 
 Parkinson's disease (PD) is a progressive neurological disorder characterized by motor symptoms which are typically accompanied by speech difficulties.
 
-In this paper we assess if Parkinson’s disease can be diagnosed through the voice based on classical machine learning approaches.
+In this paper we investigate if PD can be diagnosed through voice recordings, using classical machine learning algorithms.
 
 We worked with two different datasets, each analyzed using an identical methodology, i.e., analysis and validation procedure.
 
@@ -13,31 +13,27 @@ The first dataset, Mobile Device Voice Recordings at King’s College London, co
 
 These recordings were unprocessed, therefore we had to process the audio to extract the acoustic features to transform the data into a numeric format that would allow us to perform the analysis.
 
-The second dataset, PD speech signal features from Kaggle (UCI), contained pre-extracted acoustic features in csv format.
-
-Therefore, we did not need to process the audio since the pre-processed features were ready to be analyzed.
+The second dataset, PD speech signal features from Kaggle (UCI), contained pre-extracted acoustic features in csv format, so we did not need to process the audio since the pre-processed features were ready to be analyzed.
 
 Both datasets were processed to see if the models could distinguish between individuals with PD and healthy controls (HC) only through their voice.
 
 We compared five machine learning algorithms, i.e., Logistic Regression, Support Vector Machine (SVM), Random Forest, Gradient Boosting, and XGBoost.
 
-Furthermore, we investigated whether increasing the number of features in the training set enhances the model performance, and whether the application of class weighting enhances the model performance particularly for the PD group.
-
-To avoid data leakage, cross-validation was performed.
+We also examined if adding more features and applying class weighting to balance the PD and HC groups would improve the performance of the models and to prevent data leakage, cross-validation was applied to all of the models.
 
 The results indicate that Random Forest algorithm outperformed all other tested algorithms.
 
-An increase of the number of features in the training set positively affected the majority of the tested models.
+The addition of more features during the training phase resulted in improvements in the performance of most of the models.
 
 Class weighting had a limited positive impact especially on Random Forest, while the other algorithms either did not benefit from class weighting or were even negatively affected.
 
 In general, the study demonstrates that voice-based analysis combined with machine learning may support the diagnosis of Parkinson’s disease.
 
-Nevertheless, the results have to be viewed critically due to some limitations, e.g., potential multiple recordings of the same patient and the significant differences in terms of sample sizes between the two datasets.
+However, the findings should be interpreted cautiously due to several limitations such as the possibility of collecting multiple recordings from the same patient and the considerable difference in sample size between the two datasets.
 
-Regardless of these limitations, the study shows that adequate processing of the data, along with the appropriate application of machine learning algorithms can result in a potetial disease identification through voice, using regular microphones, available in everyday devices like smartphones.
+Regardless of these limitations, the study has shown that when adequate processing of the data is done along with the proper application of machine learning algorithms, there is a reasonable expectation for the use of common microphones found in devices such as smartphones for identifying diseases through voice.
 
-Early detection may lead to the initiation of therapy at an earlier time point and improve the quality of life of patients.
+Additionally, early detection could potentially initiate treatment sooner and enhance the quality of life of patients.
 
 \vspace{1cm}
 

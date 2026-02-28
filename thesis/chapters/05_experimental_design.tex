@@ -30,17 +30,17 @@
 \begin{table}[H]
 \centering
 \small
-\begin{tabular}{@{}lp{1.8cm}p{2.2cm}p{3.1cm}p{3.1cm}@{}}
+\begin{tabular}{@{}lccc@{}}
 \toprule
-\textbf{ID} & \textbf{Χαρακτηριστικά} & \textbf{Στάθμιση} & \textbf{Μοντέλα} & \textbf{Έξοδος} \\
+\textbf{ID} & \textbf{Χαρακτηριστικά} & \textbf{Στάθμιση} & \textbf{Μοντέλα} \\
 \midrule
-C1 & 47 & Καμία & LR, SVM, RF, GB, XGB & \texttt{baseline/baseline/} \\
-C2 & 47 & Ισορροπημένη & LR, SVM, RF, GB, XGB & \texttt{weighted/baseline/} \\
-C3 & 78 & Καμία & LR, SVM, RF, GB, XGB & \texttt{baseline/extended/} \\
-C4 & 78 & Ισορροπημένη & LR, SVM, RF, GB, XGB & \texttt{weighted/extended/} \\
+C1 & 47 & Καμία & LR, SVM, RF, GB, XGB \\
+C2 & 47 & Ισορροπημένη & LR, SVM, RF, GB, XGB \\
+C3 & 78 & Καμία & LR, SVM, RF, GB, XGB \\
+C4 & 78 & Ισορροπημένη & LR, SVM, RF, GB, XGB \\
 \bottomrule
 \end{tabular}
-\caption{Πειραματικές συνθήκες (4 συνθήκες $\times$ 5 μοντέλα = 20). Σημείωση: η στάθμιση εφαρμόζεται σε LR, SVM και RF.}
+\caption{Πειραματικές συνθήκες (4 συνθήκες $\times$ 5 μοντέλα = 20).}
 \label{tab:conditions}
 \end{table}
 
@@ -114,7 +114,6 @@ Dataset B (PD Speech) & Stratified 5-Fold & Δείγμα (rows) & Αγνωστο
 \bottomrule
 \end{tabular}
 \vspace{2pt}
-{\small $^*$Η αγνωσία IDs υποκειμένων δεν επιτρέπει grouped CV· τα αποτελέσματα ενδέχεται να είναι αισιόδοξα (\S~\ref{cav:dataset-b-leakage}).}
 \end{table}
 
 Τα αποτελέσματα του Dataset B πρέπει να εξετάζονται με προσοχή λόγω της έλλειψης αναγνωριστικών υποκειμένων (βλ.\ ενότητα~\ref{cav:dataset-b-leakage}).

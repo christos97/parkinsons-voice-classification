@@ -176,8 +176,8 @@ pvc-importance [OPTIONS]
 
 ### Methods
 
-- **Default (Gini):** Uses model's built-in feature importances (Random Forest, Logistic Regression coefficients)
-- **Permutation:** Shuffles each feature and measures performance drop (works with any model)
+- **Default (native):** Uses model's built-in feature importances (tree-based importances, linear coefficients)
+- **Permutation:** Shuffles each feature and measures performance drop (works with any model, including `SVM_RBF`)
 
 ### Examples
 
@@ -201,6 +201,12 @@ Plots saved to:
 - `outputs/plots/importance_readtext_randomforest.png`
 - `outputs/plots/importance_spontaneous_randomforest.png`
 - `outputs/plots/importance_pd_speech_randomforest.png`
+
+Additional heatmaps:
+- `outputs/plots/heatmap_readtext.png` (native, cross-model)
+- `outputs/plots/heatmap_spontaneous.png` (native, cross-model)
+- `outputs/plots/heatmap_readtext_permutation.png` (created with `--permutation`, includes `SVM_RBF`)
+- `outputs/plots/heatmap_spontaneous_permutation.png` (created with `--permutation`, includes `SVM_RBF`)
 
 ---
 
