@@ -91,14 +91,18 @@ Spectral shape (centroid, rolloff, contrast, flux) & -- & 5 & Φασματικά
 
 \section{Πειραματικά πρωτόκολλα και αναπαραγωγιμότητα}
 
-Χρησιμοποιήθηκε 5-fold cross-validation (σε επίπεδο υποκειμένου για το Dataset A και στρωματοποιημένο για το Dataset B) \citep{bishop2006pattern}. Τα datasets τεκμηριώνονται μέσω των επίσημων πηγών τους (MDVR-KCL στο Zenodo και UCI Parkinson's Disease Classification) \citep{mdvr_kcl_2019,uci2018pd_classification}.
-Όλα τα πειράματα εκτελέστηκαν με \texttt{random\_state=42} για αναπαραγωγιμότητα. Η προσέγγιση αυτή συμβαδίζει με τις συστάσεις των \citet{ge2023inflation} για την αποφυγή διογκωμένων εκτιμήσεων απόδοσης στην κλινική μηχανική μάθηση.
+Χρησιμοποιήθηκε 5-fold cross-validation (σε επίπεδο υποκειμένου για το Dataset A και stratified για το Dataset B) \citep{bishop2006pattern}. 
+Τα datasets τεκμηριώνονται μέσω των επίσημων πηγών τους (MDVR-KCL στο Zenodo και UCI Parkinson's Disease Classification) \citep{mdvr_kcl_2019,uci2018pd_classification}.
+Όλα τα πειράματα εκτελέστηκαν με \texttt{random\_state=42} για αναπαραγωγιμότητα. 
+Η προσέγγιση αυτή ακολουθεί τις συστάσεις των \citet{ge2023inflation} ώστε να αποφεύγονται υπερβολικά αισιόδοξες εκτιμήσεις απόδοσης σε κλινικές εφαρμογές.
 
-Η επιλογή του ROC-AUC ως κύριας μέτρησης βασίζεται στο κλασικό πλαίσιο ερμηνείας ROC του \citet{fawcett2006roc}. Η συμπληρωματική αναφορά precision/recall και F1 χρησιμοποιείται επειδή η βιβλιογραφία δείχνει ότι οι καμπύλες PR παρέχουν επιπλέον πληροφορία σε σενάρια ανισορροπίας κλάσεων \citep{davis2006pr_roc}.
+Η επιλογή του ROC-AUC ως κύριας μέτρησης βασίζεται στο κλασικό πλαίσιο ερμηνείας ROC του \citet{fawcett2006roc}. 
+Η συμπληρωματική αναφορά precision/recall και F1 χρησιμοποιείται επειδή η βιβλιογραφία δείχνει ότι οι καμπύλες PR παρέχουν επιπλέον πληροφορία στη περίπτωση που υπάρχει ανισορροπία κλάσεων \citep{davis2006pr_roc}.
 
-Η αναφορά του πειραματικού σχεδιασμού είναι ευθυγραμμισμένη με σύγχρονες οδηγίες διαφάνειας για μελέτες πρόβλεψης/διαγνωστικής ακρίβειας (TRIPOD+AI, STARD 2015), χωρίς αυτό να συνεπάγεται πλήρη κανονιστική συμμόρφωση κλινικής δοκιμής \citep{collins2024tripod,stard2015}.
+Η περιγραφή του πειραματικού σχεδιασμού είναι ευθυγραμμισμένη με σύγχρονες οδηγίες διαφάνειας τόσο για μελέτες πρόβλεψης όσο και διαγνωστικής ακρίβειας (TRIPOD+AI, STARD 2015), 
+χωρίς αυτό να συνεπάγεται ότι πρόκειται για πλήρως κανονιστική κλινική δοκιμή \citep{collins2024tripod,stard2015}.
 
-Ο Πίνακας~\ref{tab:cv-strategy} συνοψίζει τη στρατηγική cross-validation για κάθε dataset, συμπεριλαμβανομένης της αιτιολογίας για τις αντίστοιχες επιλογές.
+Ο Πίνακας~\ref{tab:cv-strategy} παρουσιάζει συνοπτικά τη στρατηγική cross-validation για κάθε dataset και εξηγεί γιατί επιλέχθηκε η καθεμία.
 
 \begin{table}[H]
 \centering
@@ -109,12 +113,12 @@ Spectral shape (centroid, rolloff, contrast, flux) & -- & 5 & Φασματικά
 \toprule
 \textbf{Dataset} & \textbf{CV Τύπος} & \textbf{Μονάδα διαχωρισμού} & \textbf{Αιτιολόγηση} \\
 \midrule
-Dataset A (MDVR-KCL) & Grouped Stratified 5-Fold & Υποκείμενο & Πολλαπλές ηχογραφήσεις ανά υποκείμενο: απαιγορεύεται data leakage \\
-Dataset B (PD Speech) & Stratified 5-Fold & Δείγμα (rows) & Αγνωστοί IDs υποκειμένων$^*$ \\
+Dataset A (MDVR-KCL) & Grouped Stratified 5-Fold & Υποκείμενο & Πολλαπλές ηχογραφήσεις ανά άτομο: αποφυγή διαρροής υποκειμένου \\
+Dataset B (PD Speech) & Stratified 5-Fold & Δείγμα (rows) & Αγνωστα subject IDs \\
 \bottomrule
 \end{tabular}
 \vspace{2pt}
 \end{table}
 
-Τα αποτελέσματα του Dataset B πρέπει να εξετάζονται με προσοχή λόγω της έλλειψης αναγνωριστικών υποκειμένων (βλ.\ ενότητα~\ref{cav:dataset-b-leakage}).
+Τα αποτελέσματα του Dataset B πρέπει να εξετάζονται με προσοχή λόγω έλλειψης των subject IDs  (βλ.\ ενότητα~\ref{cav:dataset-b-leakage}).
 Οι περιορισμοί παρουσιάζονται στο κεφάλαιο~\ref{ch:limitations}.
