@@ -282,21 +282,18 @@
     morestring=[b]"
 }
 
-% Header style
+% Page style — page number at outer bottom corner, no headers
+% (Compliant with NTUA thesis guide §4.1: continuous numbering, outer bottom corner)
 \pagestyle{fancy}
 \fancyhf{}
-\fancyhead[LE,RO]{\thepage}
-\fancyhead[RE]{\nouppercase{\leftmark}}
-\fancyhead[LO]{\nouppercase{\rightmark}}
-\renewcommand{\headrulewidth}{0.4pt}
+\fancyfoot[R]{\thepage}
+\renewcommand{\headrulewidth}{0pt}
 
 % Keep chapter-opening (plain) pages visually consistent with the rest
 \fancypagestyle{plain}{%
   \fancyhf{}
-  \fancyhead[LE,RO]{\thepage}
-  \fancyhead[RE]{\nouppercase{\leftmark}}
-  \fancyhead[LO]{\nouppercase{\rightmark}}
-  \renewcommand{\headrulewidth}{0.4pt}
+  \fancyfoot[R]{\thepage}
+  \renewcommand{\headrulewidth}{0pt}
 }
 
 % Chapter heading style

@@ -4,8 +4,8 @@
 %%
 %% Organisation:
 %%   Part A — Abbreviations & Acronyms  (\newabbreviation)  — 27 entries
-%%   Part B — Technical Terms           (\newglossaryentry)  —  6 entries
-%%                                                     Total: 33 entries
+%%   Part B — Technical Terms           (\newglossaryentry)  —  7 entries
+%%                                                     Total: 34 entries
 %%
 %% Abbreviation style: short-only  →  \gls{key} always prints the short form.
 %% All entries are forced into the printed glossary via \glsaddall in main.tex,
@@ -115,11 +115,21 @@
         κακή απόδοση σε νέα δεδομένα (απώλεια γενικευσιμότητας)}
 }
 
+\newglossaryentry{subjectleakage}{
+    name        = {subject leakage},
+    description = {Διαρροή ταυτότητας υποκειμένου: φαινόμενο κατά το οποίο
+        ηχογραφήσεις του ίδιου ατόμου εμφανίζονται τόσο στο σύνολο
+        εκπαίδευσης όσο και στο σύνολο ελέγχου. Οδηγεί σε υπερεκτίμηση
+        της απόδοσης του μοντέλου, καθώς αυτό «αναγνωρίζει» πρότυπα
+        από γνωστά άτομα αντί να γενικεύει σε νέα. Αποφεύγεται με
+        διαχωρισμό σε επίπεδο υποκειμένου (grouped cross-validation)}
+}
+
 %% — Signal Processing & Acoustics ————————————————————————————————————————————
 
 \newglossaryentry{jitter}{
     name        = {jitter},
-    description = {Διαταραχή περιόδου (Jitter): μέτρο κύκλο-προς-κύκλο
+    description = {Διαταραχή περιόδου: μέτρο κύκλο-προς-κύκλο
         αστάθειας της θεμελιώδους περιόδου δόνησης των φωνητικών χορδών.
         Υψηλές τιμές jitter παρατηρούνται στην υποκινητική δυσαρθρία
         που συνδέεται με τη νόσο Πάρκινσον}
@@ -127,7 +137,7 @@
 
 \newglossaryentry{shimmer}{
     name        = {shimmer},
-    description = {Διαταραχή πλάτους (Shimmer): μέτρο κύκλο-προς-κύκλο
+    description = {Διαταραχή πλάτους: μέτρο κύκλο-προς-κύκλο
         αστάθειας του πλάτους της δόνησης των φωνητικών χορδών. Μαζί
         με το jitter, αποτελεί ένδειξη νευρομυϊκής αστάθειας στη
         νόσο Πάρκινσον}

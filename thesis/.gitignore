@@ -1,24 +1,48 @@
-# LaTeX build artifacts
+# ==============================================================================
+# LaTeX build artifacts — only .tex, .bib, .md, figures/, .latexmkrc are kept
+# ==============================================================================
+
+# Core compiler outputs
 *.aux
-*.bbl
-*.blg
-*.fdb_latexmk
-*.fls
 *.log
 *.out
-*.synctex.gz
 *.toc
 *.lof
 *.lot
+*.synctex.gz
+*.fls
+*.fdb_latexmk
+
+# Bibliography
+*.bbl
+*.blg
+
+# Index / makeindex
 *.idx
 *.ilg
 *.ind
+*.ist
+
+# Glossaries (standard: glossaries package)
+*.glo
+*.gls
+*.glg
+*.glsdefs
+*.acn
+*.acr
+*.alg
+
+# Glossaries-extra (abbreviation type — suffix -abr)
+*.glo-abr
+*.gls-abr
+*.glg-abr
+
+# Beamer / slides
 *.nav
 *.snm
 *.vrb
 
-# Generated PDF (keep in .gitignore, generate fresh)
-# Uncomment if you want to track the PDF:
+# Keep the final built PDF tracked
 !main.pdf
 
 # Editor backups

@@ -114,7 +114,7 @@ I = \{\mu_I, \sigma_I, \max_I - \min_I\}
 
 \subsubsection{Formants}
 
-Τα τρία πρώτα formants ($F_1$, $F_2$, $F_3$) εξήχθησαν χρησιμοποιώντας γραμμική προβλεπτική κωδικοποίηση (\gls{lpc}):
+Τα τρία πρώτα formants ($F_1$, $F_2$, $F_3$) εξήχθησαν χρησιμοποιώντας \gls{lpc} τάξης 10:
 
 \begin{itemize}
     \item \textbf{Σειρά LPC:} τάξης 10 (επαρκής για 3 formants στα 22 kHz)
@@ -147,7 +147,7 @@ Formants & 6 & $F_1$--$F_3$ μέσος όρος, $F_1$--$F_3$ τυπική απ�
 
 \subsubsection{Συντελεστές Mel-Frequency Cepstral (\gls{mfcc})}
 
-Οι MFCC υπολογίζονται μέσω των ακόλουθων βημάτων \citep{davis1980comparison}:
+Οι \gls{mfcc} υπολογίζονται μέσω των ακόλουθων βημάτων \citep{davis1980comparison}:
 
 \begin{enumerate}
     \item \textbf{Προέμφαση:} $y[n] = x[n] - 0{,}97 \cdot x[n-1]$
@@ -286,26 +286,26 @@ Formants & 6 & $F_1$--$F_3$ μέσος όρος, $F_1$--$F_3$ τυπική απ�
 Επιλέχθηκαν πέντε κλασικά μοντέλα μηχανικής μάθησης, ώστε να καλυφθούν διαφορετικοί τρόποι μάθησης:
 
 \begin{itemize}
-    \item \textbf{Λογιστική Παλινδρόμηση~\citep{nelder1972glm,cox1958regression,hosmer2013applied_logistic_regression}:} ένα απλό γραμμικό μοντέλο με κανονικοποίηση L2.
-    \item \textbf{SVM με πυρήνα RBF~\citep{cortes1995support}:} μη γραμμική μέθοδος που μπορεί να μάθει πιο σύνθετα όρια απόφασης.
-    \item \textbf{Random Forest~\citep{breiman2001random}:} σύνολο δέντρων απόφασης που προσφέρει και εκτίμηση σημασίας χαρακτηριστικών.
-    \item \textbf{Gradient Boosting~\cite{friedman2001greedy}:} μοντέλο που βελτιώνει σταδιακά τα λάθη των προηγούμενων βημάτων.
-    \item \textbf{XGBoost~\cite{chen2016xgboost}:} βελτιστοποιημένη και κανονικοποιημένη εκδοχή του boosting.
+    \item \textbf{Λογιστική Παλινδρόμηση (\gls{logr})~\citep{nelder1972glm,cox1958regression,hosmer2013applied_logistic_regression}:} ένα απλό γραμμικό μοντέλο με κανονικοποίηση L2.
+    \item \textbf{\gls{svm} με πυρήνα \gls{rbf}~\citep{cortes1995support}:} μη γραμμική μέθοδος που μπορεί να μάθει πιο σύνθετα όρια απόφασης.
+    \item \textbf{\gls{rf}~\citep{breiman2001random}:} σύνολο δέντρων απόφασης που προσφέρει και εκτίμηση σημασίας χαρακτηριστικών.
+    \item \textbf{\gls{gb}~\cite{friedman2001greedy}:} μοντέλο που βελτιώνει σταδιακά τα λάθη των προηγούμενων βημάτων.
+    \item \textbf{\gls{xgb}~\cite{chen2016xgboost}:} βελτιστοποιημένη και κανονικοποιημένη εκδοχή του boosting.
 \end{itemize}
 
 Όλες οι υπερπαράμετροι ορίστηκαν εκ των προτέρων (\emph{a priori}) και δεν προσαρμόστηκαν ειδικά για κάποιο συγκεκριμένο σύνολο δεδομένων:
 
 \begin{table}[H]
 \centering
-\begin{tabular}{@{}llp{6cm}@{}}
+\begin{tabular}{@{}llp{9cm}@{}}
 \toprule
 \textbf{Μοντέλο} & \textbf{Τύπος} & \textbf{Βασικές παράμετροι} \\
 \midrule
-\gls{logr} & Γραμμική & $C=1.0$ (κανονικοποίηση L2), max\_iter$=1000$, solver=`lbfgs' \\
-\gls{svm} & Πυρήνας & $C=1.0$ (κανονικοποίηση), gamma$=$`scale' (αυτόματη κλιμάκωση ανά χαρακτηριστικά), kernel=`rbf' \\
-\gls{rf} & Bagging & n\_estimators$=100$, max\_depth$=10$, min\_samples\_split$=2$, random\_state$=42$ \\
-\gls{gb} & Boosting & n\_estimators$=100$, learning\_rate$=0.1$, max\_depth$=3$ (προεπιλογή), random\_state$=42$ \\
-\gls{xgb} & Boosting & n\_estimators$=100$, learning\_rate$=0.1$, eval\_metric=`logloss', random\_state$=42$ \\
+LR & Γραμμική & $C=1.0$ (κανονικοποίηση L2), max\_iter$=1000$, solver=`lbfgs' \\
+SVM & Πυρήνας & $C=1.0$ (κανονικοποίηση), gamma$=$`scale' (αυτόματη κλιμάκωση ανά χαρακτηριστικά), kernel=`rbf' \\
+RF & Bagging & n\_estimators$=100$, max\_depth$=10$, min\_samples\_split$=2$, random\_state$=42$ \\
+GB & Boosting & n\_estimators$=100$, learning\_rate$=0.1$, max\_depth$=3$ (προεπιλογή), random\_state$=42$ \\
+XGB & Boosting & n\_estimators$=100$, learning\_rate$=0.1$, eval\_metric=`logloss', random\_state$=42$ \\
 \bottomrule
 \end{tabular}
 \caption{Προδιαγραφές μοντέλου. Όλες οι παράμετροι καθορίστηκαν πριν από τα πειράματα.}
@@ -332,7 +332,7 @@ P(y=1|\mathbf{x}) = \frac{1}{1 + e^{-(\mathbf{w}^T \mathbf{x} + b)}}
 
 \subsubsection{Μηχανή Υποστήριξης Διανυσμάτων}
 
-Ο πυρήνας \gls{rbf} μαθαίνει ένα μη γραμμικό όριο απόφασης μέσω:
+Ο \gls{rbf} μαθαίνει ένα μη γραμμικό όριο απόφασης μέσω:
 
 \begin{equation}
 K(\mathbf{x}_i, \mathbf{x}_j) = \exp\left(-\gamma \|\mathbf{x}_i - \mathbf{x}_j\|^2\right)
@@ -415,7 +415,7 @@ w_k = \frac{n_{\text{samples}}}{n_{\text{classes}} \cdot n_k}
 Δεν χρησιμοποιήθηκε ξεχωριστό σύνολο δοκιμής, καθώς με μόνο $n=37$ υποκείμενα (σύνολο δεδομένων A), η δέσμευση ακόμη και του 20\% για test set θα οδηγούσε σε περίπου επτά υποκείμενα δοκιμής ανά διαχωρισμό σε επίπεδο υποκειμένου, αριθμός ανεπαρκής για σταθερή εκτίμηση. 
 
 H 5-fold \gls{cv} χρησιμοποιείται αποκλειστικά ως \textbf{μηχανισμός αξιολόγησης} και όχι ως μηχανισμός ρύθμισης. 
-Έτσι αποφεύγεται οποιοσδήποτε κίνδυνος προσαρμογής των υπερπαραμέτρων στα δεδομένα αξιολόγησης.
+Έτσι αποφεύγεται οποιοσδήποτε κίνδυνος \gls{overfitting} των υπερπαραμέτρων στα δεδομένα αξιολόγησης.
 
 Απαιτήθηκαν διαφορετικές στρατηγικές επικύρωσης για κάθε σύνολο δεδομένων, λόγω των δομικών διαφορών που παρουσιάζουν.
 
