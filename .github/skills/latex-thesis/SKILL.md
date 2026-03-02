@@ -174,6 +174,82 @@ Allowed: `@article`, `@book`, `@inproceedings`, `@misc`
 4. Cite in chapter: `\cite{key}` or `\citep{key}`
 5. Verify: build succeeds and bibliography count > 0
 
+## Glossary & Abbreviations
+
+All abbreviations are defined in `thesis/glossary.tex`. Use `\gls{key}` rather than bare abbreviation text.
+
+```latex
+% CORRECT — use \gls{} for defined abbreviations
+\gls{pd} vs \gls{hc}
+\gls{rocauc}
+\gls{mfcc}
+\gls{svm} with \gls{rbf} kernel
+
+% INCORRECT — bare abbreviation text
+PD vs HC
+ROC-AUC
+MFCC
+SVM with RBF kernel
+```
+
+### Rules
+
+- Use `\gls{key}` for all abbreviations and technical terms defined in `thesis/glossary.tex`
+- **Never** use `\gls{}` inside `\section{}`, `\chapter{}`, or `\caption{}` titles — use bare text there
+- **Never** wrap individual cells of a table listing model names with `\gls{}`
+- `\glsaddall` is already called in `main.tex` — all entries appear in the printed list regardless of usage; do not remove it
+
+### Adding a New Abbreviation
+
+1. Add to `thesis/glossary.tex`: `\newabbreviation{key}{SHORT}{full form}`
+2. Use in text: `\gls{key}`
+
+### Available Keys — Abbreviations
+
+| Key | Short | English Form |
+|-----|-------|-------------|
+| `pd` | PD | Parkinson's Disease |
+| `hc` | HC | Healthy Controls |
+| `hkd` | HKD | Hypokinetic Dysarthria |
+| `updrs` | UPDRS | Unified Parkinson's Disease Rating Scale |
+| `ml` | ML | Machine Learning |
+| `svm` | SVM | Support Vector Machine |
+| `rbf` | RBF | Radial Basis Function |
+| `rf` | RF | Random Forest |
+| `gb` | GB | Gradient Boosting |
+| `xgb` | XGB | XGBoost |
+| `logr` | LR | Logistic Regression |
+| `roc` | ROC | Receiver Operating Characteristic |
+| `auc` | AUC | Area Under the Curve |
+| `rocauc` | ROC-AUC | ROC Area Under the Curve |
+| `f1` | F1 | F1-Score |
+| `cv` | CV | Cross-Validation |
+| `tp` | TP | True Positive |
+| `fp` | FP | False Positive |
+| `mfcc` | MFCC | Mel-Frequency Cepstral Coefficients |
+| `hnr` | HNR | Harmonic-to-Noise Ratio |
+| `lpc` | LPC | Linear Predictive Coding |
+| `tqwt` | TQWT | Tunable Q-factor Wavelet Transform |
+| `mdvrkcl` | MDVR-KCL | Mobile Device Voice Recordings at King's College London |
+| `pdsf` | PDSF | PD Speech Features dataset |
+| `uci` | UCI | University of California, Irvine Machine Learning Repository |
+| `tripodai` | TRIPOD+AI | Transparent Reporting of a multivariable prediction model for Individual Prognosis Or Diagnosis + AI |
+| `probastai` | PROBAST+AI | Prediction model Risk Of Bias Assessment Tool + AI |
+
+### Available Keys — Technical Terms
+
+| Key | Term |
+|-----|------|
+| `crossvalidation` | cross-validation |
+| `overfitting` | overfitting |
+| `subjectleakage` | subject leakage |
+| `jitter` | jitter |
+| `shimmer` | shimmer |
+| `dysarthria` | dysarthria |
+| `hypophonia` | hypophonia |
+| `monopitch` | monopitch |
+| `bradykinesia` | bradykinesia |
+
 ## Figure Workflow
 
 Figures are automatically synced from `outputs/plots/` to `thesis/figures/` via `scripts/sync_figures.py`. Never manually copy figures.
