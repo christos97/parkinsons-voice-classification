@@ -10,6 +10,7 @@ Usage:
 
 from __future__ import annotations
 
+import re
 import subprocess
 import tempfile
 from pathlib import Path
@@ -27,6 +28,7 @@ ROOT = Path(__file__).resolve().parent.parent
 FIGURES = ROOT / "thesis" / "figures"
 OUTPUT_DIR = ROOT / "outputs"
 PPTX_OUT = OUTPUT_DIR / "thesis_defense_presentation.pptx"
+THESIS_PREAMBLE = ROOT / "thesis" / "Preamble.tex"
 
 # Slide dimensions (16:9 widescreen)
 SLIDE_WIDTH = Inches(13.333)
@@ -46,6 +48,289 @@ CLR_LIGHT_GRAY = RGBColor(0xF2, 0xF2, 0xF2)
 CLR_GREEN = RGBColor(0x2E, 0x7D, 0x32)
 CLR_RED = RGBColor(0xC6, 0x28, 0x28)
 CLR_MEDIUM_GRAY = RGBColor(0x99, 0x99, 0x99)
+CLR_BG = RGBColor(0xF8, 0xFB, 0xFF)
+CLR_TITLE_LINE = RGBColor(0x3B, 0x82, 0xF6)
+
+
+def extract_latex_macro(preamble_path: Path, macro_name: str, fallback: str) -> str:
+    """Extract a simple \\newcommand{\\macro}{value} from LaTeX preamble."""
+    try:
+        content = preamble_path.read_text(encoding="utf-8")
+    except OSError:
+        return fallback
+
+    macro_prefix = f"\\newcommand{{\\{macro_name}}}{{"
+    for line in content.splitlines():
+        stripped = line.strip()
+        if stripped.startswith(macro_prefix) and stripped.endswith("}"):
+            value = stripped[len(macro_prefix):-1].strip()
+            return value or fallback
+
+    pattern = re.compile(rf"\\newcommand\{{\\{re.escape(macro_name)}\}}\{{(.+?)\}}")
+    match = pattern.search(content)
+    if match:
+        return match.group(1).strip() or fallback
+    return fallback
+
+def add_slide_footer(slide, footer_text: str = "Διπλωματική Εργασία - Μάρτιος 2026"):
+    """Add subtle footer line and right-aligned footer text."""
+    footer_line = slide.shapes.add_shape(
+        1, Inches(0.5), Inches(7.06), Inches(12.3), Inches(0.01)
+    )
+    footer_line.fill.solid()
+    footer_line.fill.fore_color.rgb = CLR_ACCENT
+    footer_line.line.fill.background()
+
+    add_textbox(
+        slide,
+        Inches(0.5),
+        Inches(7.10),
+        Inches(12.3),
+        Inches(0.24),
+        footer_text,
+        Pt(9),
+        CLR_ACCENT,
+        alignment=PP_ALIGN.RIGHT,
+    )
+
+
+def add_table_legend(slide, table_caption: str = "", table_ref: str = "", source: str = ""):
+    """Add a compact table legend bar."""
+    parts = [part for part in [table_caption, table_ref, source] if part]
+    legend_text = " | ".join(parts)
+    if not legend_text:
+        return
+
+    legend_box = slide.shapes.add_shape(
+        1, Inches(0.5), Inches(6.68), Inches(12.3), Inches(0.26)
+    )
+    legend_box.fill.solid()
+    legend_box.fill.fore_color.rgb = CLR_LIGHT_GRAY
+    legend_box.line.fill.background()
+
+    tf = legend_box.text_frame
+    tf.word_wrap = True
+    tf.margin_left = Inches(0.12)
+    tf.margin_right = Inches(0.12)
+    tf.margin_top = Inches(0.02)
+    p = tf.paragraphs[0]
+    p.text = legend_text
+    p.font.size = Pt(10)
+    p.font.color.rgb = CLR_GRAY
+    p.font.name = "Calibri"
+    p.alignment = PP_ALIGN.LEFT
+
+
+def add_figure_legend(
+    slide,
+    left,
+    top,
+    width,
+    caption: str = "",
+    ref: str = "",
+    source: str = "",
+):
+    """Add a compact centered legend beneath a figure."""
+    if not caption and not ref and not source:
+        return
+
+    parts = []
+    if caption:
+        parts.append(caption)
+    if ref:
+        parts.append(f"Ref: {ref}")
+    if source:
+        parts.append(source)
+    text = " | ".join(parts)
+
+    legend_box = slide.shapes.add_shape(1, left, top, width, Inches(0.32))
+    legend_box.fill.solid()
+    legend_box.fill.fore_color.rgb = CLR_LIGHT_GRAY
+    legend_box.line.fill.background()
+
+    tf = legend_box.text_frame
+    tf.word_wrap = True
+    tf.margin_left = Inches(0.08)
+    tf.margin_right = Inches(0.08)
+    p = tf.paragraphs[0]
+    p.text = text
+    p.font.size = Pt(8.5)
+    p.font.color.rgb = CLR_GRAY
+    p.font.name = "Calibri"
+    p.alignment = PP_ALIGN.CENTER
+
+
+def infer_figure_ref_and_caption(figure_name: str) -> tuple[str, str]:
+    """Infer thesis figure reference key and caption from figure filename."""
+    mapping = {
+        "Speech_Language_Assessment_Parkinson_Disease_Diagram.png": (
+            "fig:speech-language-assessment-pd",
+            "Figure 1.1: Clinical speech-language assessment in PD",
+        ),
+        "speech_signal_hc_vs_pd.png": (
+            "fig:speech-signal-hc-vs-pd",
+            "Figure 2.1: Speech signal comparison (HC vs PD)",
+        ),
+        "fig_pipeline_overview_thesis.png": (
+            "fig:pipeline-overview-thesis",
+            "Figure 1.2: Experimental pipeline overview",
+        ),
+        "fig_roc_readtext.pdf": (
+            "fig:roc-readtext-main",
+            "Figure 6.1: ROC curves for ReadText task",
+        ),
+        "fig_roc_readtext.png": (
+            "fig:roc-readtext-main",
+            "Figure 6.1: ROC curves for ReadText task",
+        ),
+        "fig_roc_spontaneous.pdf": (
+            "fig:roc-spontaneous-main",
+            "Figure 6.2: ROC curves for SpontaneousDialogue task",
+        ),
+        "fig_roc_spontaneous.png": (
+            "fig:roc-spontaneous-main",
+            "Figure 6.2: ROC curves for SpontaneousDialogue task",
+        ),
+        "fig_roc_dataset_b.pdf": (
+            "fig:roc-datasetb-main",
+            "Figure 6.3: ROC curves for Dataset B",
+        ),
+        "fig_roc_dataset_b.png": (
+            "fig:roc-datasetb-main",
+            "Figure 6.3: ROC curves for Dataset B",
+        ),
+        "fig_confusion_readtext.pdf": (
+            "fig:confusion-readtext",
+            "Figure 6.4: Confusion matrix — ReadText",
+        ),
+        "fig_confusion_readtext.png": (
+            "fig:confusion-readtext",
+            "Figure 6.4: Confusion matrix — ReadText",
+        ),
+        "fig_confusion_spontaneous.pdf": (
+            "fig:confusion-spontaneous",
+            "Figure 6.5: Confusion matrix — SpontaneousDialogue",
+        ),
+        "fig_confusion_spontaneous.png": (
+            "fig:confusion-spontaneous",
+            "Figure 6.5: Confusion matrix — SpontaneousDialogue",
+        ),
+        "fig_confusion_dataset_b.pdf": (
+            "fig:confusion-datasetb",
+            "Figure 6.6: Confusion matrix — Dataset B",
+        ),
+        "fig_confusion_dataset_b.png": (
+            "fig:confusion-datasetb",
+            "Figure 6.6: Confusion matrix — Dataset B",
+        ),
+        "fig_imp_readtext_cats.png": (
+            "fig:imp-categories-main",
+            "Figure 7.1: Category importance — ReadText",
+        ),
+        "fig_imp_spontaneous_cats.png": (
+            "fig:imp-categories-main",
+            "Figure 7.2: Category importance — SpontaneousDialogue",
+        ),
+        "fig_heatmap_readtext_permutation.png": (
+            "fig:heatmap-readtext-permutation-main",
+            "Figure 7.3: Permutation importance heatmap — ReadText",
+        ),
+        "fig_heatmap_spontaneous_permutation.png": (
+            "fig:heatmap-spontaneous-permutation-main",
+            "Figure 7.4: Permutation importance heatmap — SpontaneousDialogue",
+        ),
+        "webapp-architecture.png": (
+            "fig:demo-architecture-simple",
+            "Figure 1.3: Demo application architecture",
+        ),
+        "fig_demo_upload_audio.png": (
+            "fig:demo-screens-main",
+            "Figure 1.4a: Demo upload screen",
+        ),
+        "fig_demo_analysis_result.png": (
+            "fig:demo-screens-main",
+            "Figure 1.4b: Demo analysis result",
+        ),
+    }
+    if figure_name in mapping:
+        return mapping[figure_name]
+    return "[placeholder-ref]", f"Figure: {figure_name}"
+
+
+
+
+def infer_figure_source(figure_name: str) -> str:
+    """Infer source note for adapted figures that require direct paper credit."""
+    source_map = {
+        "Speech_Language_Assessment_Parkinson_Disease_Diagram.png": "Source: Adapted from Cao et al. (2025)",
+        "speech_signal_hc_vs_pd.png": "Source: Adapted from Little et al. (2009)",
+    }
+    return source_map.get(figure_name, "")
+
+
+def infer_table_ref_and_caption(title: str) -> tuple[str, str]:
+    """Infer thesis table reference key and caption from slide title."""
+    mapping = {
+        "Dataset A — MDVR-KCL (Raw Audio)": (
+            "tab:dataset-a-summary",
+            "Table 3.1: Dataset A summary",
+        ),
+        "Dataset B & Cross-Dataset Comparison": (
+            "tab:cross-dataset-comparison",
+            "Table 3.3: Cross-dataset comparison",
+        ),
+        "Feature Extraction — Baseline (47) vs Extended (78)": (
+            "tab:feature-counts",
+            "Table 4.4: Feature counts by configuration",
+        ),
+        "Models & Parameters (Fixed A Priori)": (
+            "tab:model-specs",
+            "Table 4.5: Model specifications",
+        ),
+        "Experimental Design — 2×2×5 Factorial (300 Runs)": (
+            "tab:conditions",
+            "Table 5.1: Experimental conditions C1–C4",
+        ),
+        "Headline Results — Best ROC-AUC per Dataset": (
+            "tab:best-results-summary",
+            "Table 6.1: Best ROC-AUC summary",
+        ),
+        "RQ2 — Feature Extension Effect (Δ ROC-AUC: C3 − C1)": (
+            "tab:ablation-main",
+            "Table 6.3: Feature ablation effect",
+        ),
+        "RQ3 — Class Weighting Effect (Random Forest, Dataset A)": (
+            "tab:weighting-main",
+            "Table 6.4: Class weighting effect",
+        ),
+        "RQ4 — Cross-Dataset Comparison & Variance": (
+            "tab:variance-summary",
+            "Table 6.5: Variance comparison",
+        ),
+        "Limitations — Honest Self-Assessment": (
+            "tab:validity-threats-summary",
+            "Table 8.2: Validity threats and mitigation",
+        ),
+        "Full Results — C4: Extended + Weighted (Dataset A)": (
+            "tab:results-c4-dataset-a",
+            "Table 6.7: Full C4 results — Dataset A",
+        ),
+        "Full Results — C4: Extended + Weighted (Dataset B)": (
+            "tab:results-c4-dataset-b",
+            "Table 6.8: Full C4 results — Dataset B",
+        ),
+        "Full ROC-AUC — Dataset A ReadText (All Conditions)": (
+            "[appendix-b-placeholder]",
+            "Appendix Table: ReadText ROC-AUC all conditions",
+        ),
+        "Research Gap & Thesis Positioning": (
+            "[custom-placeholder]",
+            "Table: Literature gap vs thesis positioning",
+        ),
+    }
+    if title in mapping:
+        return mapping[title]
+    return "[placeholder-ref]", f"Table: {title}"
 
 
 # ---------------------------------------------------------------------------
@@ -83,7 +368,7 @@ def ensure_figure(name: str) -> Path | None:
     return None
 
 
-def set_slide_bg(slide, color: RGBColor = CLR_WHITE):
+def set_slide_bg(slide, color: RGBColor = CLR_BG):
     """Set solid background color on a slide."""
     bg = slide.background
     fill = bg.fill
@@ -155,6 +440,14 @@ def add_bullet_slide(
     title_shape.fill.solid()
     title_shape.fill.fore_color.rgb = CLR_DARK_BLUE
     title_shape.line.fill.background()
+
+    accent_line = slide.shapes.add_shape(
+        1, Inches(0), Inches(1.08), SLIDE_WIDTH, Inches(0.02)
+    )
+    accent_line.fill.solid()
+    accent_line.fill.fore_color.rgb = CLR_TITLE_LINE
+    accent_line.line.fill.background()
+
     tf_title = title_shape.text_frame
     tf_title.word_wrap = True
     p = tf_title.paragraphs[0]
@@ -236,6 +529,21 @@ def add_bullet_slide(
             if pic.height > fig_h:
                 pic.height = fig_h
                 pic.width = int(fig_h / ratio)
+
+            fig_ref, fig_caption = infer_figure_ref_and_caption(figure_name)
+            legend_top = min(
+                pic.top + pic.height + Inches(0.06),
+                SLIDE_HEIGHT - Inches(0.45),
+            )
+            add_figure_legend(
+                slide,
+                pic.left,
+                legend_top,
+                pic.width,
+                caption=fig_caption,
+                ref=fig_ref,
+                source=infer_figure_source(figure_name),
+            )
         except Exception:
             pass  # Skip if image fails
 
@@ -243,6 +551,8 @@ def add_bullet_slide(
     if note:
         notes_slide = slide.notes_slide
         notes_slide.notes_text_frame.text = note
+
+    add_slide_footer(slide)
 
     return tf_bullets
 
@@ -255,6 +565,9 @@ def add_table_slide(
     col_widths: list[float] | None = None,
     note: str = "",
     highlight_cells: list[tuple[int, int]] | None = None,
+    table_caption: str = "",
+    table_ref: str = "",
+    source: str = "",
 ):
     """Create a slide with a title and table."""
     set_slide_bg(slide)
@@ -266,6 +579,14 @@ def add_table_slide(
     title_shape.fill.solid()
     title_shape.fill.fore_color.rgb = CLR_DARK_BLUE
     title_shape.line.fill.background()
+
+    accent_line = slide.shapes.add_shape(
+        1, Inches(0), Inches(1.08), SLIDE_WIDTH, Inches(0.02)
+    )
+    accent_line.fill.solid()
+    accent_line.fill.fore_color.rgb = CLR_TITLE_LINE
+    accent_line.line.fill.background()
+
     tf_title = title_shape.text_frame
     tf_title.word_wrap = True
     p = tf_title.paragraphs[0]
@@ -284,7 +605,7 @@ def add_table_slide(
     table_left = Inches(0.5)
     table_top = Inches(1.5)
     table_width = Inches(12.3)
-    table_height = Inches(0.5) * n_rows
+    table_height = Inches(0.43) * n_rows
 
     if col_widths:
         total = sum(col_widths)
@@ -339,6 +660,18 @@ def add_table_slide(
         notes_slide = slide.notes_slide
         notes_slide.notes_text_frame.text = note
 
+    if not table_caption or not table_ref:
+        inferred_ref, inferred_caption = infer_table_ref_and_caption(title)
+        if not table_ref:
+            table_ref = inferred_ref
+        if not table_caption:
+            table_caption = inferred_caption
+    if not source:
+        source = "Source: Thesis manuscript and computed results"
+
+    add_table_legend(slide, table_caption=table_caption, table_ref=table_ref, source=source)
+    add_slide_footer(slide)
+
 
 def add_figure_slide(slide, title: str, figure_names: list[str],
                      captions: list[str] | None = None, note: str = "",
@@ -353,6 +686,14 @@ def add_figure_slide(slide, title: str, figure_names: list[str],
     title_shape.fill.solid()
     title_shape.fill.fore_color.rgb = CLR_DARK_BLUE
     title_shape.line.fill.background()
+
+    accent_line = slide.shapes.add_shape(
+        1, Inches(0), Inches(1.08), SLIDE_WIDTH, Inches(0.02)
+    )
+    accent_line.fill.solid()
+    accent_line.fill.fore_color.rgb = CLR_TITLE_LINE
+    accent_line.line.fill.background()
+
     tf_title = title_shape.text_frame
     tf_title.word_wrap = True
     p = tf_title.paragraphs[0]
@@ -366,15 +707,16 @@ def add_figure_slide(slide, title: str, figure_names: list[str],
     tf_title.margin_top = Inches(0.15)
 
     # Resolve figures
-    valid_figs = []
+    valid_figs: list[tuple[str, Path]] = []
     for fn in figure_names:
         fig_path = ensure_figure(fn)
         if fig_path:
-            valid_figs.append(fig_path)
+            valid_figs.append((fn, fig_path))
 
     if not valid_figs:
         add_textbox(slide, Inches(2), Inches(3), Inches(9), Inches(1),
                     "[Figures not found]", Pt(20), CLR_GRAY, alignment=PP_ALIGN.CENTER)
+        add_slide_footer(slide)
         return
 
     n = len(valid_figs)
@@ -386,7 +728,7 @@ def add_figure_slide(slide, title: str, figure_names: list[str],
         fig_left = Inches(2.2)
         fig_top = Inches(1.4)
         try:
-            pic = slide.shapes.add_picture(str(valid_figs[0]), fig_left, fig_top, width=fig_w)
+            pic = slide.shapes.add_picture(str(valid_figs[0][1]), fig_left, fig_top, width=fig_w)
             ratio = pic.height / pic.width
             pic.width = fig_w
             pic.height = int(fig_w * ratio)
@@ -395,11 +737,20 @@ def add_figure_slide(slide, title: str, figure_names: list[str],
                 pic.width = int(fig_h / ratio)
             # Center horizontally
             pic.left = int((SLIDE_WIDTH - pic.width) / 2)
+
+            mapped_ref, mapped_caption = infer_figure_ref_and_caption(valid_figs[0][0])
+            primary_caption = captions[0] if captions and captions[0] else mapped_caption
+            add_figure_legend(
+                slide,
+                pic.left,
+                min(pic.top + pic.height + Inches(0.06), SLIDE_HEIGHT - Inches(0.45)),
+                pic.width,
+                caption=primary_caption,
+                ref=mapped_ref,
+                source=infer_figure_source(valid_figs[0][0]),
+            )
         except Exception:
             pass
-        if captions[0]:
-            add_textbox(slide, Inches(1), Inches(6.8), Inches(11.3), Inches(0.5),
-                        captions[0], Pt(13), CLR_GRAY, alignment=PP_ALIGN.CENTER)
 
     elif n == 2:
         for idx in range(2):
@@ -408,18 +759,28 @@ def add_figure_slide(slide, title: str, figure_names: list[str],
             fig_left = Inches(0.4 + idx * 6.5)
             fig_top = Inches(1.4)
             try:
-                pic = slide.shapes.add_picture(str(valid_figs[idx]), fig_left, fig_top, width=fig_w)
+                pic = slide.shapes.add_picture(str(valid_figs[idx][1]), fig_left, fig_top, width=fig_w)
                 ratio = pic.height / pic.width
                 pic.width = fig_w
                 pic.height = int(fig_w * ratio)
                 if pic.height > fig_h:
                     pic.height = fig_h
                     pic.width = int(fig_h / ratio)
+
+                mapped_ref, mapped_caption = infer_figure_ref_and_caption(valid_figs[idx][0])
+                provided_caption = captions[idx] if idx < len(captions) else ""
+                primary_caption = provided_caption if provided_caption else mapped_caption
+                add_figure_legend(
+                    slide,
+                    pic.left,
+                    min(pic.top + pic.height + Inches(0.06), SLIDE_HEIGHT - Inches(0.45)),
+                    pic.width,
+                    caption=primary_caption,
+                    ref=mapped_ref,
+                    source=infer_figure_source(valid_figs[idx][0]),
+                )
             except Exception:
                 pass
-            if idx < len(captions) and captions[idx]:
-                add_textbox(slide, fig_left, Inches(6.5), fig_w, Inches(0.5),
-                            captions[idx], Pt(12), CLR_GRAY, alignment=PP_ALIGN.CENTER)
 
     else:  # 3
         for idx in range(min(n, 3)):
@@ -428,22 +789,34 @@ def add_figure_slide(slide, title: str, figure_names: list[str],
             fig_left = Inches(0.3 + idx * 4.3)
             fig_top = Inches(1.4)
             try:
-                pic = slide.shapes.add_picture(str(valid_figs[idx]), fig_left, fig_top, width=fig_w)
+                pic = slide.shapes.add_picture(str(valid_figs[idx][1]), fig_left, fig_top, width=fig_w)
                 ratio = pic.height / pic.width
                 pic.width = fig_w
                 pic.height = int(fig_w * ratio)
                 if pic.height > fig_h:
                     pic.height = fig_h
                     pic.width = int(fig_h / ratio)
+
+                mapped_ref, mapped_caption = infer_figure_ref_and_caption(valid_figs[idx][0])
+                provided_caption = captions[idx] if idx < len(captions) else ""
+                primary_caption = provided_caption if provided_caption else mapped_caption
+                add_figure_legend(
+                    slide,
+                    pic.left,
+                    min(pic.top + pic.height + Inches(0.06), SLIDE_HEIGHT - Inches(0.45)),
+                    pic.width,
+                    caption=primary_caption,
+                    ref=mapped_ref,
+                    source=infer_figure_source(valid_figs[idx][0]),
+                )
             except Exception:
                 pass
-            if idx < len(captions) and captions[idx]:
-                add_textbox(slide, fig_left, Inches(6.3), fig_w, Inches(0.5),
-                            captions[idx], Pt(11), CLR_GRAY, alignment=PP_ALIGN.CENTER)
 
     if note:
         notes_slide = slide.notes_slide
         notes_slide.notes_text_frame.text = note
+
+    add_slide_footer(slide)
 
 
 def add_section_divider(slide, section_title: str, subtitle: str = "", note: str = ""):
@@ -470,6 +843,8 @@ def add_section_divider(slide, section_title: str, subtitle: str = "", note: str
         notes_slide = slide.notes_slide
         notes_slide.notes_text_frame.text = note
 
+    add_slide_footer(slide)
+
 
 # ===========================================================================
 # MAIN PRESENTATION BUILDER
@@ -485,6 +860,8 @@ def build_presentation():
     # -----------------------------------------------------------------------
     # SLIDE 1: TITLE
     # -----------------------------------------------------------------------
+    author_name = extract_latex_macro(THESIS_PREAMBLE, "myAuthor", "[Your Name]")
+
     slide = prs.slides.add_slide(blank_layout)
     set_slide_bg(slide, CLR_DARK_BLUE)
 
@@ -495,10 +872,22 @@ def build_presentation():
                                  height=Inches(1.5))
 
     # Title
-    add_textbox(slide, Inches(1), Inches(2.2), Inches(11.333), Inches(1.8),
+    add_textbox(slide, Inches(1), Inches(2.0), Inches(11.333), Inches(2.1),
                 "Voice-Based Classification of\nParkinson's Disease Using\nClassical Machine Learning",
-                Pt(36), CLR_WHITE, bold=True, alignment=PP_ALIGN.CENTER,
+                Pt(34), CLR_WHITE, bold=True, alignment=PP_ALIGN.CENTER,
                 font_name="Calibri")
+
+    add_textbox(
+        slide,
+        Inches(1),
+        Inches(4.75),
+        Inches(11.333),
+        Inches(0.3),
+        "Research Demonstration — Not for clinical use",
+        Pt(12),
+        CLR_ACCENT,
+        alignment=PP_ALIGN.CENTER,
+    )
 
     # Divider line
     line = slide.shapes.add_shape(
@@ -510,12 +899,15 @@ def build_presentation():
 
     # Author info
     add_textbox(slide, Inches(1), Inches(5.0), Inches(11.333), Inches(0.5),
-                "MSc Thesis Defense", Pt(20), CLR_LIGHT_BLUE,
+                f"Author: {author_name}", Pt(20), CLR_LIGHT_BLUE,
                 alignment=PP_ALIGN.CENTER)
-    add_textbox(slide, Inches(1), Inches(5.6), Inches(11.333), Inches(0.5),
+    add_textbox(slide, Inches(1), Inches(5.35), Inches(11.333), Inches(0.45),
+                "MSc Thesis Defense", Pt(18), CLR_LIGHT_BLUE,
+                alignment=PP_ALIGN.CENTER)
+    add_textbox(slide, Inches(1), Inches(5.8), Inches(11.333), Inches(0.5),
                 "National Technical University of Athens",
                 Pt(16), CLR_MEDIUM_GRAY, alignment=PP_ALIGN.CENTER)
-    add_textbox(slide, Inches(1), Inches(6.2), Inches(11.333), Inches(0.5),
+    add_textbox(slide, Inches(1), Inches(6.25), Inches(11.333), Inches(0.5),
                 "March 2026", Pt(16), CLR_MEDIUM_GRAY,
                 alignment=PP_ALIGN.CENTER)
 
@@ -1169,7 +1561,7 @@ def build_presentation():
     # -----------------------------------------------------------------------
     slide = prs.slides.add_slide(blank_layout)
     add_table_slide(slide,
-        "[Backup] Full Results — C4: Extended + Weighted (Dataset A)",
+        "Full Results — C4: Extended + Weighted (Dataset A)",
         ["Model", "Task", "Accuracy", "Precision", "Recall", "F1", "ROC-AUC"],
         [
             ["LR", "ReadText", "73.2 ± 14.6", "0.63 ± 0.20", "0.78 ± 0.25", "0.67 ± 0.19", "0.698 ± 0.132"],
@@ -1192,7 +1584,7 @@ def build_presentation():
     # -----------------------------------------------------------------------
     slide = prs.slides.add_slide(blank_layout)
     add_table_slide(slide,
-        "[Backup] Full Results — C4: Extended + Weighted (Dataset B)",
+        "Full Results — C4: Extended + Weighted (Dataset B)",
         ["Model", "Accuracy", "Precision", "Recall", "F1", "ROC-AUC"],
         [
             ["Logistic Regression", "0.805 ± 0.024", "0.862 ± 0.023", "0.875 ± 0.023", "0.868 ± 0.015", "0.867 ± 0.029"],
@@ -1211,7 +1603,7 @@ def build_presentation():
     # -----------------------------------------------------------------------
     slide = prs.slides.add_slide(blank_layout)
     add_bullet_slide(slide,
-        "[Backup] SVM Collapse on SpontaneousDialogue",
+        "SVM Collapse on SpontaneousDialogue",
         [
             "SVM (RBF) ROC-AUC drops to 0.407–0.460 on SpontaneousDialogue",
             "SVM is sensitive to curse of dimensionality at small n",
@@ -1239,7 +1631,7 @@ def build_presentation():
     tf_t.margin_left = Inches(0.5)
     tf_t.margin_top = Inches(0.15)
     p = tf_t.paragraphs[0]
-    p.text = "[Backup] Demo Application — Research Prototype"
+    p.text = "Demo Application — Research Prototype"
     p.font.size = Pt(26)
     p.font.color.rgb = CLR_WHITE
     p.font.bold = True
@@ -1248,8 +1640,17 @@ def build_presentation():
     # Architecture diagram
     arch_fig = ensure_figure("webapp-architecture.png")
     if arch_fig:
-        slide.shapes.add_picture(str(arch_fig), Inches(0.3), Inches(1.3),
-                                 width=Inches(5.5))
+        pic = slide.shapes.add_picture(str(arch_fig), Inches(0.3), Inches(1.3),
+                                       width=Inches(5.5))
+        fig_ref, fig_caption = infer_figure_ref_and_caption("webapp-architecture.png")
+        add_figure_legend(
+            slide,
+            pic.left,
+            min(pic.top + pic.height + Inches(0.06), Inches(6.4)),
+            pic.width,
+            caption=fig_caption,
+            ref=fig_ref,
+        )
 
     # Screenshots
     for idx, (fn, cap) in enumerate([
@@ -1265,6 +1666,15 @@ def build_presentation():
                 pic.height = int(Inches(3.0) * ratio)
                 if pic.height > Inches(5.0):
                     pic.height = Inches(5.0)
+                fig_ref, mapped_caption = infer_figure_ref_and_caption(fn)
+                add_figure_legend(
+                    slide,
+                    pic.left,
+                    min(pic.top + pic.height + Inches(0.06), Inches(6.4)),
+                    pic.width,
+                    caption=cap if cap else mapped_caption,
+                    ref=fig_ref,
+                )
             except Exception:
                 pass
 
@@ -1285,7 +1695,7 @@ def build_presentation():
     # -----------------------------------------------------------------------
     slide = prs.slides.add_slide(blank_layout)
     add_table_slide(slide,
-        "[Backup] Full ROC-AUC — Dataset A ReadText (All Conditions)",
+        "Full ROC-AUC — Dataset A ReadText (All Conditions)",
         ["Model", "C1 (47, unw)", "C2 (47, wt)", "C3 (78, unw)", "C4 (78, wt)"],
         [
             ["Logistic Reg.", "0.717 ± 0.139", "0.717 ± 0.139", "0.698 ± 0.132", "0.698 ± 0.132"],

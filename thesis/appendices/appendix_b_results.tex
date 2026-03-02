@@ -29,7 +29,7 @@
     \scriptsize
     \begin{tabular}{@{}llccccc@{}}
         \toprule
-        Task & Model & Accuracy & Precision & Recall & F1 & ROC-AUC \\
+        Task & Model & Accuracy & Precision & Recall & F1 & \gls{rocauc} \\
         \midrule
         ReadText & LogisticRegression & $0.621 \pm 0.058$ & $0.620 \pm 0.217$ & $0.550 \pm 0.201$ & $0.542 \pm 0.099$ & $0.717 \pm 0.139$ \\
         ReadText & SVM\_RBF & $0.621 \pm 0.106$ & $0.367 \pm 0.342$ & $0.317 \pm 0.335$ & $0.333 \pm 0.333$ & $0.614 \pm 0.312$ \\
@@ -53,7 +53,7 @@
     \scriptsize
     \begin{tabular}{@{}lccccc@{}}
         \toprule
-        Model & Accuracy & Precision & Recall & F1 & ROC-AUC \\
+        Model & Accuracy & Precision & Recall & F1 & \gls{rocauc} \\
         \midrule
         LogisticRegression & $0.828 \pm 0.008$ & $0.881 \pm 0.010$ & $0.890 \pm 0.016$ & $0.885 \pm 0.006$ & $0.867 \pm 0.029$ \\
         SVM\_RBF & $0.851 \pm 0.024$ & $0.841 \pm 0.015$ & $0.986 \pm 0.019$ & $0.908 \pm 0.015$ & $0.885 \pm 0.025$ \\
@@ -73,7 +73,7 @@
     \scriptsize
     \begin{tabular}{@{}llccccc@{}}
         \toprule
-        Task & Model & Accuracy & Precision & Recall & F1 & ROC-AUC \\
+        Task & Model & Accuracy & Precision & Recall & F1 & \gls{rocauc} \\
         \midrule
         ReadText & LogisticRegression & $0.596 \pm 0.079$ & $0.600 \pm 0.235$ & $0.550 \pm 0.201$ & $0.528 \pm 0.099$ & $0.717 \pm 0.139$ \\
         ReadText & SVM\_RBF & $0.704 \pm 0.111$ & $0.617 \pm 0.371$ & $0.500 \pm 0.373$ & $0.519 \pm 0.320$ & $0.542 \pm 0.312$ \\
@@ -97,7 +97,7 @@
     \scriptsize
     \begin{tabular}{@{}lccccc@{}}
         \toprule
-        Model & Accuracy & Precision & Recall & F1 & ROC-AUC \\
+        Model & Accuracy & Precision & Recall & F1 & \gls{rocauc} \\
         \midrule
         LogisticRegression & $0.825 \pm 0.017$ & $0.892 \pm 0.021$ & $0.872 \pm 0.012$ & $0.882 \pm 0.011$ & $0.867 \pm 0.029$ \\
         SVM\_RBF & $0.847 \pm 0.024$ & $0.887 \pm 0.028$ & $0.911 \pm 0.014$ & $0.899 \pm 0.015$ & $0.900 \pm 0.023$ \\
@@ -117,7 +117,7 @@
     \scriptsize
     \begin{tabular}{@{}llccccc@{}}
         \toprule
-        Task & Model & Accuracy & Precision & Recall & F1 & ROC-AUC \\
+        Task & Model & Accuracy & Precision & Recall & F1 & \gls{rocauc} \\
         \midrule
         ReadText & LogisticRegression & $0.596 \pm 0.079$ & $0.600 \pm 0.253$ & $0.433 \pm 0.149$ & $0.475 \pm 0.106$ & $0.698 \pm 0.132$ \\
         ReadText & SVM\_RBF & $0.786 \pm 0.181$ & $0.733 \pm 0.435$ & $0.567 \pm 0.365$ & $0.634 \pm 0.386$ & $0.834 \pm 0.153$ \\
@@ -141,7 +141,7 @@
     \scriptsize
     \begin{tabular}{@{}lccccc@{}}
         \toprule
-        Model & Accuracy & Precision & Recall & F1 & ROC-AUC \\
+        Model & Accuracy & Precision & Recall & F1 & \gls{rocauc} \\
         \midrule
         LogisticRegression & $0.828 \pm 0.008$ & $0.881 \pm 0.010$ & $0.890 \pm 0.016$ & $0.885 \pm 0.006$ & $0.867 \pm 0.029$ \\
         SVM\_RBF & $0.851 \pm 0.024$ & $0.841 \pm 0.015$ & $0.986 \pm 0.019$ & $0.908 \pm 0.015$ & $0.885 \pm 0.025$ \\
@@ -164,4 +164,4 @@
 
 \section{Σημείωση ερμηνείας}
 
-Η αυξημένη διακύμανση σε ορισμένες συνθήκες του Dataset A (ιδίως σε ROC-AUC/F1) υποδεικνύει ότι οι συγκρίσεις μεταξύ μοντέλων και συνθηκών πρέπει να διαβάζονται ως τάσεις. Για το Dataset B, τα αποτελέσματα ενδέχεται να είναι αισιόδοξα λόγω άγνωστης επικάλυψης υποκειμένων μεταξύ folds (Ενότητα~\ref{cav:dataset-b-leakage}).
+Η αυξημένη διακύμανση σε ορισμένες συνθήκες του Dataset A (ιδίως σε \gls{rocauc}/F1) υποδεικνύει ότι οι συγκρίσεις μεταξύ μοντέλων και συνθηκών πρέπει να διαβάζονται ως τάσεις. Για το Dataset B, τα αποτελέσματα ενδέχεται να είναι αισιόδοξα λόγω άγνωστης επικάλυψης υποκειμένων μεταξύ folds (Ενότητα~\ref{cav:dataset-b-leakage}).

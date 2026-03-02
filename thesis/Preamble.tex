@@ -116,6 +116,18 @@
 ]{hyperref}
 \usepackage{bookmark}
 
+% Glossary and abbreviations (must be loaded AFTER hyperref)
+\usepackage[
+    abbreviations,
+    nonumberlist,
+    toc,
+    nogroupskip,
+    sort=def,
+]{glossaries-extra}
+% Abbreviations always print their short form; full definition lives in the glossary page
+\setabbreviationstyle[abbreviations]{short-only}
+\makeglossaries
+
 % Bibliography
 \usepackage[numbers,sort&compress]{natbib}
 

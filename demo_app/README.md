@@ -4,12 +4,13 @@ Minimal web interface for Parkinson's Voice Classification research demonstratio
 
 **Purpose:** Research demonstration for thesis defense  
 **Key invariants:**
+
 - Flask imports ONLY `inference_adapter` and `audio_utils`
 - All audio normalized to mono 22050 Hz PCM-16 WAV
 - Temp files cleaned in `finally` blocks
 - Model switching requires zero Flask changes
 
-## ⚠️ Important Disclaimer
+## Important Disclaimer
 
 **This application is a research demonstration developed as part of an MSc thesis.
 It is NOT intended for medical diagnosis or clinical use.**
@@ -31,7 +32,7 @@ make demo                # Run at http://127.0.0.1:5000
 
 ## Architecture
 
-```
+```txt
 ┌─────────────────────────────────────────────────────────────────────┐
 │                           FLASK APP                                 │
 │                          (app.py)                                   │
@@ -64,6 +65,7 @@ make demo                # Run at http://127.0.0.1:5000
 > **Flask imports ONLY the adapter and audio_utils modules.**
 
 The Flask app has no knowledge of:
+
 - Which features are extracted
 - How many features exist
 - Which model architecture is used
@@ -98,6 +100,7 @@ INFERENCE_TASK = "ReadText"
 ```
 
 To switch models:
+
 1. Update `config.py`
 2. Run `make train-demo-model`
 3. Restart demo (no code changes needed)
@@ -124,9 +127,3 @@ poetry install --with demo
 ```
 
 This adds Flask to the project dependencies.
-
----
-
-## See Also
-
-- [docs/WEB_APP_ARCHITECTURE.md](../docs/WEB_APP_ARCHITECTURE.md) — Full architecture documentation

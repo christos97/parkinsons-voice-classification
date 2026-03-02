@@ -1,5 +1,5 @@
 ---
-name: LaTeX Thesis Conventions
+name: latex-thesis-instructions
 description: LaTeX coding standards for MSc thesis on Parkinson's Disease voice classification
 applyTo: "thesis/**/*.tex"
 ---
@@ -98,6 +98,36 @@ achieved 82\% accuracy
 Never use these phrases in thesis text:
 
 - "X outperforms Y" → "X achieved higher scores than Y"
+
+## Glossary & Abbreviations
+
+All abbreviations defined in `thesis/glossary.tex` must be referenced using `\gls{key}` rather than the bare abbreviation text.
+
+```latex
+% CORRECT — use \gls{} for defined abbreviations
+\gls{pd} vs \gls{hc}
+\gls{rocauc}
+\gls{mfcc}
+\gls{svm} with \gls{rbf} kernel
+
+% INCORRECT — bare abbreviation text
+PD vs HC
+ROC-AUC
+MFCC
+SVM with RBF kernel
+```
+
+**Rules:**
+- Use `\gls{key}` for all abbreviations listed in `thesis/glossary.tex` (abbreviations type)
+- Use `\gls{key}` for technical terms defined in `thesis/glossary.tex` (main type) where a link adds value
+- **Never** use `\gls{}` inside `\section{}`, `\chapter{}`, or `\caption{}` titles — use the bare text there
+- **Never** wrap individual cells of a table listing model names with `\gls{}` unless hyperlinks are explicitly desired
+- When adding a **new** abbreviation, add it to `thesis/glossary.tex` first with `\newabbreviation{key}{SHORT}{full form}`, then use `\gls{key}` in text
+- To force ALL glossary entries to appear in the printed list (even unused ones), `\glsaddall` is already called in `main.tex` — do not remove it
+
+**Available keys (abbreviations):** `pd`, `hc`, `hkd`, `updrs`, `ml`, `svm`, `rbf`, `rf`, `gb`, `xgb`, `logr`, `roc`, `auc`, `rocauc`, `f1`, `cv`, `tp`, `fp`, `mfcc`, `hnr`, `lpc`, `tqwt`, `mdvrkcl`, `pdsf`, `uci`, `tripodai`, `probastai`
+
+**Available keys (technical terms):** `crossvalidation`, `overfitting`, `jitter`, `shimmer`, `dysarthria`, `hypophonia`
 - "This proves..." → "These results suggest..."
 - "Clearly superior" → "Showed improvement"
 - "This diagnoses..." → "This classifies..."

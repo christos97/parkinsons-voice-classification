@@ -1,0 +1,167 @@
+%% =============================================================================
+%% Glossary Definitions
+%% Parkinson's Disease Voice Classification — MSc Thesis
+%%
+%% Organisation:
+%%   Part A — Abbreviations & Acronyms  (\newabbreviation)  — 27 entries
+%%   Part B — Technical Terms           (\newglossaryentry)  —  6 entries
+%%                                                     Total: 33 entries
+%%
+%% Abbreviation style: short-only  →  \gls{key} always prints the short form.
+%% All entries are forced into the printed glossary via \glsaddall in main.tex,
+%% so no entry needs a \gls{} call to appear on the glossary pages.
+%% =============================================================================
+
+%% -----------------------------------------------------------------------------
+%% PART A — ABBREVIATIONS (type = abbreviations)
+%% Format:  \newabbreviation{key}{SHORT}{Ελληνική πλήρης μορφή (English long form)}
+%% -----------------------------------------------------------------------------
+
+%% — Core Clinical / Disease ——————————————————————————————————————————————————
+
+\newabbreviation{pd}{PD}{Νόσος Πάρκινσον (Parkinson's Disease)}
+
+\newabbreviation{hc}{HC}{Υγιείς Μάρτυρες Ελέγχου (Healthy Controls)}
+
+\newabbreviation{hkd}{HKD}{Υποκινητική Δυσαρθρία (Hypokinetic Dysarthria)}
+
+\newabbreviation{updrs}{UPDRS}{Ενιαία Κλίμακα Αξιολόγησης Νόσου Πάρκινσον
+    (Unified Parkinson's Disease Rating Scale)}
+
+%% — Machine Learning — Models ————————————————————————————————————————————————
+
+\newabbreviation{ml}{ML}{Μηχανική Μάθηση (Machine Learning)}
+
+\newabbreviation{svm}{SVM}{Μηχανή Διανυσμάτων Υποστήριξης (Support Vector Machine)}
+
+\newabbreviation{rbf}{RBF}{Συνάρτηση Ακτινικής Βάσης (Radial Basis Function)}
+
+\newabbreviation{rf}{RF}{Τυχαίο Δάσος (Random Forest)}
+
+\newabbreviation{gb}{GB}{Ενίσχυση Κλίσης (Gradient Boosting)}
+
+\newabbreviation{xgb}{XGB}{Extreme Gradient Boosting (XGBoost)}
+
+\newabbreviation{logr}{LR}{Λογιστική Παλινδρόμηση (Logistic Regression)}
+
+%% — Evaluation Metrics & Validation ————————————————————————————————————————
+
+\newabbreviation{roc}{ROC}{Χαρακτηριστική Λειτουργία Δέκτη
+    (Receiver Operating Characteristic)}
+
+\newabbreviation{auc}{AUC}{Εμβαδόν κάτω από την Καμπύλη (Area Under the Curve)}
+
+\newabbreviation{rocauc}{ROC-AUC}{Εμβαδόν κάτω από την Καμπύλη ROC
+    (Receiver Operating Characteristic — Area Under the Curve)}
+
+\newabbreviation{f1}{F1}{F1-Score: αρμονικός μέσος ακρίβειας και ανάκλησης}
+
+\newabbreviation{cv}{CV}{Σταυροειδής Επαλήθευση (Cross-Validation)}
+
+\newabbreviation{tp}{TP}{Αληθώς Θετικό (True Positive)}
+
+\newabbreviation{fp}{FP}{Ψευδώς Θετικό (False Positive)}
+
+%% — Signal Processing & Acoustic Features ————————————————————————————————————
+
+\newabbreviation{mfcc}{MFCC}{Mel-Frequency Cepstral Coefficients}
+
+\newabbreviation{hnr}{HNR}{Αρμονική προς Θορυβώδη Αναλογία
+    (Harmonic-to-Noise Ratio)}
+
+\newabbreviation{lpc}{LPC}{Γραμμική Προγνωστική Κωδικοποίηση
+    (Linear Predictive Coding)}
+
+\newabbreviation{tqwt}{TQWT}{Μετασχηματισμός Κυματιδίου Ρυθμιζόμενου Παράγοντα Q
+    (Tunable Q-factor Wavelet Transform)}
+
+%% — Datasets & Repositories ——————————————————————————————————————————————————
+
+\newabbreviation{mdvrkcl}{MDVR-KCL}{Mobile Device Voice Recordings at King's College London}
+
+\newabbreviation{pdsf}{PDSF}{Χαρακτηριστικά Ομιλίας Νόσου Πάρκινσον
+    (PD Speech Features dataset)}
+
+\newabbreviation{uci}{UCI}{University of California, Irvine Machine Learning Repository}
+
+%% — Reporting Standards ——————————————————————————————————————————————————————
+
+\newabbreviation{tripodai}{TRIPOD+AI}{Transparent Reporting of a multivariable prediction model for Individual Prognosis Or Diagnosis + AI}
+
+\newabbreviation{probastai}{PROBAST+AI}{Prediction model Risk Of Bias Assessment Tool + AI}
+
+
+%% =============================================================================
+%% PART B — TECHNICAL TERMS (type = main)
+%% =============================================================================
+
+%% — Machine Learning ————————————————————————————————————————————————————————
+
+\newglossaryentry{crossvalidation}{
+    name        = {cross-validation},
+    description = {Μέθοδος αξιολόγησης μοντέλου μηχανικής μάθησης κατά την
+        οποία τα δεδομένα χωρίζονται επανειλημμένα σε σύνολα εκπαίδευσης και
+        ελέγχου. Επιτρέπει την εκτίμηση της γενικευσιμότητας του μοντέλου χωρίς
+        διαρροή δεδομένων. Στην παρούσα εργασία, η εφαρμογή γίνεται σε επίπεδο
+        υποκειμένου για το Dataset A (ομαδοποιημένη στρωματοποιημένη 5-fold CV)
+        και σε επίπεδο δείγματος για το Dataset B (τυπική στρωματοποιημένη
+        5-fold CV)}
+}
+
+\newglossaryentry{overfitting}{
+    name        = {overfitting},
+    description = {Υπερπροσαρμογή: φαινόμενο κατά το οποίο ένα μοντέλο
+        μαθαίνει υπερβολικά καλά τα δεδομένα εκπαίδευσης, με αποτέλεσμα
+        κακή απόδοση σε νέα δεδομένα (απώλεια γενικευσιμότητας)}
+}
+
+%% — Signal Processing & Acoustics ————————————————————————————————————————————
+
+\newglossaryentry{jitter}{
+    name        = {jitter},
+    description = {Διαταραχή περιόδου (Jitter): μέτρο κύκλο-προς-κύκλο
+        αστάθειας της θεμελιώδους περιόδου δόνησης των φωνητικών χορδών.
+        Υψηλές τιμές jitter παρατηρούνται στην υποκινητική δυσαρθρία
+        που συνδέεται με τη νόσο Πάρκινσον}
+}
+
+\newglossaryentry{shimmer}{
+    name        = {shimmer},
+    description = {Διαταραχή πλάτους (Shimmer): μέτρο κύκλο-προς-κύκλο
+        αστάθειας του πλάτους της δόνησης των φωνητικών χορδών. Μαζί
+        με το jitter, αποτελεί ένδειξη νευρομυϊκής αστάθειας στη
+        νόσο Πάρκινσον}
+}
+
+%% — Clinical & Physiological Terms ——————————————————————————————————————————
+
+\newglossaryentry{dysarthria}{
+    name        = {dysarthria},
+    description = {Δυσαρθρία: νευρολογική διαταραχή της κινητικής παραγωγής
+        ομιλίας που επηρεάζει τον συντονισμό των φωνητικών μυών.
+        Ο υποτύπος που σχετίζεται με τη νόσο Πάρκινσον ονομάζεται
+        υποκινητική δυσαρθρία (HKD)}
+}
+
+\newglossaryentry{hypophonia}{
+    name        = {hypophonia},
+    description = {Υποφωνία: μειωμένη ένταση ή φωνητική έκφραση της ομιλίας,
+        συχνά παρατηρείται στη νόσο Πάρκινσον ως αποτέλεσμα εξασθένησης
+        των αναπνευστικών και φωνητικών μυών}
+}
+
+\newglossaryentry{monopitch}{
+    name        = {monopitch},
+    description = {Μονοτονικότητα: μειωμένη μεταβλητότητα της 
+        θεμελιώδους συχνότητας (F0), που οδηγεί σε μονοτονική ομιλία.
+        Αποτελεί χαρακτηριστικό της υποκινητικής δυσαρθρίας στη νόσο
+        Πάρκινσον και επηρεάζει την προσωδία και την εκφραστικότητα}
+}
+
+\newglossaryentry{bradykinesia}{
+    name        = {bradykinesia},
+    description = {Βραδυκινησία: κλινικό χαρακτηριστικό της νόσου Πάρκινσον που
+        χαρακτηρίζεται από επιβράδυνση των εκούσιων κινήσεων, επηρεάζοντας
+        την άρθρωση και την προσωδία της ομιλίας}
+}
+

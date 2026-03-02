@@ -2,40 +2,15 @@
 
 \chapter*{Abstract}
 \addcontentsline{toc}{chapter}{Abstract}
+Parkinson's disease (PD) is an advanced progressive neurological disorder which has a significant negative effect on motor functions as well as on speech functions, it has become increasingly clear that vocal changes are often observable at an early stage in the progression of PD. Therefore, as an inexpensive and non-invasive technique, there has been growing interest in utilizing voice analysis as a diagnostic tool for detecting PD. This dissertation examines whether Parkinson's disease could be diagnosed by analyzing voice recordings through the use of classic machine learning algorithms.
 
-Parkinson's Disease (PD) is a progressive neurological disorder characterized primarily by motor symptoms and secondary by speech impairment.
+To evaluate the reliability of the proposed method of diagnosis, two separate data sets were analyzed. The first data set consisted of raw audio recordings taken from low-cost microphones integrated within common products such as mobile phones. Due to the nature of these recordings, they required preprocessing of the signals and extraction of acoustic characteristics prior to converting them into a numeric structure that would enable the use of a machine learning algorithm for classification. The second data set consisted of pre-extracted acoustic features in table form that were derived from the UCI/Kaggle PD Speech Signal Features repository. Consequently, this data set allowed for the direct application of machine learning algorithms without requiring further signal processing.
 
-This paper examines the possibility of diagnosing PD through voice recordings by utilizing only classical machine learning methods.
+Five commonly used classic algorithms were compared in terms of their ability to classify participants with PD vs those who were healthy. The five algorithms compared were: (Logistic Regression, Support Vector Machine, Random Forest, Gradient Boosting and Extreme Gradient Boosting). To assess model performance, cross-validation was employed so as to produce unbiased and reliable results. In addition to assessing model performance, several additional studies were conducted to investigate how expanding the feature set and employing class weighting strategies affected the performance of the algorithms. Specifically, these studies were focused on investigating whether or not class weighting could alleviate potential class imbalance between participants with PD and those who were healthy.
 
-We used two different datasets and applied the same method of analysis and verification.
+Overall, the results showed that the random forest algorithm performed best when applied to both data sets. Additionally, expanding the feature set resulted in increased classification accuracy for most of the algorithms, and the application of class weighting resulted in few benefits and was only found to be beneficial for random forest.
 
-The first dataset, included some audio files (WAV), 
-that were already split in two groups, i.e., PD and healthy controls (HC), and were recorded with low cost microphones, available in everyday devices like smartphones.
-
-Since the recordings were raw we had to process them to extract the acoustic features related to PD, and then convert the data to a numeric format.
-
-The second dataset, PD speech signal features from Kaggle (UCI), contained pre-extracted acoustic features already in csv format, so we did not need to process the audio ourselves.
-
-We compared five machine learning algorithms, i.e., Logistic Regression, Support Vector Machine (SVM), Random Forest, Gradient Boosting, and XGBoost.
-
-We also determined if additional features in the training set resulted in improved performance, and if class weighting enhanced model performance (particularly for the PD group).
-
-Cross-validation was utilized in each case to prevent data leakage.
-
-The results show that Random Forest algorithm outperformed all other tested algorithms, in almost all cases and that increasing the number of features in the training set positively affected the majority of the tested models.
-
-Class weighting had a small positive impact primarily on Random Forest, while the other four algorithms either did not benefit from class weighting or were even negatively affected.
-
-Class-weighting appeared to have a small positive effect for Random Forest alone. The other four models exhibited no advantage, or they were harmed by class-weighting.
-
-The overall conclusion of this research is that using voice-based analysis in conjunction with machine learning will assist in diagnosing patients who have Parkinson’s disease.
-
-It has to be said that the results need to be interpreted carefully as there are several limitations and constraints (e.g., potentially more than one recording per patient and substantial differences in sample size for the two different data sets).
-
-But even though there are limitations, the study suggests that it is possible to identify diseases through voice if you properly process your data and correctly apply machine learning algorithms.
-
-Early detection can allow treatment to begin earlier and thereby improve the quality of a patient's life.
-
+While there are certainly some drawbacks to the study (i.e., differences in data set size and the possibility that multiple recordings of each participant could have been used), the results show that voice based analysis in conjunction with classic machine learning algorithms can provide effective means for identifying individuals with Parkinson's disease. As a result, the study provides evidence of the potential for speech to serve as a digital biomarker, and contributes to the continued development of accessible tools for the early detection and clinical decision support for PD.
 \vspace{1cm}
 
 \textbf{Keywords:} Parkinson's Disease; Dysarthria; Voice Biomarkers; Acoustic Features; Machine Learning; Feature Extraction; Cross-Validation; Reproducibility; Speech Classification;

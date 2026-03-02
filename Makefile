@@ -261,8 +261,12 @@ generate-plots: ## Generate all plots (confusion matrices + ROC curves)
 	@echo "✓ All plots generated and synced"
 
 thesis: sync-figures
-	@echo "Building thesis PDF (using latexmk)..."
-	@cd thesis && latexmk -xelatex -interaction=nonstopmode -quiet -f main.tex 2>/dev/null || latexmk -xelatex -interaction=nonstopmode -quiet main.tex
+	@echo "Building thesis PDF (using latexmk + makeglossaries)..."
+	@cd thesis && latexmk -xelatex -interaction=nonstopmode -quiet -f main.tex 2>/dev/null || true
+	@cd thesis && makeglossaries -q main 2>/dev/null || makeglossaries main
+	@cd thesis && latexmk -xelatex -interaction=nonstopmode -quiet -f main.tex 2>/dev/null || true
+	@cd thesis && xelatex -interaction=nonstopmode -quiet main.tex > /dev/null 2>&1 || true
+	@test -f thesis/main.pdf || (echo "ERROR: PDF not generated" && exit 1)
 	@echo "✓ Thesis PDF built successfully: thesis/main.pdf"
 	@cd thesis && pdfinfo main.pdf 2>/dev/null | grep "Pages:" | awk '{print "  Pages:", $$2}' || true
 	@cd thesis && pdftotext main.pdf - 2>/dev/null | wc -w | awk '{print "  Word count:", $$1}' || echo "  Word count: n/a"
@@ -278,4 +282,6 @@ thesis-clean:
 	@rm -f thesis/chapters/*.aux
 	@rm -f thesis/frontmatter/*.aux
 	@rm -f thesis/appendices/*.aux
-	@echo "✓ Cleaned all LaTeX build artifacts"
+	@rm -f thesis/main.glo thesis/main.gls thesis/main.glg thesis/main.glsdefs
+	@rm -f thesis/main.acn thesis/main.acr thesis/main.alg thesis/main.ist
+	@echo "✓ Cleaned all LaTeX build artifacts (including glossary files)"

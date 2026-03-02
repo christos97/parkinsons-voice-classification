@@ -10,7 +10,7 @@
 \small
 \begin{tabular}{@{}p{2.5cm}p{2.6cm}p{3.2cm}p{3.3cm}@{}}
 \toprule
-\textbf{Dataset} & \textbf{Καλύτερο ROC-AUC} & \textbf{Μοντέλο/Task} & \textbf{Συνθήκη} \\
+\textbf{Dataset} & \textbf{Καλύτερο \gls{rocauc}} & \textbf{Μοντέλο/Task} & \textbf{Συνθήκη} \\
 \midrule
 Dataset A & $0{,}857 \pm 0{,}171$ & Random Forest / SpontaneousDialogue & Extended (78), unweighted \\
 Dataset A (ReadText) & $0{,}834 \pm 0{,}153$ & SVM (RBF) / ReadText & Extended (78), unweighted \\
@@ -25,7 +25,7 @@ Dataset B & $0{,}952 \pm 0{,}015$ & XGBoost & Baseline (47), unweighted \\
 
 \begin{table}[H]
 \centering
-\caption{Random Forest ROC-AUC ανά task και πειραματική συνθήκη (Dataset A, mean $\pm$ std, 5-fold CV).}
+\caption{Random Forest \gls{rocauc} ανά task και πειραματική συνθήκη (Dataset A, mean $\pm$ std, 5-fold CV).}
 \label{tab:rf-rocauc-main}
 \begin{tabular}{@{}llcc@{}}
 \toprule
@@ -50,7 +50,7 @@ Dataset B & $0{,}952 \pm 0{,}015$ & XGBoost & Baseline (47), unweighted \\
 \centering
 \begin{tabular}{@{}lcc@{}}
 \toprule
-\textbf{Μοντέλο} & \textbf{$\Delta$ ROC-AUC ReadText} & \textbf{$\Delta$ ROC-AUC SpontaneousDialogue} \\
+\textbf{Μοντέλο} & \textbf{$\Delta$ \gls{rocauc} ReadText} & \textbf{$\Delta$ \gls{rocauc} SpontaneousDialogue} \\
 \midrule
 Λογιστική παλινδρόμηση & $-0{,}019$ & $+0{,}023$ \\
 SVM (RBF) & $+0{,}220$ & $+0{,}053$ \\
@@ -71,7 +71,7 @@ XGBoost & $+0{,}166$ & $-0{,}036$ \\
 \centering
 \begin{tabular}{@{}lcc@{}}
 \toprule
-\textbf{Task} & \textbf{$\Delta$ ROC-AUC RF (baseline)} & \textbf{$\Delta$ ROC-AUC RF (extended)} \\
+\textbf{Task} & \textbf{$\Delta$ \gls{rocauc} RF (baseline)} & \textbf{$\Delta$ \gls{rocauc} RF (extended)} \\
 \midrule
 ReadText & $+0{,}097$ & $-0{,}017$ \\
 SpontaneousDialogue & $-0{,}001$ & $-0{,}034$ \\
@@ -91,7 +91,7 @@ SpontaneousDialogue & $-0{,}001$ & $-0{,}034$ \\
 \toprule
 \textbf{Μετρική} & \textbf{Dataset A} & \textbf{Dataset B} \\
 \midrule
-ROC-AUC std & $\pm 0{,}15$--$0{,}30$ & $\pm 0{,}01$--$0{,}03$ \\
+\gls{rocauc} std & $\pm 0{,}15$--$0{,}30$ & $\pm 0{,}01$--$0{,}03$ \\
 Accuracy std & $\pm 0{,}14$--$0{,}18$ & $\pm 0{,}008$--$0{,}024$ \\
 F1 std & $\pm 0{,}21$--$0{,}39$ & $\pm 0{,}006$--$0{,}015$ \\
 \bottomrule
@@ -128,7 +128,7 @@ F1 std & $\pm 0{,}21$--$0{,}39$ & $\pm 0{,}006$--$0{,}015$ \\
 \end{tabular}
 \end{table}
 
-Τα δεδομένα υποδηλώνουν ότι το extended feature set παρέχει σταθερά υψηλότερη απόδοση στο ReadText ($+23{,}2$ pp ROC-AUC, unweighted), ενώ στο SpontaneousDialogue η βελτίωση είναι περιορισμένη. 
+Τα δεδομένα υποδηλώνουν ότι το extended feature set παρέχει σταθερά υψηλότερη απόδοση στο ReadText ($+23{,}2$ pp \gls{rocauc}, unweighted), ενώ στο SpontaneousDialogue η βελτίωση είναι περιορισμένη. 
 ενώ η προσθήκη class weighting δεν οδήγησε σε σταθερό όφελος, και σε ορισμένες περιπτώσεις φάνηκε να μειώνει την απόδοση, ειδικά όταν τα διαστήματα αβεβαιότητας επικαλύπτονται.
 
 \section{Οπτική επιβεβαίωση αποτελεσμάτων}
@@ -197,7 +197,7 @@ F1 std & $\pm 0{,}21$--$0{,}39$ & $\pm 0{,}006$--$0{,}015$ \\
     \scriptsize
     \begin{tabular}{@{}llccccc@{}}
         \toprule
-        Task & Model & Accuracy & Precision & Recall & F1 & ROC-AUC \\
+        Task & Model & Accuracy & Precision & Recall & F1 & \gls{rocauc} \\
         \midrule
         ReadText & LogisticRegression & $0.650 \pm 0.108$ & $0.650 \pm 0.253$ & $0.550 \pm 0.201$ & $0.564 \pm 0.160$ & $0.698 \pm 0.132$ \\
         ReadText & SVM\_RBF & $0.761 \pm 0.214$ & $0.700 \pm 0.447$ & $0.567 \pm 0.365$ & $0.620 \pm 0.390$ & $0.834 \pm 0.153$ \\
@@ -221,7 +221,7 @@ F1 std & $\pm 0{,}21$--$0{,}39$ & $\pm 0{,}006$--$0{,}015$ \\
     \scriptsize
     \begin{tabular}{@{}lccccc@{}}
         \toprule
-        Model & Accuracy & Precision & Recall & F1 & ROC-AUC \\
+        Model & Accuracy & Precision & Recall & F1 & \gls{rocauc} \\
         \midrule
         LogisticRegression & $0.825 \pm 0.017$ & $0.892 \pm 0.021$ & $0.872 \pm 0.012$ & $0.882 \pm 0.011$ & $0.867 \pm 0.029$ \\
         SVM\_RBF & $0.847 \pm 0.024$ & $0.887 \pm 0.028$ & $0.911 \pm 0.014$ & $0.899 \pm 0.015$ & $0.900 \pm 0.023$ \\

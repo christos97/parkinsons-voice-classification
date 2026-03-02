@@ -6,6 +6,9 @@
 % All packages, configuration, and custom commands
 \input{Preamble}
 
+% Glossary and abbreviation definitions (loaded after Preamble for correct ordering)
+\input{glossary}
+
 %% ============================================================================
 %% DOCUMENT START
 %% ============================================================================
@@ -50,6 +53,18 @@
 % List of tables
 \listoftables
 \addcontentsline{toc}{chapter}{Κατάλογος Πινάκων}
+
+% Glossaries (forced-add ensures all defined entries are printed regardless of \gls{} usage)
+\glsaddall
+\printglossary[
+    type=abbreviations,
+    style=long,
+    title={Κατάλογος Συντομογραφιών}
+]
+\printglossary[
+    style=altlist,
+    title={Γλωσσάρι Τεχνικών Όρων}
+]
 
 %% ----------------------------------------------------------------------------
 %% MAIN MATTER
