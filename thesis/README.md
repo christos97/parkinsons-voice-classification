@@ -1,6 +1,6 @@
-# Thesis LaTeX Project
+# Thesis LaTeX
 
-LaTeX source files for the MSc thesis on **Voice-Based Classification of Parkinson's Disease Using Classical Machine Learning**.
+LaTeX source files for the thesis on **Voice-Based Classification of Parkinson's Disease Using Classical Machine Learning**.
 
 **Build tool:** latexmk  
 **Source of truth:** This directory contains the authoritative thesis content.
@@ -93,9 +93,3 @@ make sync-figures
 ## Source of Truth
 
 > **LaTeX files in `thesis/` are authoritative for thesis content.**
-
-Markdown files in `_legacy_/v2/` are deprecated (read-only archive).
-
----
-
-See [thesis/AGENTS.md](AGENTS.md) for AI agent-specific editing rules.
