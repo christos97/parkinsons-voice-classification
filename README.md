@@ -1,6 +1,11 @@
-# Ταξινόμηση Νόσου Parkinson μέσω Φωνής με Χρήση Κλασικής Μηχανικής Μάθησης
+# parkinsons-voice-classification
 
-*Voice-Based Classification of Parkinson's Disease Using Classical Machine Learning*
+## Ταξινόμηση Νόσου Parkinson μέσω Φωνής με Χρήση Κλασικής Μηχανικής Μάθησης
+
+### *Voice-Based Classification of Parkinson's Disease Using Classical Machine Learning*
+
+[![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 ---
 
@@ -135,7 +140,3 @@ parkinsons-voice-classification/
 - Python 3.10+
 - [Poetry](https://python-poetry.org/)
 - LaTeX (για μεταγλώττιση διπλωματικής)
-
-## Άδεια Χρήσης
-
-MIT License
